@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-gear-fill"></i>
+            <h3>Settings</h3>
+        </div>
+
+        <!-- Change Password -->
+        <h5 class="gs-fw-700 gs-mb-2"><i class="bi bi-lock me-2"></i>Change Password</h5>
+        <form method="post" action="{% url 'change_password' %}">
+            {% csrf_token %}
+            <div class="gs-form-group">
+                <label>Current Password</label>
+                <input type="password" name="current_password" class="gs-input" placeholder="Enter current 5-digit PIN" maxlength="5" data-numeric required>
+            </div>
+            <div class="gs-form-group">
+                <label>New Password</label>
+                <input type="password" name="new_password" class="gs-input" placeholder="Enter new 5-digit PIN" maxlength="5" data-numeric required>
+            </div>
+            <div class="gs-form-group">
+                <label>Confirm New Password</label>
+                <input type="password" name="confirm_password" class="gs-input" placeholder="Confirm new PIN" maxlength="5" data-numeric required>
+            </div>
+            <button type="submit" class="gs-btn gs-btn-primary">
+                <i class="bi bi-check-circle"></i> Change Password
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <!-- App Language -->
+        <h5 class="gs-fw-700 gs-mb-2"><i class="bi bi-translate me-2"></i>App Language</h5>
+        <div class="gs-form-group">
+            <label>Select Language</label>
+            <select id="language-selector" class="gs-input">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="mr">मराठी (Marathi)</option>
+                <option value="bn">বাংলা (Bengali)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="gu">ગુજરાતી (Gujarati)</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="ml">മലയാളം (Malayalam)</option>
+                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            </select>
+        </div>
+        <button type="button" onclick="changeLanguage()" class="gs-btn gs-btn-primary">
+            <i class="bi bi-globe"></i> Change Language
+        </button>
+
+        <hr class="my-4">
+
+        <!-- Account Info -->
+        <h5 class="gs-fw-700 gs-mb-2"><i class="bi bi-person-badge me-2"></i>Account Info</h5>
+        <div class="gs-profile-info">
+            <div class="gs-profile-info-item">
+                <i class="bi bi-phone"></i>
+                <span>Mobile</span>
+                <strong>{{ current_user.mobile|default:"N/A" }}</strong>
+            </div>
+            {% if current_profile %}
+            <div class="gs-profile-info-item">
+                <i class="bi bi-person-badge"></i>
+                <span>Member ID</span>
+                <strong>{{ current_profile.member_id|default:"N/A" }}</strong>
+            </div>
+            {% endif %}
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Logout -->
+        <a href="{% url 'logout' %}" class="gs-btn gs-btn-danger" data-confirm="Are you sure you want to logout?">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function changeLanguage() {
+        const lang = document.getElementById('language-selector').value;
+        // Set google translate cookie (translating from English 'en' to selected language)
+        document.cookie = `googtrans=/en/${lang}; path=/`;
+        document.cookie = `googtrans=/en/${lang}; domain=.${location.hostname}; path=/`;
+        window.location.reload();
+    }
+
+    // Set dropdown value based on current cookie
+    window.addEventListener('DOMContentLoaded', () => {
+        const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+        if (match && match[1]) {
+            const selector = document.getElementById('language-selector');
+            if (selector.querySelector(`option[value="${match[1]}"]`)) {
+                selector.value = match[1];
+            }
+        }
+    });
+</script>
+{% endblock %}

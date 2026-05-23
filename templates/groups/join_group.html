@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Join Group - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <h3>Join a Group</h3>
+        </div>
+        <p class="gs-text-muted gs-mb-2">Enter the Group ID shared by the group leader to send a join request.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="gs-form-group">
+                <label>Group ID</label>
+                <div class="gs-input-icon">
+                    <i class="bi bi-hash"></i>
+                    <input type="text" name="group_id" class="gs-input" placeholder="Enter 6-digit Group ID" maxlength="10" data-numeric required>
+                </div>
+            </div>
+            <button type="submit" class="gs-btn gs-btn-primary">
+                <i class="bi bi-send"></i> Send Join Request
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'profile_view' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Back to Profile</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-pencil-square"></i>
+            <h3>Edit Profile</h3>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="gs-form-group gs-text-center">
+                {% if profile.profile_photo %}
+                <img src="/media/{{ profile.profile_photo }}" alt="Photo" class="gs-profile-avatar" id="avatarPreview">
+                {% else %}
+                <div class="gs-profile-avatar-placeholder"><i class="bi bi-person"></i></div>
+                <img id="avatarPreview" src="" alt="" class="gs-profile-avatar" style="display:none;">
+                {% endif %}
+                <br>
+                <label class="gs-btn gs-btn-secondary gs-btn-sm gs-mt-1" style="width:auto; cursor:pointer;">
+                    <i class="bi bi-camera"></i> Change Photo
+                    <input type="file" name="profile_photo" accept="image/*" data-preview="avatarPreview" hidden>
+                </label>
+            </div>
+            <div class="gs-form-group">
+                <label>Full Name *</label>
+                <input type="text" name="full_name" class="gs-input" value="{{ profile.full_name|default:'' }}" required>
+            </div>
+            <div class="gs-form-group">
+                <label>Gender</label>
+                <select name="gender" class="gs-input">
+                    <option value="">Select</option>
+                    <option value="Male" {% if profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                    <option value="Other" {% if profile.gender == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="gs-form-group">
+                <label>Address</label>
+                <textarea name="address" class="gs-input" rows="3">{{ profile.address|default:'' }}</textarea>
+            </div>
+            <div class="gs-form-group">
+                <label>PIN Code</label>
+                <input type="text" name="pin_code" class="gs-input" maxlength="6" value="{{ profile.pin_code|default:'' }}" data-numeric>
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <a href="{% url 'profile_view' %}" class="gs-btn gs-btn-secondary">Cancel</a>
+                <button type="submit" class="gs-btn gs-btn-primary">
+                    <i class="bi bi-check2"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

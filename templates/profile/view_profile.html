@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+
+    <div class="gs-card gs-profile-card">
+        {% if profile.profile_photo %}
+        <img src="/media/{{ profile.profile_photo }}" alt="Profile Photo" class="gs-profile-avatar">
+        {% else %}
+        <div class="gs-profile-avatar-placeholder">
+            <i class="bi bi-person"></i>
+        </div>
+        {% endif %}
+
+        <h3 class="gs-fw-700">{{ profile.full_name|default:"N/A" }}</h3>
+
+        {% if profile.member_id %}
+        <div class="gs-member-id">
+            <i class="bi bi-person-badge me-1"></i> Member ID: {{ profile.member_id }}
+        </div>
+        {% endif %}
+
+        <div class="gs-profile-info">
+            <div class="gs-profile-info-item">
+                <i class="bi bi-phone"></i>
+                <span>Mobile</span>
+                <strong>{{ profile.mobile|default:"N/A" }}</strong>
+            </div>
+            <div class="gs-profile-info-item">
+                <i class="bi bi-gender-ambiguous"></i>
+                <span>Gender</span>
+                <strong>{{ profile.gender|default:"N/A" }}</strong>
+            </div>
+            <div class="gs-profile-info-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>Address</span>
+                <strong>{{ profile.address|default:"N/A" }}</strong>
+            </div>
+            <div class="gs-profile-info-item">
+                <i class="bi bi-pin-map"></i>
+                <span>PIN Code</span>
+                <strong>{{ profile.pin_code|default:"N/A" }}</strong>
+            </div>
+            <div class="gs-profile-info-item">
+                <i class="bi bi-people"></i>
+                <span>Groups</span>
+                <strong>{{ groups_count }}</strong>
+            </div>
+        </div>
+
+        <a href="{% url 'profile_edit' %}" class="gs-btn gs-btn-primary gs-mt-3" style="width: auto; padding: 0.6rem 2rem;">
+            <i class="bi bi-pencil"></i> Edit Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

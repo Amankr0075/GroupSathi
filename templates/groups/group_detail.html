@@ -1,0 +1,760 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ group.name }} - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'my_groups' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> My Groups</a>
+
+    <!-- Group Header -->
+    <div class="gs-card">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            {% if group.logo %}
+            <img src="/media/{{ group.logo }}" alt="Logo" class="gs-group-logo" style="width:60px;height:60px;">
+            {% else %}
+            <div class="gs-group-logo-placeholder" style="width:60px;height:60px;font-size:1.5rem;"><i class="bi bi-people"></i></div>
+            {% endif %}
+            <div>
+                <h3 class="gs-fw-700 mb-0">{{ group.name }}</h3>
+                <small class="gs-text-muted">Group ID: <strong>{{ group.group_id }}</strong></small>
+                <br><span class="gs-role-badge gs-role-{{ user_role }}">{{ user_role }}</span>
+            </div>
+        </div>
+
+        <div class="gs-group-stats" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+            <div class="gs-group-stat animate__animated animate__fadeIn">
+                <div class="gs-group-stat-value">₹{{ group.emi_amount }}</div>
+                <div class="gs-group-stat-label">Monthly EMI</div>
+            </div>
+            <div class="gs-group-stat animate__animated animate__fadeIn">
+                <div class="gs-group-stat-value">Day {{ group.emi_date|default:"1" }}</div>
+                <div class="gs-group-stat-label">EMI Day (Monthly)</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">{{ group.interest_rate }}%</div>
+                <div class="gs-group-stat-label">Interest Rate</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">₹{{ balance }}</div>
+                <div class="gs-group-stat-label">Balance</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">₹{{ emi_collected }}</div>
+                <div class="gs-group-stat-label">EMI Collected</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">₹{{ interest_collected }}</div>
+                <div class="gs-group-stat-label">Interest Earned</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">₹{{ outstanding_loans }}</div>
+                <div class="gs-group-stat-label">Outstanding Loans</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">₹{{ fine_collected }}</div>
+                <div class="gs-group-stat-label">Fines Collected</div>
+            </div>
+            <div class="gs-group-stat">
+                <div class="gs-group-stat-value">{{ member_details|length }}</div>
+                <div class="gs-group-stat-label">Members</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="d-flex gap-2 flex-wrap gs-mt-2">
+            <form method="post" action="{% url 'emi_payment' group.group_id %}" class="d-flex gap-2" style="flex:1; min-width: 320px;">
+                {% csrf_token %}
+                <input type="number" name="amount" class="gs-input" placeholder="EMI Amount" value="{{ group.emi_amount }}" step="0.01" style="flex:1; min-width: 120px;" readonly>
+                {% if is_emi_day %}
+                <button type="submit" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; white-space:nowrap;">
+                    <i class="bi bi-check"></i> Pay EMI
+                </button>
+                {% else %}
+                <button type="button" class="gs-btn gs-btn-secondary gs-btn-sm" style="width:auto; white-space:nowrap; opacity: 0.6; cursor: not-allowed;" title="EMI payments are allowed on Day {{ group.emi_date|default:'1' }} only." disabled>
+                    <i class="bi bi-lock-fill"></i> Pay EMI (Locked)
+                </button>
+                {% endif %}
+            </form>
+
+            {% if user_role == 'leader' or user_role == 'co-leader' %}
+                {% if is_emi_day %}
+                <form method="post" action="{% url 'send_emi_alert' group.group_id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto; white-space:nowrap;">
+                        <i class="bi bi-bell-fill"></i> Send EMI Alert
+                    </button>
+                </form>
+                {% else %}
+                <button class="gs-btn gs-btn-secondary gs-btn-sm" style="width:auto; white-space:nowrap; opacity: 0.6; cursor: not-allowed;" title="EMI alert only available on Day {{ group.emi_date|default:'1' }}." disabled>
+                    <i class="bi bi-bell-slash-fill"></i> Send EMI Alert (Day {{ group.emi_date|default:'1' }} Only)
+                </button>
+                {% endif %}
+            {% endif %}
+
+            <a href="{% url 'loan_request' group.group_id %}" class="gs-btn gs-btn-primary gs-btn-sm" style="width:auto;">
+                <i class="bi bi-cash"></i> Request Loan
+            </a>
+            <a href="{% url 'waive_fine_request' group.group_id %}" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto;">
+                <i class="bi bi-gift"></i> Request Late Fine Waiver
+            </a>
+            {% if user_role in 'leader,co-leader' %}
+            <a href="{% url 'waive_imposed_fine_request' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;">
+                <i class="bi bi-exclamation-triangle"></i> Request Imposed Fine Waiver
+            </a>
+            {% endif %}
+            {% if user_role == 'leader' %}
+            <a href="{% url 'edit_group' group.group_id %}" class="gs-btn gs-btn-info gs-btn-sm" style="width:auto; color: white;">
+                <i class="bi bi-pencil-square"></i> Edit Details
+            </a>
+            <a href="{% url 'delete_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" onclick="return confirm('Are you absolutely sure you want to DESTROY this group? This action cannot be undone.');">
+                <i class="bi bi-trash"></i> Destroy
+            </a>
+            {% else %}
+            <a href="{% url 'leave_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" onclick="return confirm('Request to leave the group?');">
+                <i class="bi bi-box-arrow-left"></i> Leave
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if outstanding_imposed_fines %}
+    <div class="gs-card gs-mb-3 animate__animated animate__shakeX" style="border-left: 4px solid var(--gs-danger); background-color: rgba(220, 53, 69, 0.05); padding: 1.25rem;">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-exclamation-octagon-fill" style="font-size: 1.5rem; color: var(--gs-danger);"></i>
+            <h3 class="m-0" style="color: var(--gs-danger); font-size: 1.2rem;">Unpaid Imposed Fines</h3>
+        </div>
+        <p class="gs-text-muted mb-3" style="font-size: 0.9rem;">
+            The group consensus has imposed the following fine(s) on you. Please clear them immediately:
+        </p>
+        {% for fine in outstanding_imposed_fines %}
+        <div class="d-flex justify-content-between align-items-center p-3 mb-2" style="background: var(--gs-card-bg); border: 1px solid var(--gs-border-color); border-radius: 8px;">
+            <div>
+                <strong style="font-size: 1.1rem; color: var(--gs-danger);">₹{{ fine.amount|floatformat:2 }}</strong>
+                <br><span style="font-size: 0.9rem;"><strong>Reason:</strong> "{{ fine.reason }}"</span>
+                <br><small class="gs-text-muted">Imposed on: {{ fine.created_at|date:"d M Y" }}</small>
+            </div>
+            <a href="{% url 'pay_imposed_fine' fine|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width: auto; padding: 0.4rem 1rem;" data-confirm="Pay this fine now?">
+                <i class="bi bi-wallet2"></i> Pay Fine
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row g-3">
+        <!-- Members -->
+        <div class="col-lg-6">
+            <div class="gs-card">
+                <div class="gs-card-header">
+                    <i class="bi bi-people"></i>
+                    <h3>Members ({{ member_details|length }})</h3>
+                </div>
+                {% for md in member_details %}
+                <div class="d-flex align-items-center gap-3 p-2" style="border-bottom:1px solid var(--gs-body-bg);">
+                    {% if md.profile and md.profile.profile_photo %}
+                    <img src="/media/{{ md.profile.profile_photo }}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                    {% else %}
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--gs-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.9rem;">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    {% endif %}
+                    <div style="flex:1;">
+                        <strong style="font-size:0.9rem;">{{ md.profile.full_name|default:"Unknown" }}</strong>
+                        <br><small class="gs-text-muted">ID: {{ md.profile.member_id|default:"N/A" }}</small>
+                    </div>
+                    <span class="gs-role-badge gs-role-{{ md.member.role }}">{{ md.member.role }}</span>
+                    <div class="d-flex gap-2 align-items-center">
+                        {% if user_role == 'leader' and md.member.role == 'member' %}
+                        <a href="{% url 'promote_member' group.group_id md.member.user_id %}" class="gs-btn gs-btn-secondary gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem;" data-confirm="Promote this member to Co-Leader?" title="Promote to Co-Leader">
+                            <i class="bi bi-arrow-up"></i> Promote
+                        </a>
+                        {% endif %}
+                        
+                        {% if user_role == 'leader' and md.member.role == 'co-leader' %}
+                        <a href="{% url 'demote_member' group.group_id md.member.user_id %}" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; color: #000;" data-confirm="Demote this Co-Leader back to Member?" title="Demote to Member">
+                            <i class="bi bi-arrow-down"></i> Demote
+                        </a>
+                        {% endif %}
+
+                        {% if user_role in 'leader,co-leader' and md.member.user_id != request.session.user_id %}
+                        <a href="{% url 'impose_fine_request' group.group_id md.member.user_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem;" title="Impose Fine">
+                            <i class="bi bi-exclamation-octagon"></i> Impose Fine
+                        </a>
+                        {% endif %}
+
+                        {% if user_role == 'leader' and md.member.user_id != request.session.user_id %}
+                        <a href="{% url 'remove_member' group.group_id md.member.user_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; background: #dc3545;" data-confirm="Remove this member from the group?" title="Remove Member">
+                            <i class="bi bi-person-x-fill"></i> Remove
+                        </a>
+                        {% elif user_role == 'co-leader' and md.member.role == 'member' and md.member.user_id != request.session.user_id %}
+                        <a href="{% url 'remove_member' group.group_id md.member.user_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; background: #dc3545;" data-confirm="Remove this member from the group?" title="Remove Member">
+                            <i class="bi bi-person-x-fill"></i> Remove
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Active Loans & Financial Analytics -->
+        <div class="col-lg-6">
+            <!-- Active Loans -->
+            <div class="gs-card">
+                <div class="gs-card-header">
+                    <i class="bi bi-cash-stack"></i>
+                    <h3>Active Loans ({{ loan_details|length }})</h3>
+                </div>
+                {% if loan_details %}
+                {% for ld in loan_details %}
+                <div class="gs-loan-card" style="margin-bottom: 1rem; padding: 1rem; background: var(--gs-body-bg); border-radius: 8px; border-left: 4px solid var(--gs-primary);">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong>{{ ld.profile.full_name|default:"Unknown" }}</strong>
+                            <br><small class="gs-text-muted">₹{{ ld.loan.amount }} @ {{ ld.loan.interest_rate }}%</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="gs-loan-status gs-status-{{ ld.loan.status }}">{{ ld.loan.status }}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem;">
+                        <span class="gs-text-muted">Remaining Principal: <strong>₹{{ ld.loan.remaining_amount }}</strong></span>
+                        <span class="gs-text-muted">Expected Interest: ₹{{ ld.loan.interest_amount }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between" style="font-size:0.85rem;">
+                        <span class="gs-text-muted">Interest Paid: <strong>₹{{ ld.loan.interest_paid|default:0.0 }}</strong></span>
+                        <span class="gs-text-muted">Total Paid so far: <strong>₹{{ ld.paid_so_far }}</strong></span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="gs-text-muted gs-text-center">No active loans</p>
+                {% endif %}
+            </div>
+
+            <!-- Completed Loans -->
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-check-circle-fill" style="color:var(--gs-success);"></i>
+                    <h3>Completed Loans ({{ total_completed_loans_count|default:"0" }})</h3>
+                </div>
+                {% if completed_loans %}
+                {% for ld in completed_loans %}
+                <div class="gs-loan-card" style="margin-bottom: 1rem; padding: 1rem; background: var(--gs-body-bg); border-radius: 8px; border-left: 4px solid var(--gs-success);">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong>{{ ld.profile.full_name|default:"Unknown" }}</strong>
+                            <br><small class="gs-text-muted">₹{{ ld.loan.amount }} @ {{ ld.loan.interest_rate }}%</small>
+                        </div>
+                        <span class="gs-loan-status gs-status-completed" style="background-color: #d4edda; color: #155724; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">completed</span>
+                    </div>
+                    <div class="d-flex justify-content-between" style="font-size:0.85rem;">
+                        <span class="gs-text-muted">Interest Paid: <strong>₹{{ ld.loan.interest_paid|default:ld.loan.interest_amount }}</strong></span>
+                        <span class="gs-text-muted">Total Repaid: <strong>₹{{ ld.loan.total_repayment }}</strong></span>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if total_completed_loans_count > 3 %}
+                <div class="text-center mt-2 pt-2" style="border-top: 1px dashed var(--gs-border-color);">
+                    <a href="{% url 'loan_list' %}" class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        <i class="bi bi-clock-history"></i> View Full Loan History in Dashboard
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <p class="gs-text-muted gs-text-center">No completed loans yet</p>
+                {% endif %}
+            </div>
+
+            <!-- Interest Analytics -->
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-graph-up-arrow" style="color: var(--gs-success);"></i>
+                    <h3>Interest Analytics</h3>
+                </div>
+                
+                <h5 class="gs-mt-2" style="font-size:0.95rem; font-weight:600; border-bottom: 1px solid var(--gs-body-bg); padding-bottom: 0.3rem;">Member-wise Interest Paid</h5>
+                {% if member_interest %}
+                <div class="d-flex flex-column gap-2 mb-3">
+                    {% for item in member_interest %}
+                    <div class="d-flex justify-content-between align-items-center p-2" style="background: var(--gs-body-bg); border-radius: 4px;">
+                        <span>{{ item.name }}</span>
+                        <strong>₹{{ item.total|floatformat:2 }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="gs-text-muted" style="font-size:0.85rem;">No member interest recorded yet.</p>
+                {% endif %}
+                
+                <h5 class="gs-mt-2" style="font-size:0.95rem; font-weight:600; border-bottom: 1px solid var(--gs-body-bg); padding-bottom: 0.3rem;">Monthly Interest Collection</h5>
+                {% if monthly_interest %}
+                <div class="d-flex flex-column gap-2">
+                    {% for item in monthly_interest %}
+                    <div class="d-flex justify-content-between align-items-center p-2" style="background: var(--gs-body-bg); border-radius: 4px;">
+                        <span>{{ item.month }}</span>
+                        <strong>₹{{ item.total|floatformat:2 }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="gs-text-muted" style="font-size:0.85rem;">No interest collected yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Pending Join Requests (leaders only) -->
+            {% if pending_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-person-plus"></i>
+                    <h3>Pending Requests</h3>
+                </div>
+                {% for req in pending_requests %}
+                <div class="d-flex align-items-center gap-3 p-2" style="border-bottom:1px solid var(--gs-body-bg);">
+                    <div style="flex:1;">
+                        <strong>{{ req.member_name }}</strong>
+                        <br><small class="gs-text-muted">{{ req.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'approve_join_request' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this join request?">
+                            <i class="bi bi-check"></i>
+                        </a>
+                        <a href="{% url 'reject_join_request' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this join request?">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Leave Requests (leaders only) -->
+            {% if pending_leave_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-box-arrow-left"></i>
+                    <h3>Leave Requests</h3>
+                </div>
+                {% for req in pending_leave_requests %}
+                <div class="d-flex align-items-center gap-3 p-2" style="border-bottom:1px solid var(--gs-body-bg);">
+                    <div style="flex:1;">
+                        <strong>{{ req.member_name }}</strong>
+                        <br><small class="gs-text-muted">{{ req.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'approve_leave_request' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this leave request?">
+                            <i class="bi bi-check"></i>
+                        </a>
+                        <a href="{% url 'reject_leave_request' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this leave request?">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending EMI Requests (leaders only) -->
+            {% if pending_emi_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-wallet2"></i>
+                    <h3>EMI Requests</h3>
+                </div>
+                {% for req in pending_emi_requests %}
+                <div class="d-flex align-items-center gap-3 p-2" style="border-bottom:1px solid var(--gs-body-bg);">
+                    <div style="flex:1;">
+                        <strong>{{ req.member_name }}</strong>
+                        <br><small class="gs-text-muted">₹{{ req.total_amount|default:"0" }} {% if req.fine_amount > 0 %}(Fine: ₹{{ req.fine_amount }}){% endif %}</small>
+                        <br><small class="gs-text-muted">{{ req.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'approve_emi_request' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this EMI payment?">
+                            <i class="bi bi-check"></i>
+                        </a>
+                        <a href="{% url 'reject_emi_request' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this EMI payment?">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Fine Payments (leaders only) -->
+            {% if pending_fine_payments %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-wallet2" style="color:var(--gs-success);"></i>
+                    <h3>Fine Payment Approvals ({{ pending_fine_payments|length }})</h3>
+                </div>
+                {% for req in pending_fine_payments %}
+                <div class="p-3 mb-2" style="border-bottom:1px solid var(--gs-body-bg); background: var(--gs-body-bg); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div style="flex: 1;">
+                            <strong>{{ req.member_name }}</strong>
+                            <br><small class="gs-text-muted">Paid Fine Amount: ₹{{ req.amount|floatformat:2 }}</small>
+                            <br><small class="gs-text-muted">Submitted: {{ req.payment_submitted_at|date:"d M Y H:i" }}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if req.has_approved %}
+                            <button class="gs-btn gs-btn-success gs-btn-sm" disabled style="opacity: 0.7; cursor: not-allowed; width: auto; padding: 0.3rem 0.8rem;">
+                                <i class="bi bi-check-all"></i> Approved By You
+                            </button>
+                            {% else %}
+                            <a href="{% url 'approve_fine_payment' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this fine payment?">
+                                <i class="bi bi-check"></i> Approve
+                            </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'reject_fine_payment' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this fine payment?">
+                                <i class="bi bi-x"></i> Reject
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-card-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-success);">
+                        <strong style="color:var(--gs-success);"><i class="bi bi-people-fill"></i> Consensus Approvals (Leaders & Co-Leaders):</strong>
+                        <div class="progress mt-1 mb-1" style="height: 8px; background-color: var(--gs-body-bg); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: calc(({{ req.approvals_count }} / {{ req.total_leaders }}) * 100%);"></div>
+                        </div>
+                        <span class="gs-text-muted gs-fw-600">{{ req.approvals_count }} out of {{ req.total_leaders }} leaders have approved.</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Loan Extensions (leaders only) -->
+            {% if pending_loan_extensions %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-calendar-plus" style="color:var(--gs-primary);"></i>
+                    <h3>Loan Extension Approvals ({{ pending_loan_extensions|length }})</h3>
+                </div>
+                {% for req in pending_loan_extensions %}
+                <div class="p-3 mb-2" style="border-bottom:1px solid var(--gs-body-bg); background: var(--gs-body-bg); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div style="flex: 1;">
+                            <strong>{{ req.member_name }}</strong>
+                            <br><small class="gs-text-muted">Requested Extra Months: +{{ req.extra_months }}</small>
+                            <br><small class="gs-text-muted">Submitted: {{ req.created_at|date:"d M Y H:i" }}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if req.has_approved %}
+                            <button class="gs-btn gs-btn-success gs-btn-sm" disabled style="opacity: 0.7; cursor: not-allowed; width: auto; padding: 0.3rem 0.8rem;">
+                                <i class="bi bi-check-all"></i> Approved By You
+                            </button>
+                            {% else %}
+                            <a href="{% url 'approve_extend_loan' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this loan extension?">
+                                <i class="bi bi-check"></i> Approve
+                            </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'reject_extend_loan' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this loan extension?">
+                                <i class="bi bi-x"></i> Reject
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-card-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-primary);">
+                        <strong style="color:var(--gs-primary);"><i class="bi bi-people-fill"></i> Consensus Approvals (Leaders & Co-Leaders):</strong>
+                        <div class="progress mt-1 mb-1" style="height: 8px; background-color: var(--gs-body-bg); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: calc(({{ req.approvals_count }} / {{ req.total_leaders }}) * 100%);"></div>
+                        </div>
+                        <span class="gs-text-muted gs-fw-600">{{ req.approvals_count }} out of {{ req.total_leaders }} leaders have approved.</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Repayment Requests (leaders only) -->
+            {% if pending_repayment_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-cash-coin" style="color:var(--gs-success);"></i>
+                    <h3>Repayment Requests ({{ pending_repayment_requests|length }})</h3>
+                </div>
+                {% for req in pending_repayment_requests %}
+                <div class="d-flex align-items-center gap-3 p-2" style="border-bottom:1px solid var(--gs-body-bg);">
+                    <div style="flex:1;">
+                        <strong>{{ req.member_name }}</strong>
+                        <br><small class="gs-text-muted">
+                            Type: <strong>{{ req.type|title }}</strong>
+                            {% if req.type == 'principal' %}
+                            <br>Principal: ₹{{ req.principal_amount|floatformat:2 }} | Calculated Interest: ₹{{ req.interest_amount|floatformat:2 }}
+                            {% else %}
+                            <br>Interest Payment: ₹{{ req.interest_amount|floatformat:2 }}
+                            {% endif %}
+                            <br>Total: <strong>₹{{ req.total_amount|floatformat:2 }}</strong>
+                        </small>
+                        <br><small class="gs-text-muted">{{ req.created_at|date:"d M Y" }}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'approve_repayment_request' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this repayment?">
+                            <i class="bi bi-check"></i>
+                        </a>
+                        <a href="{% url 'reject_repayment_request' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this repayment?">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Fine Waiver Requests (Visible to all members for voting) -->
+            {% if pending_waiver_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-gift" style="color:var(--gs-warning);"></i>
+                    <h3>Fine Waiver Requests ({{ pending_waiver_requests|length }})</h3>
+                </div>
+                {% for req in pending_waiver_requests %}
+                <div class="p-3 mb-2" style="border-bottom:1px solid var(--gs-body-bg); background: var(--gs-body-bg); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div style="flex: 1;">
+                            <strong>{{ req.member_name }}</strong>
+                            {% if req.is_imposed_fine_waiver %}
+                            <br><span class="badge bg-warning text-dark mb-1" style="font-size:0.75rem;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Imposed Fine Waiver</span>
+                            <br><small class="gs-text-muted">Fine: <strong>₹{{ req.fine_amount|floatformat:2 }}</strong> (Reason: "{{ req.fine_reason }}")</small>
+                            {% endif %}
+                            <br><small class="gs-text-muted">Reason: "{{ req.reason }}"</small>
+                            <br><small class="gs-text-muted">Submitted: {{ req.created_at|date:"d M Y H:i" }}</small>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            {% if request.session.user_id == req.user_id %}
+                                {% if req.is_imposed_fine_waiver %}
+                                <span class="badge bg-secondary p-2" style="font-size:0.8rem; border-radius: 50px;">
+                                    <i class="bi bi-person-badge"></i> Your Fine
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary p-2" style="font-size:0.8rem; border-radius: 50px;">
+                                    <i class="bi bi-person-fill"></i> Your Request
+                                </span>
+                                {% endif %}
+                            {% elif req.has_approved %}
+                            <button class="gs-btn gs-btn-success gs-btn-sm" disabled style="opacity: 0.7; cursor: not-allowed; width: auto; padding: 0.3rem 0.8rem;">
+                                <i class="bi bi-check-all"></i> Approved By You
+                            </button>
+                            {% else %}
+                            <a href="{% url 'approve_waive_request' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve this fine waiver?">
+                                <i class="bi bi-check"></i> Approve
+                            </a>
+                            {% endif %}
+                            
+                            {% if user_role in 'leader,co-leader' %}
+                            <a href="{% url 'reject_waive_request' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this fine waiver?">
+                                <i class="bi bi-x"></i> Reject
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if req.voice_data %}
+                    <div class="mt-2 p-2" style="background:var(--gs-card-bg); border-radius: 6px; border: 1px solid var(--gs-border-color);">
+                        <small class="d-block gs-text-muted mb-1"><i class="bi bi-mic-fill"></i> Voice Recording:</small>
+                        <audio src="{{ req.voice_data }}" controls style="max-height: 35px; width: 100%; border-radius: 4px;"></audio>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-card-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-success);">
+                        {% if req.is_imposed_fine_waiver %}
+                        <strong style="color:var(--gs-success);"><i class="bi bi-people-fill"></i> Consensus Approvals (Excludes Target):</strong>
+                        {% else %}
+                        <strong style="color:var(--gs-success);"><i class="bi bi-people-fill"></i> Consensus Approvals (Excludes Requester):</strong>
+                        {% endif %}
+                        <div class="progress mt-1 mb-1" style="height: 8px; background-color: var(--gs-body-bg); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: calc(({{ req.approvals_count }} / {{ req.total_required }}) * 100%);"></div>
+                        </div>
+                        <span class="gs-text-muted gs-fw-600">{{ req.approvals_count }} out of {{ req.total_required }} other required members have approved.</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Pending Consensus Fine Impositions (Visible to all members for voting except target member) -->
+            {% if pending_fine_impositions %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-exclamation-octagon-fill" style="color:var(--gs-danger);"></i>
+                    <h3>Impose Fine Requests ({{ pending_fine_impositions|length }})</h3>
+                </div>
+                {% for req in pending_fine_impositions %}
+                <div class="p-3 mb-2" style="border-bottom:1px solid var(--gs-body-bg); background: var(--gs-body-bg); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div style="flex: 1;">
+                            <strong>Impose ₹{{ req.fine_amount|floatformat:2 }} Fine on: {{ req.target_member_name }}</strong>
+                            <br><small class="gs-text-muted">Reason: "{{ req.reason }}"</small>
+                            <br><small class="gs-text-muted">Initiated: {{ req.created_at|date:"d M Y H:i" }}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if req.has_approved %}
+                            <button class="gs-btn gs-btn-success gs-btn-sm" disabled style="opacity: 0.7; cursor: not-allowed; width: auto; padding: 0.3rem 0.8rem;">
+                                <i class="bi bi-check-all"></i> Approved By You
+                            </button>
+                            {% else %}
+                            <a href="{% url 'approve_impose_fine' req|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Approve imposing this fine?">
+                                <i class="bi bi-check"></i> Approve
+                            </a>
+                            {% endif %}
+                            
+                            {% if user_role in 'leader,co-leader' %}
+                            <a href="{% url 'reject_impose_fine' req|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.8rem;" data-confirm="Reject this fine imposition?">
+                                <i class="bi bi-x"></i> Reject
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-card-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-danger);">
+                        <strong style="color:var(--gs-danger);"><i class="bi bi-people-fill"></i> Consensus Approvals (All Other Active Members):</strong>
+                        <div class="progress mt-1 mb-1" style="height: 8px; background-color: var(--gs-body-bg); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: calc(({{ req.approvals_count }} / {{ req.required_approvals }}) * 100%);"></div>
+                        </div>
+                        <span class="gs-text-muted gs-fw-600">{{ req.approvals_count }} out of {{ req.required_approvals }} other active members have approved.</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- User's Own Fine Waiver Requests (non-leaders) -->
+            {% if user_waiver_requests %}
+            <div class="gs-card gs-mt-2">
+                <div class="gs-card-header">
+                    <i class="bi bi-gift" style="color:var(--gs-warning);"></i>
+                    <h3>My Fine Waiver Requests</h3>
+                </div>
+                {% for req in user_waiver_requests %}
+                <div class="p-3 mb-2" style="border-bottom:1px solid var(--gs-body-bg); background: var(--gs-body-bg); border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Reason:</strong> "{{ req.reason }}"
+                            <br><small class="gs-text-muted">Submitted: {{ req.created_at|date:"d M Y" }}</small>
+                        </div>
+                        <span class="gs-role-badge gs-role-{{ req.status }}">{{ req.status|upper }}</span>
+                    </div>
+                    
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-card-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-success);">
+                        <strong style="color:var(--gs-success);"><i class="bi bi-people-fill"></i> Consensus Status:</strong>
+                        <span class="gs-text-muted gs-fw-600 ml-2">{{ req.approved_by|length|default:0 }} approval(s) received.</span>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pagination for My Fine Waiver Requests -->
+                {% if user_waiver_requests.has_other_pages %}
+                <nav aria-label="Waiver page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center gap-2" style="border: none;">
+                        {% if user_waiver_requests.has_previous %}
+                        <li class="page-item">
+                            <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page_waiver={{ user_waiver_requests.previous_page_number }}{% if recent_transactions.number %}&page_txn={{ recent_transactions.number }}{% endif %}">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="page-item disabled">
+                            <span class="gs-btn gs-btn-sm" style="background-color: var(--gs-card-bg); color: var(--gs-text-muted); border: 1px solid var(--gs-border-color); cursor: default; width: auto;">
+                                Page {{ user_waiver_requests.number }} of {{ user_waiver_requests.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if user_waiver_requests.has_next %}
+                        <li class="page-item">
+                            <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page_waiver={{ user_waiver_requests.next_page_number }}{% if recent_transactions.number %}&page_txn={{ recent_transactions.number }}{% endif %}">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row g-3 gs-mt-2">
+        <div class="col-12">
+            <div class="gs-card">
+                <div class="gs-card-header">
+                    <i class="bi bi-list-ul"></i>
+                    <h3>Recent Transactions</h3>
+                </div>
+                {% if recent_transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" style="font-size: 0.9rem;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Member</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in recent_transactions %}
+                            <tr>
+                                <td>{{ txn.created_at|date:"d M Y H:i" }}</td>
+                                <td>{{ txn.member_name }}</td>
+                                <td>
+                                    <span class="gs-role-badge gs-role-{{ txn.badge_class }}" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;">
+                                        {{ txn.type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ txn.description }}</td>
+                                <td class="text-end {% if txn.is_negative %}text-danger{% else %}text-success{% endif %} font-weight-bold">
+                                    {% if txn.is_negative %}-{% endif %}{{ txn.amount_display }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination for Recent Transactions -->
+                {% if recent_transactions.has_other_pages %}
+                <nav aria-label="Transaction page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center gap-2" style="border: none;">
+                        {% if recent_transactions.has_previous %}
+                        <li class="page-item">
+                            <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page_txn={{ recent_transactions.previous_page_number }}{% if user_waiver_requests.number %}&page_waiver={{ user_waiver_requests.number }}{% endif %}">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="page-item disabled">
+                            <span class="gs-btn gs-btn-sm" style="background-color: var(--gs-card-bg); color: var(--gs-text-muted); border: 1px solid var(--gs-border-color); cursor: default; width: auto;">
+                                Page {{ recent_transactions.number }} of {{ recent_transactions.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if recent_transactions.has_next %}
+                        <li class="page-item">
+                            <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page_txn={{ recent_transactions.next_page_number }}{% if user_waiver_requests.number %}&page_waiver={{ user_waiver_requests.number }}{% endif %}">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+                {% else %}
+                <p class="gs-text-muted gs-text-center">No transactions recorded yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

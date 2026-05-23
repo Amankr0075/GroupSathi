@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            <h3>Generate Reports</h3>
+        </div>
+
+        {% if user_groups %}
+        <p class="gs-text-muted gs-mb-2">Select a group and pick a date to download a comprehensive PDF report. Leave the date empty to get all records.</p>
+
+        {% for group in user_groups %}
+        <div class="p-3 mb-3" style="border: 1px solid var(--gs-border-color, #dee2e6); border-radius: 10px; background: var(--gs-body-bg);">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                {% if group.logo %}
+                <img src="/media/{{ group.logo }}" alt="" class="gs-group-logo">
+                {% else %}
+                <div class="gs-group-logo-placeholder"><i class="bi bi-people"></i></div>
+                {% endif %}
+                <div style="flex:1;">
+                    <strong>{{ group.name }}</strong>
+                    <br><small class="gs-text-muted">Group Code: {{ group.group_id }}</small>
+                </div>
+            </div>
+
+            <form method="get" action="{% url 'generate_report_pdf' group.group_id %}" class="d-flex gap-2 align-items-end flex-wrap">
+                {% csrf_token %}
+                <div style="flex:1; min-width: 130px;">
+                    <label class="form-label gs-text-muted" style="font-size: 0.8rem; margin-bottom: 0.25rem;">
+                        <i class="bi bi-calendar-event me-1"></i>From Date (optional)
+                    </label>
+                    <input type="date" name="from_date" class="gs-input" style="font-size: 0.9rem;">
+                </div>
+                <div style="flex:1; min-width: 130px;">
+                    <label class="form-label gs-text-muted" style="font-size: 0.8rem; margin-bottom: 0.25rem;">
+                        <i class="bi bi-calendar-event me-1"></i>To Date (optional)
+                    </label>
+                    <input type="date" name="to_date" class="gs-input" style="font-size: 0.9rem;">
+                </div>
+                <button type="submit" class="gs-btn gs-btn-primary gs-btn-sm" style="width:auto; white-space: nowrap; height: fit-content;">
+                    <i class="bi bi-download me-1"></i> Download PDF
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="gs-empty">
+            <i class="bi bi-file-earmark-x"></i>
+            <h5>No Groups</h5>
+            <p>Join a group to generate reports.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,194 @@
+"""
+Authentication views for GroupSathi.
+Handles registration, login, logout with MongoDB-backed user storage.
+"""
+
+import bcrypt
+from datetime import datetime
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from core.db import get_collection
+from core.utils import generate_member_id
+
+
+def register_view(request):
+    """Handle user registration with mobile number and 5-digit numeric password."""
+    if request.session.get('user_id'):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        # Validation
+        errors = []
+        if not mobile or len(mobile) != 10 or not mobile.isdigit():
+            errors.append('Please enter a valid 10-digit mobile number.')
+
+        if not password or len(password) != 5 or not password.isdigit():
+            errors.append('Password must be exactly 5 digits (numeric only).')
+
+        if password != confirm_password:
+            errors.append('Passwords do not match.')
+
+        users = get_collection('users')
+        if users.find_one({'mobile': mobile}):
+            errors.append('This mobile number is already registered.')
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'auth/register.html', {'mobile': mobile})
+
+        # Hash password
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Create user
+        user_data = {
+            'mobile': mobile,
+            'password': hashed,
+            'is_active': True,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        }
+        result = users.insert_one(user_data)
+        user_id = str(result.inserted_id)
+
+        # Create empty profile
+        profiles = get_collection('profiles')
+        profile_data = {
+            'user_id': user_id,
+            'mobile': mobile,
+            'full_name': '',
+            'gender': '',
+            'address': '',
+            'pin_code': '',
+            'profile_photo': '',
+            'member_id': generate_member_id(),
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        }
+        profiles.insert_one(profile_data)
+
+        messages.success(request, 'Registration successful! Please login.')
+        return redirect('login')
+
+    return render(request, 'auth/register.html')
+
+
+def login_view(request):
+    """Handle user login."""
+    if request.session.get('user_id'):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        users = get_collection('users')
+        user = users.find_one({'mobile': mobile})
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            if not user.get('is_active', True):
+                messages.error(request, 'Your account has been deactivated.')
+                return render(request, 'auth/login.html')
+
+            # Set session
+            request.session['user_id'] = str(user['_id'])
+            request.session['mobile'] = user['mobile']
+
+            # Update last login
+            users.update_one(
+                {'_id': user['_id']},
+                {'$set': {'last_login': datetime.now()}}
+            )
+
+            messages.success(request, 'Login successful!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid mobile number or password.')
+
+    return render(request, 'auth/login.html')
+
+
+def logout_view(request):
+    """Handle user logout."""
+    request.session.flush()
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('login')
+
+
+def forgot_pin_view(request):
+    """Handle verification for PIN reset."""
+    if request.session.get('user_id'):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile', '').strip()
+        full_name = request.POST.get('full_name', '').strip()
+
+        users = get_collection('users')
+        user = users.find_one({'mobile': mobile})
+
+        if not user:
+            messages.error(request, 'No user registered with this mobile number.')
+            return render(request, 'auth/forgot_pin.html')
+
+        profiles = get_collection('profiles')
+        profile = profiles.find_one({'user_id': str(user['_id'])})
+
+        # Match case-insensitively and trim
+        if not profile or profile.get('full_name', '').strip().lower() != full_name.lower():
+            messages.error(request, 'Mobile number and full name do not match.')
+            return render(request, 'auth/forgot_pin.html')
+
+        # If match, render the Step 2 form
+        return render(request, 'auth/forgot_pin.html', {
+            'step': 'reset',
+            'target_user_id': str(user['_id'])
+        })
+
+    return render(request, 'auth/forgot_pin.html', {'step': 'verify'})
+
+
+def reset_pin_submit(request):
+    """Submit the new PIN."""
+    from bson import ObjectId
+    if request.method == 'POST':
+        target_user_id = request.POST.get('user_id', '').strip()
+        new_pin = request.POST.get('new_pin', '').strip()
+        confirm_pin = request.POST.get('confirm_pin', '').strip()
+
+        if not target_user_id or not new_pin or not confirm_pin:
+            messages.error(request, 'Invalid request.')
+            return redirect('forgot_pin')
+
+        if len(new_pin) != 5 or not new_pin.isdigit():
+            messages.error(request, 'PIN must be exactly 5 digits (numeric only).')
+            return render(request, 'auth/forgot_pin.html', {
+                'step': 'reset',
+                'target_user_id': target_user_id
+            })
+
+        if new_pin != confirm_pin:
+            messages.error(request, 'PINs do not match.')
+            return render(request, 'auth/forgot_pin.html', {
+                'step': 'reset',
+                'target_user_id': target_user_id
+            })
+
+        # Hash new PIN
+        hashed = bcrypt.hashpw(new_pin.encode('utf-8'), bcrypt.gensalt())
+
+        users = get_collection('users')
+        users.update_one(
+            {'_id': ObjectId(target_user_id)},
+            {'$set': {'password': hashed, 'updated_at': datetime.now()}}
+        )
+
+        messages.success(request, 'Your PIN has been successfully reset! Please login with your new PIN.')
+        return redirect('login')
+
+    return redirect('forgot_pin')
+

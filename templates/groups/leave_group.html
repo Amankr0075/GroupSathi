@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Group - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <a href="{% url 'group_detail' group.group_id %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Back</a>
+    <div class="gs-card gs-text-center">
+        <i class="bi bi-box-arrow-left" style="font-size:3rem; color: var(--gs-danger);"></i>
+        <h3 class="gs-fw-700 gs-mt-2">Leave "{{ group.name }}"?</h3>
+        <p class="gs-text-muted">This action requires approval from the group leader. You can only leave if you have no pending loans or dues.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2 justify-content-center gs-mt-2">
+                <a href="{% url 'group_detail' group.group_id %}" class="gs-btn gs-btn-secondary" style="width:auto; padding:0.6rem 2rem;">Cancel</a>
+                <button type="submit" class="gs-btn gs-btn-danger" style="width:auto; padding:0.6rem 2rem;">
+                    <i class="bi bi-box-arrow-left"></i> Request Leave
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

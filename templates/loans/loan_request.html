@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Loan - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'my_groups' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Back</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-cash-stack"></i>
+            <h3>Request Loan - {{ group.name }}</h3>
+        </div>
+        <div class="d-flex gap-3 mb-3">
+            <div class="gs-group-stat flex-fill">
+                <div class="gs-group-stat-value">₹{{ balance }}</div>
+                <div class="gs-group-stat-label">Available Balance</div>
+            </div>
+            <div class="gs-group-stat flex-fill">
+                <div class="gs-group-stat-value">{{ group.interest_rate }}%</div>
+                <div class="gs-group-stat-label">Interest Rate</div>
+            </div>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="gs-form-group">
+                <label>Loan Amount (₹) *</label>
+                <input type="number" name="amount" class="gs-input" placeholder="Enter loan amount" min="1" max="{{ balance }}" step="0.01" required>
+                <small class="gs-text-muted">Maximum available: ₹{{ balance }}</small>
+            </div>
+            <div class="gs-form-group">
+                <label>Tenure (Months) *</label>
+                <input type="number" name="tenure" class="gs-input" placeholder="e.g. 12" min="1" max="60" required>
+            </div>
+            <div class="gs-form-group">
+                <label>Mortgage Details (Optional)</label>
+                <textarea name="mortgage" class="gs-input" rows="3" placeholder="Describe any mortgage/collateral"></textarea>
+            </div>
+
+            <!-- Guarantor Details Section (Hidden by default, shown if amount > 50000) -->
+            <div id="guarantor-section" style="display: none; border: 1px dashed var(--gs-warning); border-radius: 8px; padding: 1rem; margin-top: 1rem; margin-bottom: 1rem; background: rgba(255, 193, 7, 0.05);">
+                <h4 style="font-size: 0.95rem; font-weight: 600; color: var(--gs-warning); margin-bottom: 0.8rem;">
+                    <i class="bi bi-shield-fill-check"></i> Guarantor Information (Required for Loans > ₹50,000)
+                </h4>
+                
+                <div class="gs-form-group">
+                    <label>Upload Signed Loan Document *</label>
+                    <input type="file" name="signed_doc" id="signed-doc-input" class="gs-input" accept=".pdf,image/*">
+                    <small class="gs-text-muted">Upload a clear scan or photo of the signed loan agreement document.</small>
+                </div>
+                
+                <div class="gs-form-group">
+                    <label>Guarantor Full Name *</label>
+                    <input type="text" name="guarantor_name" id="guarantor-name-input" class="gs-input" placeholder="Enter guarantor's full name">
+                </div>
+                
+                <div class="gs-form-group">
+                    <label>Guarantor Mobile Number *</label>
+                    <input type="text" name="guarantor_mobile" id="guarantor-mobile-input" class="gs-input" placeholder="10-digit mobile number" maxlength="10">
+                </div>
+                
+                <div class="gs-form-group">
+                    <label>Guarantor Address *</label>
+                    <textarea name="guarantor_address" id="guarantor-address-input" class="gs-input" rows="2" placeholder="Enter guarantor's full address"></textarea>
+                </div>
+                
+                <div class="form-check gs-mt-2">
+                    <input class="form-check-input" type="checkbox" name="agree_guarantor_terms" id="agree-terms-checkbox" value="yes">
+                    <label class="form-check-label" for="agree-terms-checkbox" style="font-size: 0.8rem; line-height: 1.4; color: var(--gs-body-color);">
+                        I agree to the terms and conditions that if I am unable to repay this loan, my guarantor/guardian is legally responsible to pay the remaining loan balance with interest. *
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="gs-btn gs-btn-primary gs-mt-2">
+                <i class="bi bi-send"></i> Submit Loan Request
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const amountInput = document.querySelector('input[name="amount"]');
+        const guarantorSection = document.getElementById('guarantor-section');
+        const docInput = document.getElementById('signed-doc-input');
+        const nameInput = document.getElementById('guarantor-name-input');
+        const mobileInput = document.getElementById('guarantor-mobile-input');
+        const addressInput = document.getElementById('guarantor-address-input');
+        const termsCheckbox = document.getElementById('agree-terms-checkbox');
+
+        function toggleGuarantor() {
+            const val = parseFloat(amountInput.value) || 0;
+            if (val > 50000) {
+                guarantorSection.style.display = 'block';
+                docInput.required = true;
+                nameInput.required = true;
+                mobileInput.required = true;
+                addressInput.required = true;
+                termsCheckbox.required = true;
+            } else {
+                guarantorSection.style.display = 'none';
+                docInput.required = false;
+                nameInput.required = false;
+                mobileInput.required = false;
+                addressInput.required = false;
+                termsCheckbox.required = false;
+            }
+        }
+
+        amountInput.addEventListener('input', toggleGuarantor);
+        toggleGuarantor(); // Run once initially
+    });
+</script>
+{% endblock %}

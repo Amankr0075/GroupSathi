@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Member - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-search"></i>
+            <h3>Search Member</h3>
+        </div>
+        <p class="gs-text-muted gs-mb-2">Search for a member using their unique 5-digit Member ID.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="gs-search-box">
+                <input type="text" name="member_id" class="gs-input" placeholder="Enter Member ID (e.g. 12345)" maxlength="5" data-numeric required>
+                <button type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+
+        {% if searched %}
+        <div class="gs-mt-3">
+            {% if result %}
+            <div class="gs-profile-card" style="padding:1.5rem;">
+                {% if result.profile.profile_photo %}
+                <img src="/media/{{ result.profile.profile_photo }}" alt="" class="gs-profile-avatar" style="width:80px;height:80px;">
+                {% else %}
+                <div class="gs-profile-avatar-placeholder" style="width:80px;height:80px;font-size:2rem;"><i class="bi bi-person"></i></div>
+                {% endif %}
+                <h4 class="gs-fw-700 gs-mt-1">{{ result.profile.full_name }}</h4>
+                <div class="gs-member-id">ID: {{ result.profile.member_id }}</div>
+
+                {% if result.is_group_member %}
+                <!-- Full details for group members -->
+                <div class="gs-profile-info gs-mt-2">
+                    <div class="gs-profile-info-item">
+                        <i class="bi bi-gender-ambiguous"></i>
+                        <span>Gender</span>
+                        <strong>{{ result.profile.gender|default:"N/A" }}</strong>
+                    </div>
+                    <div class="gs-profile-info-item">
+                        <i class="bi bi-phone"></i>
+                        <span>Mobile</span>
+                        <strong>{{ result.profile.mobile }}</strong>
+                    </div>
+                    <div class="gs-profile-info-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Address</span>
+                        <strong>{{ result.profile.address|default:"N/A" }}</strong>
+                    </div>
+                </div>
+                {% else %}
+                <p class="gs-text-muted gs-mt-2" style="font-size:0.85rem;">
+                    <i class="bi bi-lock me-1"></i> Limited view — join the same group for full details.
+                </p>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="gs-empty">
+                <i class="bi bi-person-x"></i>
+                <h5>Member Not Found</h5>
+                <p>No member found with this ID.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

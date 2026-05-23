@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Request Late Fine Waiver - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'group_detail' group.group_id %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Back to Group</a>
+    
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-gift" style="color: var(--gs-warning);"></i>
+            <h3>Request Late Fine Waiver</h3>
+        </div>
+        <p class="gs-text-muted gs-mb-2">If you have incurred a fine due to late EMI payment, you can request other group members to waive it off. Please provide a clear reason and record your voice statement.</p>
+        
+        <form method="post" id="waiver-form">
+            {% csrf_token %}
+
+            <div class="gs-mb-3">
+                <label class="gs-form-label" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Reason for Waiver</label>
+                <textarea name="reason" class="gs-input" rows="4" placeholder="Explain why your automatic late fine should be waived off..." required style="resize: none;"></textarea>
+            </div>
+
+            <!-- Voice Recording Section -->
+            <div class="gs-mb-3" style="background: var(--gs-body-bg); border: 1px dashed var(--gs-border-color); border-radius: 8px; padding: 1.5rem; text-align: center; position: relative;">
+                <label class="gs-form-label" style="font-weight: 600; display: block; margin-bottom: 1rem;">
+                    <i class="bi bi-mic me-1"></i> Record Voice Statement (Optional)
+                </label>
+                
+                <div id="mic-controls">
+                    <button type="button" id="record-btn" class="gs-btn gs-btn-primary" style="width: 70px; height: 70px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; padding: 0; margin-bottom: 1rem; transition: all 0.3s ease;">
+                        <i class="bi bi-mic-fill" id="mic-icon"></i>
+                    </button>
+                    <div id="recording-status" class="gs-text-muted gs-mt-1" style="font-size: 0.9rem;">Click button to start recording</div>
+                    
+                    <!-- Pulsing Soundwave Bars -->
+                    <div id="soundwave" class="d-none justify-content-center align-items-center gap-1 my-3" style="height: 30px;">
+                        <span class="wave-bar" style="width:3px;height:10px;background:var(--gs-danger);border-radius:3px;animation: pulse-wave 1s ease-in-out infinite;"></span>
+                        <span class="wave-bar" style="width:3px;height:24px;background:var(--gs-danger);border-radius:3px;animation: pulse-wave 0.8s ease-in-out infinite 0.1s;"></span>
+                        <span class="wave-bar" style="width:3px;height:14px;background:var(--gs-danger);border-radius:3px;animation: pulse-wave 1.2s ease-in-out infinite 0.2s;"></span>
+                        <span class="wave-bar" style="width:3px;height:30px;background:var(--gs-danger);border-radius:3px;animation: pulse-wave 0.9s ease-in-out infinite 0.15s;"></span>
+                        <span class="wave-bar" style="width:3px;height:12px;background:var(--gs-danger);border-radius:3px;animation: pulse-wave 1.1s ease-in-out infinite 0.3s;"></span>
+                    </div>
+                </div>
+
+                <!-- Preview Player -->
+                <div id="preview-container" class="d-none gs-mt-2">
+                    <audio id="audio-preview" controls class="w-100 gs-mb-2" style="max-height: 40px; border-radius: 8px;"></audio>
+                    <button type="button" id="delete-record-btn" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; margin: 0 auto; display: block;">
+                        <i class="bi bi-trash"></i> Delete & Re-record
+                    </button>
+                </div>
+
+                <!-- Hidden Input to store Base64 Audio Data -->
+                <input type="hidden" name="voice_data" id="voice_data_input">
+            </div>
+
+            <div class="d-flex gap-2 gs-mt-3">
+                <a href="{% url 'group_detail' group.group_id %}" class="gs-btn gs-btn-secondary" style="flex:1;">Cancel</a>
+                <button type="submit" class="gs-btn gs-btn-success" style="flex:2;">
+                    <i class="bi bi-send"></i> Submit Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Styles for Pulse Animations -->
+<style>
+@keyframes pulse-wave {
+    0%, 100% { height: 10px; }
+    50% { height: 30px; }
+}
+.record-active {
+    background-color: var(--gs-danger) !important;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.6);
+    transform: scale(1.1);
+    animation: pulse-ring 1.5s infinite;
+}
+@keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+</style>
+
+<!-- Audio Recorder JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const recordBtn = document.getElementById('record-btn');
+    const micIcon = document.getElementById('mic-icon');
+    const statusText = document.getElementById('recording-status');
+    const soundwave = document.getElementById('soundwave');
+    const previewContainer = document.getElementById('preview-container');
+    const audioPreview = document.getElementById('audio-preview');
+    const deleteRecordBtn = document.getElementById('delete-record-btn');
+    const voiceDataInput = document.getElementById('voice_data_input');
+    
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    // Check mic permission and initialize recorder
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async function() {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                
+                // Convert audio to Base64
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    voiceDataInput.value = base64data; // Set base64 value in hidden input
+                };
+
+                // Create audio URL for local preview playback
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPreview.src = audioUrl;
+                
+                // Stop all tracks on the stream to turn off the microphone
+                stream.getTracks().forEach(track => track.stop());
+
+                // Show player, hide recorder interface
+                previewContainer.classList.remove('d-none');
+                recordBtn.classList.add('d-none');
+                statusText.innerText = "Recording saved!";
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            recordBtn.classList.add('record-active');
+            micIcon.className = 'bi bi-stop-fill';
+            statusText.innerHTML = "<span class='text-danger fw-bold'>🔴 Recording...</span> Click again to stop";
+            soundwave.classList.remove('d-none');
+            soundwave.classList.add('d-flex');
+        } catch (err) {
+            console.error("Error accessing microphone: ", err);
+            alert("Could not access microphone. Please ensure microphone permissions are granted.");
+            statusText.innerText = "Mic permission denied.";
+        }
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            recordBtn.classList.remove('record-active');
+            micIcon.className = 'bi bi-mic-fill';
+            soundwave.classList.add('d-none');
+            soundwave.classList.remove('d-flex');
+        }
+    }
+
+    recordBtn.addEventListener('click', function() {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    deleteRecordBtn.addEventListener('click', function() {
+        // Clear value and reset UI
+        voiceDataInput.value = "";
+        audioPreview.src = "";
+        previewContainer.classList.add('d-none');
+        recordBtn.classList.remove('d-none');
+        statusText.innerText = "Click button to start recording";
+    });
+});
+</script>
+{% endblock %}

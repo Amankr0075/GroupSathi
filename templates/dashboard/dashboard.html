@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Dashboard - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="gs-dashboard-header">
+        <h2>Welcome{% if current_profile and current_profile.full_name %}, {{ current_profile.full_name }}{% endif %} 👋</h2>
+        <p>Smart Management for Self Help Groups</p>
+    </div>
+
+    <div class="gs-stats-row">
+        <div class="gs-stat-chip">
+            <i class="bi bi-people-fill" style="color: var(--gs-primary);"></i>
+            <span>{{ groups_count }} Group{{ groups_count|pluralize }}</span>
+        </div>
+        <div class="gs-stat-chip">
+            <i class="bi bi-cash-stack" style="color: var(--gs-success);"></i>
+            <span>{{ active_loans }} Active Loan{{ active_loans|pluralize }}</span>
+        </div>
+        {% if current_profile and current_profile.member_id %}
+        <div class="gs-stat-chip">
+            <i class="bi bi-person-badge" style="color: var(--gs-accent);"></i>
+            <span>ID: {{ current_profile.member_id }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="gs-grid">
+        {% for item in dashboard_items %}
+        <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};">
+            {% if item.badge %}
+            <span class="gs-dash-card-badge">{{ item.badge }}</span>
+            {% endif %}
+            <div class="gs-dash-card-icon" style="background: {{ item.color }};">
+                <i class="bi {{ item.icon }}"></i>
+            </div>
+            <span class="gs-dash-card-name">{{ item.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

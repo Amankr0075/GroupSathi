@@ -1,0 +1,1 @@
+# GroupSathi Django Project

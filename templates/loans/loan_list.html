@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Loans - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="gs-page-header">
+        <i class="bi bi-cash-stack"></i>
+        <h2>Loan Management</h2>
+    </div>
+
+    <!-- Pending Approvals (for leaders) -->
+    {% if pending_loans %}
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-clock-history" style="color:var(--gs-warning);"></i>
+            <h3>Pending Approvals</h3>
+        </div>
+        {% for pl in pending_loans %}
+        <div class="gs-loan-card" style="border-left: 3px solid var(--gs-warning);">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <strong>{{ pl.profile.full_name|default:"Unknown" }}</strong>
+                    <br><small class="gs-text-muted">{{ pl.group.name }} | ₹{{ pl.loan.amount }} for {{ pl.loan.tenure_months }} months</small>
+                    <br><small class="gs-text-muted">Interest: ₹{{ pl.loan.interest_amount }} | Total: ₹{{ pl.loan.total_repayment }}</small>
+                    {% if pl.loan.mortgage_details %}
+                    <br><small class="gs-text-muted">Mortgage: {{ pl.loan.mortgage_details }}</small>
+                    {% endif %}
+                    {% if pl.loan|get_item:'guarantor_name' %}
+                    <div class="mt-2 p-2" style="background: rgba(255, 193, 7, 0.05); border: 1px dashed var(--gs-warning); border-radius: 6px; font-size: 0.8rem;">
+                        <strong style="color:var(--gs-warning);"><i class="bi bi-shield-fill-check"></i> Guarantor Verified Details:</strong>
+                        <br>Name: {{ pl.loan|get_item:'guarantor_name' }}
+                        <br>Mobile: {{ pl.loan|get_item:'guarantor_mobile' }}
+                        <br>Address: {{ pl.loan|get_item:'guarantor_address' }}
+                        {% if pl.loan|get_item:'signed_doc_path' %}
+                        <br><a href="/media/{{ pl.loan|get_item:'signed_doc_path' }}" target="_blank" class="gs-fw-600" style="color: var(--gs-primary);"><i class="bi bi-file-earmark-pdf-fill"></i> View Signed Document</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if pl.loan.amount > 50000 %}
+                    <div class="mt-2" style="font-size: 0.8rem; background: var(--gs-body-bg); padding: 0.6rem; border-radius: 6px; border-left: 3px solid var(--gs-success);">
+                        <strong style="color:var(--gs-success);"><i class="bi bi-people-fill"></i> Consensus Approvals (All Active Members):</strong>
+                        <div class="progress mt-1 mb-1" style="height: 8px; background-color: var(--gs-card-bg); border-radius: 4px; overflow: hidden;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: calc(({{ pl.approvals_count }} / {{ pl.total_active }}) * 100%);"></div>
+                        </div>
+                        <span class="gs-text-muted gs-fw-600">{{ pl.approvals_count }} out of {{ pl.total_active }} active members have approved.</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <span class="gs-loan-status gs-status-pending">Pending</span>
+            </div>
+            <div class="d-flex gap-2">
+                {% if pl.has_approved %}
+                <button class="gs-btn gs-btn-success gs-btn-sm flex-fill" disabled style="opacity: 0.7; cursor: not-allowed;">
+                    <i class="bi bi-check-all"></i> Approved By You
+                </button>
+                {% else %}
+                <a href="{% url 'loan_approve' pl.loan|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm flex-fill" data-confirm="Approve this loan?">
+                    <i class="bi bi-check-circle"></i> Approve
+                </a>
+                {% endif %}
+
+                {% if pl.is_leader %}
+                <a href="{% url 'loan_reject' pl.loan|get_item:'_id' %}" class="gs-btn gs-btn-danger gs-btn-sm flex-fill" data-confirm="Reject this loan?">
+                    <i class="bi bi-x-circle"></i> Reject (Leader Action)
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- My Loans -->
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-wallet2"></i>
+            <h3>My Loans</h3>
+        </div>
+        {% if loan_data %}
+        {% for ld in loan_data %}
+        <div class="gs-loan-card" {% if ld.total_fines > 0 %}style="border-left: 4px solid var(--gs-danger); background-color: rgba(220, 53, 69, 0.02);"{% endif %}>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <strong>{{ ld.group.name|default:"Unknown Group" }}</strong>
+                    <br><small class="gs-text-muted">Amount: ₹{{ ld.loan.amount }} @ {{ ld.loan.interest_rate }}% for {{ ld.loan.tenure_months }} months</small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    {% if ld.total_fines > 0 %}
+                    <span class="gs-role-badge gs-role-rejected" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;"><i class="bi bi-exclamation-triangle-fill"></i> Unpaid Fine: ₹{{ ld.total_fines|floatformat:2 }}</span>
+                    {% endif %}
+                    <span class="gs-loan-status gs-status-{{ ld.loan.status }}">{{ ld.loan.status }}</span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mb-2" style="font-size:0.85rem;">
+                <span>Interest: <strong>₹{{ ld.loan.interest_amount }}</strong></span>
+                <span>Total: <strong>₹{{ ld.loan.total_repayment }}</strong></span>
+                <span>Remaining: <strong style="color:var(--gs-danger);">₹{{ ld.loan.remaining_amount }}</strong></span>
+            </div>
+
+            {% if ld.total_fines > 0 %}
+            <div class="p-3 mb-2" style="background: var(--gs-body-bg); border: 1px solid var(--gs-border-color); border-radius: 8px; font-size: 0.9rem;">
+                <span class="d-block mb-2 text-danger fw-bold"><i class="bi bi-exclamation-circle-fill"></i> You must pay your imposed fine(s) for this group:</span>
+                {% for fine in ld.fines %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span>- {{ fine.reason }} (₹{{ fine.amount|floatformat:2 }})</span>
+                    <a href="{% url 'pay_imposed_fine' fine|get_item:'_id' %}" class="gs-btn gs-btn-success gs-btn-sm" style="width: auto; padding: 0.2rem 0.6rem; font-size: 0.75rem;" data-confirm="Pay this fine now?">
+                        Pay ₹{{ fine.amount|floatformat:2 }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if ld.loan.status == 'approved' or ld.loan.status == 'active' %}
+            <div class="gs-mt-2" style="border-top: 1px dashed var(--gs-body-bg); padding-top: 1rem;">
+                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem;">Submit Repayment Request</h4>
+                
+                <div class="row g-2">
+                    <!-- Option 1: Pay Principal -->
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: var(--gs-body-bg); border-radius: 6px;">
+                            <span class="d-block mb-1" style="font-size: 0.8rem; font-weight: 600; color: var(--gs-primary);">Option A: Pay Principal Only</span>
+                            <form method="post" action="{% url 'loan_repay' ld.loan|get_item:'_id' %}" class="d-flex flex-column gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="repay_type" value="principal">
+                                <div class="d-flex gap-2">
+                                    <input type="number" name="principal_amount" class="gs-input" id="p-input-{{ ld.loan|get_item:'_id' }}" placeholder="Principal Amount" value="{{ ld.loan.remaining_amount }}" step="0.01" min="0.01" max="{{ ld.loan.remaining_amount }}" style="flex:1; font-size:0.85rem;" readonly required>
+                                    <button type="submit" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto;">Pay Principal</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: Pay Interest -->
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: var(--gs-body-bg); border-radius: 6px;">
+                            <span class="d-block mb-1" style="font-size: 0.8rem; font-weight: 600; color: var(--gs-success);">Option B: Pay Interest Separately</span>
+                            <form method="post" action="{% url 'loan_repay' ld.loan|get_item:'_id' %}" class="d-flex gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="repay_type" value="interest">
+                                <input type="number" name="interest_amount" class="gs-input" placeholder="Interest Amount" value="{{ ld.loan.interest_amount|subtract:ld.loan.interest_paid }}" step="0.01" min="0.01" style="flex:1; font-size:0.85rem;" readonly required>
+                                <button type="submit" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto;">Pay Interest</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-2 mt-2">
+                    <!-- Option 3: Extend Loan -->
+                    <div class="col-md-12">
+                        <div class="p-2" style="background: var(--gs-body-bg); border-radius: 6px;">
+                            <span class="d-block mb-1" style="font-size: 0.8rem; font-weight: 600; color: var(--gs-warning);">Option C: Request Loan Extension</span>
+                            <form method="post" action="{% url 'extend_loan_request' ld.loan|get_item:'_id' %}" class="d-flex gap-2">
+                                {% csrf_token %}
+                                <input type="number" name="extra_months" class="gs-input" placeholder="Extra Months to Add" step="1" min="1" style="flex:1; font-size:0.85rem;" required>
+                                <button type="submit" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto; color: #000;">Request Extension</button>
+                            </form>
+                            <small class="gs-text-muted mt-1 d-block" style="font-size:0.75rem;">This will recalculate interest and requires leadership approval.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="gs-empty">
+            <i class="bi bi-cash-stack"></i>
+            <p>No loans yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Completed Loans History -->
+    <div class="gs-card gs-mt-2">
+        <div class="gs-card-header">
+            <i class="bi bi-clock-history" style="color:var(--gs-success);"></i>
+            <h3>Completed Loans History</h3>
+        </div>
+        {% if completed_loans_history %}
+        {% for ld in completed_loans_history %}
+        <div class="gs-loan-card" style="border-left: 4px solid var(--gs-success); background-color: rgba(40, 167, 69, 0.01);">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <strong>{{ ld.profile.full_name|default:"Unknown Member" }}</strong>
+                    <br><small class="gs-text-muted">Group: <strong>{{ ld.group.name|default:"Unknown Group" }}</strong></small>
+                    <br><small class="gs-text-muted">Amount: ₹{{ ld.loan.amount }} @ {{ ld.loan.interest_rate }}% for {{ ld.loan.tenure_months }} months</small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="gs-loan-status gs-status-completed" style="background-color: #d4edda; color: #155724; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">completed</span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mb-1" style="font-size:0.85rem; border-top: 1px dashed var(--gs-border-color); padding-top: 0.5rem;">
+                <span>Principal: <strong>₹{{ ld.loan.amount }}</strong></span>
+                <span>Interest Paid: <strong>₹{{ ld.loan.interest_paid|default:ld.loan.interest_amount }}</strong></span>
+                <span>Total Repaid: <strong style="color:var(--gs-success);">₹{{ ld.loan.total_repayment }}</strong></span>
+            </div>
+
+            {% if ld.fines %}
+            <div class="mt-2 mb-2 p-2" style="background: var(--gs-body-bg); border: 1px solid var(--gs-border-color); border-radius: 6px; font-size: 0.8rem;">
+                <strong class="text-danger d-block mb-1"><i class="bi bi-exclamation-triangle-fill"></i> Incurred Fines:</strong>
+                {% for fine in ld.fines %}
+                <div class="d-flex justify-content-between">
+                    <span>- {{ fine.reason }} (Status: <span class="fw-bold">{{ fine.status }}</span>)</span>
+                    <strong>₹{{ fine.amount|floatformat:2 }}</strong>
+                </div>
+                {% endfor %}
+                <div class="d-flex justify-content-between mt-1 pt-1" style="border-top: 1px dashed var(--gs-border-color); font-weight: bold;">
+                    <span>Total Fines Incurred:</span>
+                    <span class="text-danger">₹{{ ld.total_fines|floatformat:2 }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between" style="font-size:0.8rem;">
+                <span class="gs-text-muted">Requested: {{ ld.loan.created_at|date:"d M Y" }}</span>
+                <span class="gs-text-muted">Completed: {{ ld.loan.updated_at|date:"d M Y" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination Controls -->
+        {% if completed_loans_history.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center gap-2" style="border: none;">
+                {% if completed_loans_history.has_previous %}
+                <li class="page-item">
+                    <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page={{ completed_loans_history.previous_page_number }}">
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item disabled">
+                    <span class="gs-btn gs-btn-sm" style="background-color: var(--gs-card-bg); color: var(--gs-text-muted); border: 1px solid var(--gs-border-color); cursor: default; width: auto;">
+                        Page {{ completed_loans_history.number }} of {{ completed_loans_history.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if completed_loans_history.has_next %}
+                <li class="page-item">
+                    <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page={{ completed_loans_history.next_page_number }}">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="gs-empty">
+            <i class="bi bi-check-circle"></i>
+            <p>No completed loans yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
