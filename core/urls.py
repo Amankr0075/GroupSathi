@@ -32,6 +32,7 @@ from core.views.report_views import reports_view, generate_report_pdf
 from core.views.settings_views import settings_view, change_password_view
 from core.views.help_views import help_view
 from core.views.calculator_views import calculator_view
+from core.views.download_views import download_apk_view
 
 urlpatterns = [
     # Home / Dashboard
@@ -116,4 +117,7 @@ urlpatterns = [
 
     # Calculator
     path('calculator/', calculator_view, name='calculator'),
+
+    # APK Download
+    path('download/app/', download_apk_view, name='download_apk'),
 ]
