@@ -1,0 +1,25 @@
+name: Deploy GroupSathi
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to AWS
+        uses: appleboy/ssh-action@master
+
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+
+          script: |
+            cd /home/ubuntu/GroupSathi
+            git pull origin main
+            sudo systemctl restart groupsathi
+            sudo systemctl restart nginx
