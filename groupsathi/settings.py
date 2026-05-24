@@ -16,7 +16,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['groupsathi.duckdns.org']
 
 # MongoDB Configuration
-MONGODB_URI = "mongodb+srv://groupsathi:Aman624781406380@cluster0.xdwm2pf.mongodb.net/groupsathi_db?retryWrites=true&w=majority&appName=Cluster0"
+MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_NAME = os.getenv('MONGODB_NAME', 'groupsathi_db')
 
 INSTALLED_APPS = [
