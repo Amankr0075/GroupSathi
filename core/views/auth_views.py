@@ -192,3 +192,11 @@ def reset_pin_submit(request):
 
     return redirect('forgot_pin')
 
+
+def auth_check_view(request):
+    """Lightweight endpoint for Flutter to check if the user session is active.
+    Returns JSON: {"authenticated": true} or {"authenticated": false}
+    """
+    from django.http import JsonResponse
+    is_authenticated = bool(request.session.get('user_id'))
+    return JsonResponse({'authenticated': is_authenticated})

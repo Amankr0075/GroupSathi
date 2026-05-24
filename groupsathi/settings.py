@@ -11,12 +11,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['groupsathi.duckdns.org']
 
 # MongoDB Configuration
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
+MONGODB_URI = "mongodb+srv://groupsathi:Aman624781406380@cluster0.xdwm2pf.mongodb.net/groupsathi_db?retryWrites=true&w=majority&appName=Cluster0"
 MONGODB_NAME = os.getenv('MONGODB_NAME', 'groupsathi_db')
 
 INSTALLED_APPS = [
@@ -83,8 +83,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/'
+LOGIN_URL = '/auth/login/'
 
 # Session settings
 SESSION_COOKIE_AGE = 86400 * 7  # 7 days
 SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False  # Set True when using HTTPS in production
+
+# CSRF settings — required so the Flutter WebView can submit forms
+CSRF_TRUSTED_ORIGINS = [
+    'https://groupsathi.duckdns.org',
+    'http://groupsathi.duckdns.org',
+]
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False  # Set True when using HTTPS in production

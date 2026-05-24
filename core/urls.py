@@ -3,7 +3,7 @@ URL configuration for GroupSathi core app.
 """
 
 from django.urls import path
-from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit
+from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view
 from core.views.dashboard_views import dashboard_view
 from core.views.landing_views import landing_page_view
 from core.views.profile_views import profile_complete_view, profile_view, profile_edit_view
@@ -41,6 +41,7 @@ urlpatterns = [
     path('dashboard/', dashboard_view, name='dashboard'),
 
     # Auth
+    path('api/auth/check/', auth_check_view, name='auth_check'),
     path('auth/register/', register_view, name='register'),
     path('auth/login/', login_view, name='login'),
     path('auth/logout/', logout_view, name='logout'),
