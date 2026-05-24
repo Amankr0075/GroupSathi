@@ -9,12 +9,15 @@ from core.utils import is_profile_complete
 
 # URLs that don't require profile completion
 EXEMPT_URLS = [
+    '/',
     '/auth/login/',
     '/auth/register/',
     '/auth/logout/',
+    '/auth/forgot-pin/',
     '/profile/complete/',
     '/static/',
     '/media/',
+    '/download/app/',
 ]
 
 
