@@ -116,7 +116,7 @@ def logout_view(request):
     """Handle user logout."""
     request.session.flush()
     messages.success(request, 'You have been logged out successfully.')
-    return redirect('login')
+    return redirect('landing_page')
 
 
 def forgot_pin_view(request):

@@ -5,6 +5,7 @@ URL configuration for GroupSathi core app.
 from django.urls import path
 from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit
 from core.views.dashboard_views import dashboard_view
+from core.views.landing_views import landing_page_view
 from core.views.profile_views import profile_complete_view, profile_view, profile_edit_view
 from core.views.group_views import (
     create_group_view, join_group_view, my_groups_view,
@@ -35,8 +36,9 @@ from core.views.calculator_views import calculator_view
 from core.views.download_views import download_apk_view
 
 urlpatterns = [
-    # Home / Dashboard
-    path('', dashboard_view, name='dashboard'),
+    # Home / Landing
+    path('', landing_page_view, name='landing_page'),
+    path('dashboard/', dashboard_view, name='dashboard'),
 
     # Auth
     path('auth/register/', register_view, name='register'),

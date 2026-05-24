@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GroupSathi | Empowering Self Help Groups{% endblock %}
+
+{% block extra_css %}
+<!-- Modern Fonts & AOS -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --font-main: 'Plus Jakarta Sans', sans-serif;
+        --gs-primary: #4361ee;
+        --gs-secondary: #3f37c9;
+        --gs-accent: #4cc9f0;
+        --gs-dark: #0f172a;
+        --gs-navy: #1e293b;
+        --gs-slate: #94a3b8;
+        --gs-light: #f8fafc;
+        --gs-glass: rgba(255, 255, 255, 0.03);
+        --gs-glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        font-family: var(--font-main);
+        background-color: var(--gs-light);
+        color: var(--gs-dark);
+        overflow-x: hidden;
+    }
+
+    /* --- Animated Background --- */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #ffffff 100%);
+    }
+
+    .blob {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.05) 0%, rgba(76, 201, 240, 0.05) 100%);
+        filter: blur(80px);
+        border-radius: 50%;
+        z-index: -1;
+        animation: move 20s infinite alternate;
+    }
+
+    @keyframes move {
+        from { transform: translate(-10%, -10%); }
+        to { transform: translate(20%, 20%); }
+    }
+
+    /* --- Luxury Navigation --- */
+    .landing-nav {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 0;
+        transition: all 0.4s ease;
+    }
+
+    .gs-brand-v3 {
+        font-weight: 900;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    }
+
+    .gs-highlight {
+        font-weight: 800;
+        color: var(--gs-primary);
+        background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    /* --- Hero Section - Deep Professional --- */
+    .hero-v3 {
+        padding: 180px 0 100px;
+        position: relative;
+    }
+
+    .badge-v3 {
+        background: rgba(67, 97, 238, 0.08);
+        color: var(--gs-primary);
+        padding: 10px 20px;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(67, 97, 238, 0.15);
+    }
+
+    .hero-title-v3 {
+        font-size: clamp(3rem, 8vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -2px;
+        color: var(--gs-dark);
+        margin-bottom: 30px;
+    }
+
+    .hero-title-v3 span {
+        color: var(--gs-primary);
+        position: relative;
+    }
+
+    .btn-pro {
+        padding: 18px 45px;
+        font-weight: 700;
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 1.1rem;
+    }
+
+    .btn-pro-primary {
+        background: var(--gs-primary);
+        border: none;
+        color: white !important;
+        box-shadow: 0 20px 40px rgba(67, 97, 238, 0.2);
+    }
+
+    .btn-pro-primary:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(67, 97, 238, 0.3);
+    }
+
+    /* --- Card Aesthetics --- */
+    .pro-card {
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        border-radius: 32px;
+        padding: 45px;
+        transition: all 0.4s ease;
+        height: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .pro-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 40px 70px rgba(0,0,0,0.06);
+        border-color: rgba(67, 97, 238, 0.1);
+    }
+
+    .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: var(--gs-light);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        color: var(--gs-primary);
+        margin-bottom: 30px;
+        transition: all 0.4s ease;
+    }
+
+    .pro-card:hover .icon-wrapper {
+        background: var(--gs-primary);
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* --- Developer Section - FULL PHOTO VISIBILITY --- */
+    .dev-section-v3 {
+        background: var(--gs-dark);
+        border-radius: 80px 80px 0 0;
+        padding: 120px 0;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dev-section-v3::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(180deg, rgba(67, 97, 238, 0.05) 0%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .dev-photo-container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .dev-frame-v3 {
+        width: 100%;
+        max-width: 450px;
+        aspect-ratio: 4/5;
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--gs-navy);
+        box-shadow: 0 50px 100px rgba(0,0,0,0.4);
+    }
+
+    .dev-img-full {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        transition: transform 0.6s ease;
+    }
+
+    .dev-frame-v3:hover .dev-img-full {
+        transform: scale(1.05);
+    }
+
+    .dev-label {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 15px 25px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeIn 1s ease-out;
+    }
+
+    /* --- Text Aesthetics --- */
+    .quote-v3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.4;
+        background: linear-gradient(135deg, white, var(--gs-accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 40px;
+    }
+
+    .stats-grid-v3 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .stat-box-v3 {
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 24px;
+    }
+
+    .stat-box-v3 h3 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0;
+        color: var(--gs-accent);
+    }
+
+    /* --- CTA Styling --- */
+    .cta-v3 {
+        background: var(--gs-primary);
+        padding: 100px 0;
+        text-align: center;
+        color: white;
+    }
+
+    @media (max-width: 991px) {
+        .hero-title-v3 { font-size: 3.5rem; }
+        .dev-frame-v3 { margin-bottom: 50px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-animation">
+    <div class="blob"></div>
+</div>
+
+<div class="landing-wrapper">
+    <!-- Professional Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top landing-nav">
+        <div class="container">
+            <a class="navbar-brand gs-brand-v3" href="{% url 'landing_page' %}">
+                <img src="{% static 'images/GroupSathi.png' %}" alt="Logo" style="height: 40px; margin-right: 12px; border-radius: 12px;">
+                <span class="gs-brand-v3">GroupSathi</span>
+            </a>
+            <div class="ms-auto d-none d-lg-flex align-items-center">
+                <a href="#about" class="nav-link px-3 fw-600">Overview</a>
+                <a href="#features" class="nav-link px-3 fw-600">Features</a>
+                <div class="ms-4">
+                    <a href="{% url 'login' %}" class="btn btn-pro btn-outline-dark px-4 py-2 me-2" style="border-radius: 15px;">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-2" style="border-radius: 15px;">Join Group</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section V3 -->
+    <section class="hero-v3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7" data-aos="fade-right">
+                    <div class="badge-v3">
+                        <i class="bi bi-stars"></i> The Future of Community Microfinance
+                    </div>
+                    <h1 class="hero-title-v3">
+                        Financial <span>Freedom</span> Starts With Community.
+                    </h1>
+                    <p class="lead mb-5 text-muted fs-4">
+                        <span class="gs-highlight">GroupSathi</span> is a professional-grade platform designed to streamline Self Help Groups. 
+                        We automate the complexity so you can focus on building collective wealth.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary">Get Started Now</a>
+                        <a href="{% static 'apk/GroupSathi.apk' %}" class="btn btn-pro btn-outline-dark" download>
+                            <i class="bi bi-android2 me-2"></i> Download App
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 ms-lg-n5" data-aos="fade-left">
+                    <div class="showcase-frame shadow-2xl">
+                        <img src="{% static 'images/app_preview.png' %}" alt="Interface" class="img-fluid rounded-4" style="transform: scale(1.1); transform-origin: left;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional About Section -->
+    <section id="about" class="section-spacing">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12 text-center mb-5" data-aos="fade-up">
+                    <h2 class="display-4 fw-800">What is an SHG?</h2>
+                    <p class="text-muted fs-5 mx-auto" style="max-width: 800px;">
+                        A Self Help Group is a cooperative engine for socio-economic change. 
+                        Members pool resources to create a sustainable financial ecosystem.
+                    </p>
+                </div>
+                <div class="col-lg-6" data-aos="fade-right">
+                    <img src="{% static 'images/shg_community.png' %}" alt="SHG" class="img-fluid rounded-5 shadow-lg border">
+                </div>
+                <div class="col-lg-6 ps-lg-5 mt-5 mt-lg-0" data-aos="fade-left">
+                    <div class="pro-card">
+                        <h3 class="fw-800 mb-4">Core Impact</h3>
+                        <div class="d-flex gap-4 mb-4">
+                            <div class="icon-wrapper sm"><i class="bi bi-lightning"></i></div>
+                            <div>
+                                <h5 class="fw-700">Digital Velocity</h5>
+                                <p class="text-muted">Accelerate group growth with instant digital transactions and verification.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-4 mb-4">
+                            <div class="icon-wrapper sm"><i class="bi bi-shield-check"></i></div>
+                            <div>
+                                <h5 class="fw-700">Institutional Trust</h5>
+                                <p class="text-muted">Build a professional financial history that major banks recognize and respect.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-4">
+                            <div class="icon-wrapper sm"><i class="bi bi-gem"></i></div>
+                            <div>
+                                <h5 class="fw-700">Collective Success</h5>
+                                <p class="text-muted">Turn individual efforts into community prosperity through smart management.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Features -->
+    <section id="features" class="section-spacing" style="background: white;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                    <div class="pro-card">
+                        <div class="icon-wrapper"><i class="bi bi-cpu-fill"></i></div>
+                        <h4 class="fw-800">Automated Intelligence</h4>
+                        <p class="text-muted">Advanced algorithms handle interest, EMI distributions, and loan lifecycles with zero error margin.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pro-card">
+                        <div class="icon-wrapper"><i class="bi bi-graph-up"></i></div>
+                        <h4 class="fw-800">Real-time Analytics</h4>
+                        <p class="text-muted">Get a bird's-eye view of your group's financial health with intuitive charts and instant PDF exports.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="pro-card">
+                        <div class="icon-wrapper"><i class="bi bi-shield-lock"></i></div>
+                        <h4 class="fw-800">Secure Data Management</h4>
+                        <p class="text-muted">We ensure every record and piece of data is protected with encrypted architecture and secure session management.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developer Section V3 - FULL PHOTO VISIBILITY -->
+    <section class="dev-section-v3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="zoom-in">
+                    <div class="dev-photo-container">
+                        <div class="dev-frame-v3">
+                            <img src="{% static 'images/developer.jpg' %}" alt="Aman Kumar" class="dev-img-full">
+                            <div class="dev-label">
+                                <h4 class="mb-0 fw-800">Aman Kumar</h4>
+                                <span class="text-white-50 small fw-600">SOFTWARE ARCHITECT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 ps-lg-5" data-aos="fade-left">
+                    <div class="quote-v3">
+                        "Building AI-powered solutions to solve real-world problems through technology."
+                    </div>
+                    <p class="fs-5 text-white-50 mb-5">
+                        Aman Kumar is a visionary full-stack architect dedicated to creating impactful digital ecosystems. 
+                        Based in India, he bridges the gap between intricate backend systems and elegant, 
+                        accessible user interfaces. GroupSathi is his contribution to global financial inclusion.
+                    </p>
+                    <a href="https://amankr0075.github.io/amanportfolio/" target="_blank" class="btn btn-pro btn-outline-light w-100">
+                        Explore Full Architecture Portfolio <i class="bi bi-arrow-up-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Footer -->
+    <footer class="py-5 bg-white text-center">
+        <div class="container">
+            <h2 class="gs-brand-v3 mb-4">GroupSathi</h2>
+            <p class="text-muted mb-4">Digitizing Self Help Groups for a better tomorrow.</p>
+            <div class="d-flex justify-content-center gap-4 mb-4">
+                <a href="https://github.com/Amankr0075" target="_blank" class="text-dark fs-4"><i class="bi bi-github"></i></a>
+                <a href="https://www.linkedin.com/in/amanxelon/" target="_blank" class="text-dark fs-4"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <hr class="w-25 mx-auto mb-4">
+            <p class="text-muted small">&copy; 2026 GroupSathi. All rights reserved. Crafted by Aman Kumar.</p>
+        </div>
+    </footer>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 1000, once: true });
+</script>
+{% endblock %}
