@@ -13,7 +13,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 DEBUG = False
 
-ALLOWED_HOSTS = ['groupsathi.duckdns.org']
+ALLOWED_HOSTS = [
+    'groupsathi.duckdns.org',
+    '15.134.231.205',
+    'localhost',
+    '127.0.0.1'
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://groupsathi.duckdns.org'
+]
 
 # MongoDB Configuration
 MONGODB_URI = os.getenv('MONGODB_URI')
