@@ -279,9 +279,104 @@
         color: white;
     }
 
+    .section-spacing {
+        padding: 80px 0;
+    }
+
+    /* --- Mobile Sticky CTA Bar --- */
+    .mobile-cta-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        display: flex;
+        gap: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding: 12px 16px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-cta-btn {
+        flex: 1;
+        text-align: center;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mobile-cta-login {
+        background: transparent;
+        color: var(--gs-dark);
+        border: 2px solid var(--gs-dark);
+        margin-right: 8px;
+    }
+
+    .mobile-cta-login:hover {
+        background: var(--gs-dark);
+        color: white;
+    }
+
+    .mobile-cta-register {
+        background: var(--gs-primary);
+        color: white;
+        border: 2px solid var(--gs-primary);
+    }
+
+    .mobile-cta-register:hover {
+        background: var(--gs-secondary);
+        border-color: var(--gs-secondary);
+        color: white;
+    }
+
+    /* --- Responsive Navbar Collapse --- */
     @media (max-width: 991px) {
         .hero-title-v3 { font-size: 3.5rem; }
         .dev-frame-v3 { margin-bottom: 50px; }
+
+        .navbar-collapse {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-collapse .nav-link {
+            padding: 12px 16px !important;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .navbar-collapse .nav-link:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .section-spacing {
+            padding: 50px 0;
+        }
+
+        /* Extra bottom padding for footer to not overlap with sticky bar */
+        .landing-wrapper footer {
+            padding-bottom: 100px !important;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hero-title-v3 { font-size: 2.5rem; letter-spacing: -1px; }
+        .hero-v3 { padding: 140px 0 60px; }
+        .btn-pro { padding: 14px 30px; font-size: 1rem; }
     }
 </style>
 {% endblock %}
@@ -292,20 +387,37 @@
 </div>
 
 <div class="landing-wrapper">
-    <!-- Professional Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top landing-nav">
+    <!-- Professional Navbar - Fully Responsive -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top landing-nav" id="landingNav">
         <div class="container">
             <a class="navbar-brand gs-brand-v3" href="{% url 'landing_page' %}">
                 <img src="{% static 'images/GroupSathi.png' %}" alt="Logo" style="height: 40px; margin-right: 12px; border-radius: 12px;">
                 <span class="gs-brand-v3">GroupSathi</span>
             </a>
-            <div class="ms-auto d-none d-lg-flex align-items-center">
-                <a href="#about" class="nav-link px-3 fw-600">Overview</a>
-                <a href="#features" class="nav-link px-3 fw-600">Features</a>
-                <div class="ms-4">
-                    <a href="{% url 'login' %}" class="btn btn-pro btn-outline-dark px-4 py-2 me-2" style="border-radius: 15px;">Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-2" style="border-radius: 15px;">Join Group</a>
-                </div>
+            <!-- Mobile Hamburger Toggle -->
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#landingNavCollapse" aria-controls="landingNavCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Collapsible Menu -->
+            <div class="collapse navbar-collapse" id="landingNavCollapse">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link px-3 fw-600">Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#features" class="nav-link px-3 fw-600">Features</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a href="{% url 'login' %}" class="btn btn-outline-dark px-4 py-2 w-100 fw-600" style="border-radius: 15px;" id="nav-login-btn">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a href="{% url 'register' %}" class="btn btn-pro-primary px-4 py-2 w-100 fw-600" style="border-radius: 15px; color: white;" id="nav-register-btn">
+                            <i class="bi bi-person-plus me-1"></i> Register
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -326,7 +438,7 @@
                         We automate the complexity so you can focus on building collective wealth.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary">Get Started Now</a>
+                        <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary" id="hero-get-started">Get Started Now</a>
                         <a href="{% static 'apk/GroupSathi.apk' %}" class="btn btn-pro btn-outline-dark" download>
                             <i class="bi bi-android2 me-2"></i> Download App
                         </a>
@@ -447,7 +559,7 @@
     </section>
 
     <!-- Professional Footer -->
-    <footer class="py-5 bg-white text-center">
+    <footer class="py-5 bg-white text-center" style="padding-bottom: 100px !important;">
         <div class="container">
             <h2 class="gs-brand-v3 mb-4">GroupSathi</h2>
             <p class="text-muted mb-4">Digitizing Self Help Groups for a better tomorrow.</p>
@@ -461,8 +573,46 @@
     </footer>
 </div>
 
+<!-- Mobile Sticky Bottom CTA Bar -->
+<div class="mobile-cta-bar d-lg-none">
+    <a href="{% url 'login' %}" class="mobile-cta-btn mobile-cta-login" id="mobile-login-btn">
+        <i class="bi bi-box-arrow-in-right"></i> Login
+    </a>
+    <a href="{% url 'register' %}" class="mobile-cta-btn mobile-cta-register" id="mobile-register-btn">
+        <i class="bi bi-person-plus"></i> Register
+    </a>
+</div>
+
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     AOS.init({ duration: 1000, once: true });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Close mobile menu after clicking
+                const navCollapse = document.getElementById('landingNavCollapse');
+                if (navCollapse.classList.contains('show')) {
+                    new bootstrap.Collapse(navCollapse).hide();
+                }
+            }
+        });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const nav = document.getElementById('landingNav');
+        if (window.scrollY > 50) {
+            nav.style.background = 'rgba(255, 255, 255, 0.95)';
+            nav.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+        } else {
+            nav.style.background = 'rgba(255, 255, 255, 0.8)';
+            nav.style.boxShadow = 'none';
+        }
+    });
 </script>
 {% endblock %}
