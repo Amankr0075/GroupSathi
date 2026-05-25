@@ -607,8 +607,13 @@ def approve_repayment_request(request, request_id):
     loan = loans.find_one({'_id': req['loan_id']})
     if loan:
         new_remaining = loan['remaining_amount'] - req['principal_amount']
-        # Status becomes completed if remaining principal is 0
-        status = 'completed' if new_remaining <= 0 else loan['status']
+        new_interest_paid = loan.get('interest_paid', 0.0) + req.get('interest_amount', 0.0)
+        
+        # Status becomes completed if remaining principal is 0 AND full interest is paid
+        if new_remaining <= 0.01 and new_interest_paid >= (loan.get('interest_amount', 0.0) - 0.01):
+            status = 'completed'
+        else:
+            status = loan['status']
         
         loans.update_one(
             {'_id': req['loan_id']},
