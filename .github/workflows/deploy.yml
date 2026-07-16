@@ -1,4 +1,4 @@
-name: Deploy GroupSathi
+name: Deploy to AWS EC2
 
 on:
   push:
@@ -10,16 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to AWS
-        uses: appleboy/ssh-action@master
-
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-
           script: |
-            cd /home/ubuntu/GroupSathi
-            git pull origin main
+            cd ~/GroupSathi
+            source venv/bin/activate
+            git fetch origin
+            git reset --hard origin/main
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
             sudo systemctl restart groupsathi
             sudo systemctl restart nginx
