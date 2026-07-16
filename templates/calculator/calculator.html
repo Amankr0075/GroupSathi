@@ -13,15 +13,11 @@
         </a>
     </div>
 
-    <!-- Toggle Tabs for Mobile/SI Modes -->
-    <div class="d-flex justify-content-center gap-3 mb-4">
-        <button id="btn-show-mobile" class="gs-btn gs-btn-primary" style="width:auto; padding: 0.6rem 1.2rem;">
-            <i class="bi bi-phone"></i> Mobile Calculator
-        </button>
-        <button id="btn-show-interest" class="gs-btn gs-btn-secondary" style="width:auto; padding: 0.6rem 1.2rem;">
-            <i class="bi bi-percent"></i> Simple Interest (Months)
-        </button>
-    </div>
+        <!-- Tabs for mobile -->
+        <div class="d-flex d-md-none mb-3 gap-2">
+            <button id="btn-show-mobile" class="btn btn-primary flex-fill rounded-pill shadow-sm" style="font-size: 0.9rem;"><i class="bi bi-calculator"></i> Calculator</button>
+            <button id="btn-show-interest" class="btn btn-light flex-fill rounded-pill shadow-sm" style="font-size: 0.9rem; border: 1px solid #e2e8f0;"><i class="bi bi-percent"></i> Interest</button>
+        </div>
 
     <div class="row g-4 justify-content-center">
         <!-- Panel 1: Mobile Style Math Calculator -->
@@ -167,8 +163,9 @@
     const panelInterest = document.getElementById('panel-interest');
 
     btnShowMobile.addEventListener('click', () => {
-        btnShowMobile.classList.replace('gs-btn-secondary', 'gs-btn-primary');
-        btnShowInterest.classList.replace('gs-btn-primary', 'gs-btn-secondary');
+        btnShowMobile.className = 'btn btn-primary flex-fill rounded-pill shadow-sm';
+        btnShowInterest.className = 'btn btn-light flex-fill rounded-pill shadow-sm';
+        btnShowInterest.style.border = '1px solid #e2e8f0';
         panelMobile.classList.remove('d-none');
         panelMobile.classList.add('d-block');
         panelInterest.classList.add('d-none');
@@ -176,8 +173,10 @@
     });
 
     btnShowInterest.addEventListener('click', () => {
-        btnShowInterest.classList.replace('gs-btn-secondary', 'gs-btn-primary');
-        btnShowMobile.classList.replace('gs-btn-primary', 'gs-btn-secondary');
+        btnShowInterest.className = 'btn btn-primary flex-fill rounded-pill shadow-sm';
+        btnShowInterest.style.border = 'none';
+        btnShowMobile.className = 'btn btn-light flex-fill rounded-pill shadow-sm';
+        btnShowMobile.style.border = '1px solid #e2e8f0';
         panelInterest.classList.remove('d-none', 'd-md-block');
         panelInterest.classList.add('d-block');
         panelMobile.classList.add('d-none');

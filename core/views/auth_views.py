@@ -200,3 +200,30 @@ def auth_check_view(request):
     from django.http import JsonResponse
     is_authenticated = bool(request.session.get('user_id'))
     return JsonResponse({'authenticated': is_authenticated})
+
+
+def verify_pin_api(request):
+    """API endpoint to verify PIN (used for app lock)."""
+    from django.http import JsonResponse
+    import json
+    
+    if not request.session.get('user_id'):
+        return JsonResponse({'success': False, 'error': 'Not authenticated'})
+        
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            pin = data.get('pin', '').strip()
+            
+            from bson import ObjectId
+            users = get_collection('users')
+            user = users.find_one({'_id': ObjectId(request.session['user_id'])})
+            
+            if user and bcrypt.checkpw(pin.encode('utf-8'), user['password']):
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'Invalid PIN'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+            
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

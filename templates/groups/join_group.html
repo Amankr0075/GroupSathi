@@ -3,15 +3,14 @@
 {% block title %}Join Group - GroupSathi{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 500px;">
-    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
-    <div class="gs-card">
-        <div class="gs-card-header">
-            <i class="bi bi-box-arrow-in-right"></i>
-            <h3>Join a Group</h3>
+<div class="container" style="max-width: 500px; padding: 2rem 15px;">
+    <div class="gs-card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary)); border-bottom: none; padding: 1.5rem;">
+            <h3 class="mb-0 fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Join a Group</h3>
         </div>
-        <p class="gs-text-muted gs-mb-2">Enter the Group ID shared by the group leader to send a join request.</p>
-        <form method="post">
+        <div class="p-4 bg-white">
+            <p class="gs-text-muted gs-mb-2">Enter the Group ID shared by the group leader to send a join request.</p>
+            <form method="post">
             {% csrf_token %}
             <div class="gs-form-group">
                 <label>Group ID</label>
@@ -20,10 +19,11 @@
                     <input type="text" name="group_id" class="gs-input" placeholder="Enter 6-digit Group ID" maxlength="10" data-numeric required>
                 </div>
             </div>
-            <button type="submit" class="gs-btn gs-btn-primary">
-                <i class="bi bi-send"></i> Send Join Request
+            <button type="submit" class="btn btn-primary w-100 gs-mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary));">
+                <i class="bi bi-send-fill me-2"></i> Send Join Request
             </button>
         </form>
+        </div>
     </div>
 </div>
 {% endblock %}

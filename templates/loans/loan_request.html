@@ -3,14 +3,14 @@
 {% block title %}Request Loan - GroupSathi{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px;">
-    <a href="{% url 'my_groups' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Back</a>
-    <div class="gs-card">
-        <div class="gs-card-header">
-            <i class="bi bi-cash-stack"></i>
-            <h3>Request Loan - {{ group.name }}</h3>
+<div class="container" style="max-width: 600px; padding: 2rem 15px;">
+    <div class="gs-card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary)); border-bottom: none; padding: 1.5rem;">
+            <h3 class="mb-0 fw-bold"><i class="bi bi-cash-stack me-2"></i>Request Loan</h3>
         </div>
-        <div class="d-flex gap-3 mb-3">
+        <div class="p-4 bg-white">
+        <h5 class="text-muted mb-3">{{ group.name }}</h5>
+        <div class="d-flex gap-3 mb-4">
             <div class="gs-group-stat flex-fill">
                 <div class="gs-group-stat-value">₹{{ balance }}</div>
                 <div class="gs-group-stat-label">Available Balance</div>
@@ -71,10 +71,11 @@
                 </div>
             </div>
 
-            <button type="submit" class="gs-btn gs-btn-primary gs-mt-2">
-                <i class="bi bi-send"></i> Submit Loan Request
+            <button type="submit" class="btn btn-primary w-100 gs-mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary));">
+                <i class="bi bi-send-fill me-2"></i> Submit Loan Request
             </button>
         </form>
+        </div>
     </div>
 </div>
 

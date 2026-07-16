@@ -46,10 +46,10 @@
                 <label>PIN Code</label>
                 <input type="text" name="pin_code" class="gs-input" maxlength="6" value="{{ profile.pin_code|default:'' }}" data-numeric>
             </div>
-            <div style="display:flex; gap:1rem;">
-                <a href="{% url 'profile_view' %}" class="gs-btn gs-btn-secondary">Cancel</a>
-                <button type="submit" class="gs-btn gs-btn-primary">
-                    <i class="bi bi-check2"></i> Save Changes
+            <div class="d-flex gap-3 mt-4">
+                <a href="{% url 'profile_view' %}" class="btn btn-secondary flex-fill rounded-pill shadow-sm" style="padding: 12px; font-size: 1.05rem;">Cancel</a>
+                <button type="submit" class="btn btn-primary flex-fill rounded-pill shadow-sm" style="padding: 12px; font-size: 1.05rem; background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary)); border: none;">
+                    <i class="bi bi-check2-circle me-2"></i> Save Changes
                 </button>
             </div>
         </form>

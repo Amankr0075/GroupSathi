@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Technical Staff Dashboard - GroupSathi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .staff-banner {
+        background: radial-gradient(circle at top right, #10B981 0%, transparent 40%),
+                    radial-gradient(circle at bottom left, #3B82F6 0%, transparent 40%),
+                    #0F172A;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        color: white;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    .staff-banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        opacity: 0.05;
+        z-index: 0;
+    }
+    .staff-banner-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .search-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 1rem;
+        display: flex;
+        gap: 1rem;
+        max-width: 600px;
+        margin-top: 2rem;
+    }
+    
+    .search-box input {
+        background: rgba(255,255,255,0.9);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        flex: 1;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .search-box button {
+        background: #3B82F6;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0 24px;
+        font-weight: 600;
+        transition: transform 0.2s;
+    }
+    
+    .search-box button:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; padding-top: 2rem; padding-bottom: 4rem;">
+    <div class="staff-banner">
+        <div class="staff-banner-content">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-headset text-success me-3" style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));"></i>
+                <h2 class="fw-bold mb-0" style="font-family: 'Outfit', sans-serif; font-size: 2.5rem;">Support Center</h2>
+            </div>
+            <p style="color: #94A3B8; font-size: 1.1rem; max-width: 500px;">
+                Welcome to the Technical Staff portal. Use the fast customer lookup below to pull up a user's data and assist them with their groups, loans, or fines.
+            </p>
+            
+            <form method="post" class="search-box">
+                {% csrf_token %}
+                <input type="text" name="search_query" placeholder="Enter User Mobile Number (e.g. 1234567890)" data-numeric required maxlength="10">
+                <button type="submit"><i class="bi bi-search me-2"></i>Lookup</button>
+            </form>
+            
+            <div class="mt-4 d-flex gap-2">
+                <a href="{% url 'admin_tickets' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" style="transition: transform 0.3s ease;">
+                    <i class="bi bi-inbox-fill text-primary me-2"></i>View Support Queue
+                </a>
+                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#escalationModal" style="transition: transform 0.3s ease;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Create Escalation Ticket
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="gs-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="gs-card-header border-0 pb-0 pt-4 px-4">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: rgba(16, 185, 129, 0.1);">
+                            <i class="bi bi-shield-check text-success fs-4"></i>
+                        </div>
+                        <h3 class="mb-0 fw-bold fs-5">Your Permissions</h3>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <ul class="list-group list-group-flush text-muted">
+                        <li class="list-group-item bg-transparent border-0 px-0 py-2"><i class="bi bi-check-circle-fill text-success me-3"></i>View customer profiles</li>
+                        <li class="list-group-item bg-transparent border-0 px-0 py-2"><i class="bi bi-check-circle-fill text-success me-3"></i>View customer loans & fines</li>
+                        <li class="list-group-item bg-transparent border-0 px-0 py-2"><i class="bi bi-check-circle-fill text-success me-3"></i>Download User PDF Reports</li>
+                        <li class="list-group-item bg-transparent border-0 px-0 py-2"><i class="bi bi-x-circle-fill text-danger me-3"></i>Delete or Deactivate Users</li>
+                        <li class="list-group-item bg-transparent border-0 px-0 py-2"><i class="bi bi-x-circle-fill text-danger me-3"></i>Send System Broadcasts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="gs-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="gs-card-header border-0 pb-0 pt-4 px-4">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background: rgba(59, 130, 246, 0.1);">
+                            <i class="bi bi-question-circle text-primary fs-4"></i>
+                        </div>
+                        <h3 class="mb-0 fw-bold fs-5">How to assist?</h3>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <p class="text-muted mb-3" style="line-height: 1.6;">
+                        When a customer contacts support, ask for their registered mobile number. Enter it in the lookup tool above to access their full profile.
+                    </p>
+                    <p class="text-muted mb-0" style="line-height: 1.6;">
+                        You can download their PDF report if they require a physical copy of their account status. For destructive actions (like account deletion), please use the Escalate to Admin feature inside the ticket queue.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Escalation Modal -->
+<div class="modal fade" id="escalationModal" tabindex="-1" aria-labelledby="escalationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden;">
+            <div class="modal-header bg-danger text-white border-0 p-4">
+                <h5 class="modal-title fw-bold" id="escalationModalLabel" style="font-family: 'Outfit', sans-serif;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Escalate to Admin
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="post" action="{% url 'staff_escalate' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Subject</label>
+                        <input type="text" name="subject" class="form-control rounded-3" placeholder="Brief summary of the issue" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">For Customer (Optional)</label>
+                        <input type="text" name="customer_mobile" class="form-control rounded-3" placeholder="Enter customer's 10-digit mobile if applicable" data-numeric maxlength="10">
+                        <div class="form-text">Leave blank if this ticket is for your own assistance.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Description</label>
+                        <textarea name="description" class="form-control rounded-3" rows="4" placeholder="Explain the problem in detail to the Super Admin..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Attach Screenshot (Optional, Max 1MB)</label>
+                        <input type="file" name="image" class="form-control rounded-3" accept="image/*">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger w-100 rounded-pill py-2 fw-bold shadow-sm">
+                        Submit Escalation Ticket
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,18 +1,32 @@
+# Python Cache
 __pycache__/
 *.pyc
-db.sqlite3
-media/
-staticfiles/
-.env
+*.pyo
+*.pyd
+
+# Environments
 venv/
 env/
-__pycache__/
-*.pyc
+.venv/
+
+# Databases
 db.sqlite3
+*.sqlite3
+
+# Media and Static Files
 media/
 staticfiles/
+
+# Credentials, Secrets, and Configuration
 .env
-venv/
-env/
+.env.*
+*.pem
+*.key
+*.cert
+*.crt
+secrets.json
+credentials.json
+client_secret.json
+
+# Logs
 *.log
-.env

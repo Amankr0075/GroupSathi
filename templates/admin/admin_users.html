@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Admin - Manage Users{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'custom_admin_dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Admin Dashboard</a>
+    
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-people-fill"></i>
+            <h3>All Registered Users</h3>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Mobile</th>
+                        <th>Name</th>
+                        <th>Member ID</th>
+                        <th>Joined</th>
+                        <th>Is Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td><a href="{% url 'admin_user_detail' u|get_item:'_id' %}" class="fw-bold text-primary">{{ u.mobile }}</a></td>
+                        <td>{{ u.profile.full_name|default:"Not Set" }}</td>
+                        <td>{{ u.profile.member_id|default:"N/A" }}</td>
+                        <td>{{ u.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if u.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

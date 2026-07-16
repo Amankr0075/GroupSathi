@@ -93,3 +93,7 @@ wadllib==2.0.0
 wheel==0.46.3
 zipp==3.23.0
 zope.interface==8.2
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+google-genai==2.12.0
+openai==1.59.3

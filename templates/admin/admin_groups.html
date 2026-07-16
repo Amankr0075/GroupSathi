@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin - Manage Groups{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'custom_admin_dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Admin Dashboard</a>
+    
+    <div class="gs-card">
+        <div class="gs-card-header">
+            <i class="bi bi-collection-fill"></i>
+            <h3>All Groups</h3>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Group Name</th>
+                        <th>Group ID</th>
+                        <th>EMI (,1)</th>
+                        <th>Interest (%)</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in groups %}
+                    <tr>
+                        <td>{{ g.name }}</td>
+                        <td>{{ g.group_id }}</td>
+                        <td>{{ g.emi_amount }}</td>
+                        <td>{{ g.interest_rate }}%</td>
+                        <td>{{ g.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if g.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Closed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No groups found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

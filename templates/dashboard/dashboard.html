@@ -3,42 +3,262 @@
 
 {% block title %}Dashboard - GroupSathi{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Premium Dashboard Styles */
+    .dashboard-wrapper {
+        padding: 2rem 0 4rem;
+    }
+    
+    .welcome-banner {
+        background: radial-gradient(circle at top right, #3B82F6 0%, transparent 40%),
+                    radial-gradient(circle at bottom left, #8B5CF6 0%, transparent 40%),
+                    #0F172A;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.4);
+    }
+    
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.05rem;
+        color: #94A3B8;
+        font-weight: 500;
+        max-width: 500px;
+        line-height: 1.5;
+    }
+    
+    .gs-stats-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .gs-stat-chip {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .gs-stat-chip:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .gs-stat-chip i {
+        font-size: 1.2rem;
+        padding: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+    }
+
+    .gs-grid-section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.3px;
+    }
+
+    .gs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .gs-dash-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.75rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #E2E8F0;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .gs-dash-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .gs-dash-card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 16px -4px var(--card-color, #3B82F6);
+        background: linear-gradient(135deg, var(--card-color), var(--card-color));
+        opacity: 0.9;
+    }
+
+    .gs-dash-card:hover .gs-dash-card-icon {
+        transform: scale(1.1) rotate(5deg);
+        opacity: 1;
+    }
+
+    .gs-dash-card-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #334155;
+    }
+
+    .gs-dash-card-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #EF4444;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-weight: 700;
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        border: 2px solid #fff;
+        z-index: 10;
+        animation: badgePulse 2s infinite;
+    }
+    
+    @keyframes badgePulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="gs-dashboard-header">
-        <h2>Welcome{% if current_profile and current_profile.full_name %}, {{ current_profile.full_name }}{% endif %} 👋</h2>
-        <p>Smart Management for Self Help Groups</p>
+<div class="container dashboard-wrapper">
+    <div class="welcome-banner">
+        <div class="welcome-content">
+            <h2 class="welcome-title">Welcome{% if current_profile and current_profile.full_name %}, {{ current_profile.full_name }}{% endif %} 👋</h2>
+            <p class="welcome-subtitle">Here is what's happening with your Self Help Groups today.</p>
+            
+            <div class="gs-stats-row">
+                <div class="gs-stat-chip">
+                    <i class="bi bi-people-fill text-info"></i>
+                    <span>{{ groups_count }} Group{{ groups_count|pluralize }}</span>
+                </div>
+                <div class="gs-stat-chip">
+                    <i class="bi bi-cash-stack text-success"></i>
+                    <span>{{ active_loans }} Active Loan{{ active_loans|pluralize }}</span>
+                </div>
+                {% if current_profile and current_profile.member_id %}
+                <div class="gs-stat-chip">
+                    <i class="bi bi-person-badge" style="color: #FBBF24;"></i>
+                    <span>ID: {{ current_profile.member_id }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <div class="gs-stats-row">
-        <div class="gs-stat-chip">
-            <i class="bi bi-people-fill" style="color: var(--gs-primary);"></i>
-            <span>{{ groups_count }} Group{{ groups_count|pluralize }}</span>
-        </div>
-        <div class="gs-stat-chip">
-            <i class="bi bi-cash-stack" style="color: var(--gs-success);"></i>
-            <span>{{ active_loans }} Active Loan{{ active_loans|pluralize }}</span>
-        </div>
-        {% if current_profile and current_profile.member_id %}
-        <div class="gs-stat-chip">
-            <i class="bi bi-person-badge" style="color: var(--gs-accent);"></i>
-            <span>ID: {{ current_profile.member_id }}</span>
-        </div>
-        {% endif %}
-    </div>
-
+    <h3 class="gs-grid-section-title">Quick Actions</h3>
     <div class="gs-grid">
         {% for item in dashboard_items %}
         <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};">
             {% if item.badge %}
             <span class="gs-dash-card-badge">{{ item.badge }}</span>
             {% endif %}
-            <div class="gs-dash-card-icon" style="background: {{ item.color }};">
+            <div class="gs-dash-card-icon">
                 <i class="bi {{ item.icon }}"></i>
             </div>
             <span class="gs-dash-card-name">{{ item.name }}</span>
         </a>
         {% endfor %}
+        
+        <!-- Share App Button -->
+        <a href="#" onclick="shareGroupSathi(event)" class="gs-dash-card" style="--card-color: #EC4899;">
+            <div class="gs-dash-card-icon">
+                <i class="bi bi-share-fill"></i>
+            </div>
+            <span class="gs-dash-card-name">Share App</span>
+        </a>
+        
+        <!-- Contact Support Button -->
+        <a href="{% url 'my_tickets' %}" class="gs-dash-card" style="--card-color: #6366F1;">
+            <div class="gs-dash-card-icon">
+                <i class="bi bi-headset"></i>
+            </div>
+            <span class="gs-dash-card-name">Contact Support</span>
+        </a>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function shareGroupSathi(e) {
+    e.preventDefault();
+    const shareData = {
+        title: 'GroupSathi',
+        text: 'GroupSathi is a smart management platform for Self Help Groups. Join now to manage loans, groups, and finances seamlessly!\n\nOfficial Website: https://groupsathi.duckdns.org/\nDownload APK: https://groupsathi.duckdns.org/download/app/',
+        url: 'https://groupsathi.duckdns.org/'
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => console.log('Successfully shared'))
+            .catch((error) => console.log('Error sharing', error));
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        const dummy = document.createElement('textarea');
+        document.body.appendChild(dummy);
+        dummy.value = shareData.text;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        alert('Share text and links copied to clipboard!');
+    }
+}
+</script>
 {% endblock %}

@@ -61,6 +61,9 @@ def _ensure_indexes():
     # Reminder Logs
     db.reminder_logs.create_index([('group_id', 1), ('reminder_type', 1), ('year', 1), ('month', 1)], unique=True)
 
+    # Chat Histories
+    db.chat_histories.create_index([('user_id', 1), ('timestamp', 1)])
+
 
 def get_collection(name):
     """Get a specific MongoDB collection."""

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Support - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    
+    <div class="gs-card mt-3">
+        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB); border-bottom: none; padding: 1.5rem;">
+            <h3 class="mb-0 fw-bold"><i class="bi bi-headset me-2"></i>Contact Support</h3>
+        </div>
+        <form method="post" enctype="multipart/form-data" class="p-4 bg-white">
+            {% csrf_token %}
+            <p class="text-muted mb-4">Please describe the issue you are facing. Our technical staff will get back to you shortly.</p>
+            
+            <div class="gs-form-group">
+                <label>Subject *</label>
+                <input type="text" name="subject" class="gs-input" placeholder="e.g. App crashing on loan page" required>
+            </div>
+            
+            <div class="gs-form-group">
+                <label>Problem Description *</label>
+                <textarea name="description" class="gs-input" rows="5" placeholder="Please provide details about the issue..." required></textarea>
+            </div>
+            
+            <div class="gs-form-group">
+                <label>Screenshot (Optional, < 1MB)</label>
+                <input type="file" name="screenshot" class="form-control gs-input" accept="image/png, image/jpeg">
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; background: linear-gradient(135deg, #2563EB, #1D4ED8);">
+                <i class="bi bi-send-fill me-2"></i> Submit Ticket
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

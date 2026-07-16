@@ -3,7 +3,7 @@ URL configuration for GroupSathi core app.
 """
 
 from django.urls import path
-from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view
+from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view, verify_pin_api
 from core.views.dashboard_views import dashboard_view
 from core.views.landing_views import landing_page_view
 from core.views.profile_views import profile_complete_view, profile_view, profile_edit_view
@@ -28,20 +28,37 @@ from core.views.notification_views import (
     alerts_view, mark_read_view, mark_all_read_view,
     delete_notification_view, delete_all_notifications_view
 )
+from core.views.admin_views import (
+    admin_dashboard_view, admin_users_view, admin_groups_view,
+    admin_user_detail_view, admin_remove_user_view, admin_user_pdf_view,
+    admin_add_staff_view, admin_broadcast_view, staff_dashboard_view, admin_edit_user_view
+)
+from core.views.support_views import (
+    my_tickets_view, create_ticket_view, ticket_chat_view, admin_tickets_view,
+    staff_create_escalation_view
+)
 from core.views.search_views import search_member_view
 from core.views.report_views import reports_view, generate_report_pdf
 from core.views.settings_views import settings_view, change_password_view
 from core.views.help_views import help_view
 from core.views.calculator_views import calculator_view
 from core.views.download_views import download_apk_view
+from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView
 
 urlpatterns = [
     # Home / Landing
     path('', landing_page_view, name='landing_page'),
+    path('reset-pin/submit/', reset_pin_submit, name='reset_pin_submit'),
     path('dashboard/', dashboard_view, name='dashboard'),
 
     # Auth
     path('api/auth/check/', auth_check_view, name='auth_check'),
+    path('api/verify-pin/', verify_pin_api, name='verify_pin_api'),
+    path('api/auth/jwt-token/', get_jwt_token_view, name='jwt_token'),
+    # Chatbot Endpoints
+    path('api/chatbot/ask/', ChatbotAskView.as_view(), name='chatbot_ask'),
+    path('api/chatbot/public-ask/', PublicChatbotAskView.as_view(), name='chatbot_public_ask'),
+    path('api/chatbot/history/', ChatbotHistoryView.as_view(), name='chatbot_history'),
     path('auth/register/', register_view, name='register'),
     path('auth/login/', login_view, name='login'),
     path('auth/logout/', logout_view, name='logout'),
@@ -123,4 +140,25 @@ urlpatterns = [
 
     # APK Download
     path('download/app/', download_apk_view, name='download_apk'),
+
+    # Custom Admin Dashboard
+    path('custom-admin/', admin_dashboard_view, name='custom_admin_dashboard'),
+    path('custom-admin/users/', admin_users_view, name='custom_admin_users'),
+    path('custom-admin/users/<str:user_id>/', admin_user_detail_view, name='admin_user_detail'),
+    path('custom-admin/users/<str:user_id>/edit/', admin_edit_user_view, name='admin_edit_user'),
+    path('custom-admin/users/<str:user_id>/delete/', admin_remove_user_view, name='admin_remove_user'),
+    path('custom-admin/users/<str:user_id>/pdf/', admin_user_pdf_view, name='admin_user_pdf'),
+    path('custom-admin/groups/', admin_groups_view, name='custom_admin_groups'),
+    path('custom-admin/staff/add/', admin_add_staff_view, name='admin_add_staff'),
+    path('custom-admin/broadcast/', admin_broadcast_view, name='admin_broadcast'),
+    
+    # Technical Staff Dashboard
+    path('staff-dashboard/', staff_dashboard_view, name='staff_dashboard'),
+    path('staff-dashboard/tickets/', admin_tickets_view, name='admin_tickets'),
+    path('support/staff-escalate/', staff_create_escalation_view, name='staff_escalate'),
+    
+    # Customer Support
+    path('support/', my_tickets_view, name='my_tickets'),
+    path('support/create/', create_ticket_view, name='create_ticket'),
+    path('support/<str:ticket_id>/', ticket_chat_view, name='ticket_chat'),
 ]

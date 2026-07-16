@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Custom Admin Dashboard - GroupSathi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-action-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .admin-action-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        border-color: var(--card-color);
+    }
+    .admin-action-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        background: linear-gradient(135deg, var(--card-color), var(--card-color-dark, #000));
+        margin-bottom: 1.25rem;
+        box-shadow: 0 10px 15px -3px var(--card-color);
+        transition: transform 0.3s ease;
+    }
+    .admin-action-card:hover .admin-action-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .admin-action-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #0F172A;
+        margin-bottom: 0.5rem;
+    }
+    .admin-action-desc {
+        color: #64748B;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    .admin-banner {
+        background: radial-gradient(circle at top right, #DC2626 0%, transparent 40%),
+                    radial-gradient(circle at bottom left, #1E293B 0%, transparent 40%),
+                    #0F172A;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        color: white;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    .admin-banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        opacity: 0.05;
+        z-index: 0;
+    }
+    .admin-banner-content {
+        position: relative;
+        z-index: 1;
+    }
+    .stat-chip {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        color: white;
+    }
+    .stat-chip-icon {
+        font-size: 1.5rem;
+        background: rgba(255,255,255,0.15);
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; padding-top: 2rem; padding-bottom: 4rem;">
+    <div class="admin-banner">
+        <div class="admin-banner-content">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-shield-lock-fill text-danger me-3" style="font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.5));"></i>
+                <h2 class="fw-bold mb-0" style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; letter-spacing: -1px;">Admin Control Center</h2>
+            </div>
+            <p style="color: #94A3B8; font-size: 1.1rem; max-width: 600px; margin-bottom: 2rem;">
+                Welcome to the master control panel. Monitor platform health, manage users, and orchestrate the entire GroupSathi ecosystem from here.
+            </p>
+            
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-info"><i class="bi bi-people"></i></div>
+                        <div class="text-uppercase fw-bold" style="font-size: 0.75rem; opacity: 0.8; letter-spacing: 1px;">Total Users</div>
+                        <div class="fs-4 fw-bold">{{ total_users }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon" style="color: #A78BFA;"><i class="bi bi-collection"></i></div>
+                        <div class="text-uppercase fw-bold" style="font-size: 0.75rem; opacity: 0.8; letter-spacing: 1px;">Total Groups</div>
+                        <div class="fs-4 fw-bold">{{ total_groups }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-success"><i class="bi bi-cash-stack"></i></div>
+                        <div class="text-uppercase fw-bold" style="font-size: 0.75rem; opacity: 0.8; letter-spacing: 1px;">Total Loans</div>
+                        <div class="fs-4 fw-bold">{{ total_loans }}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-warning"><i class="bi bi-activity"></i></div>
+                        <div class="text-uppercase fw-bold" style="font-size: 0.75rem; opacity: 0.8; letter-spacing: 1px;">Active Loans</div>
+                        <div class="fs-4 fw-bold">{{ active_loans }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="fw-bold mb-4 mt-5" style="font-family: 'Outfit', sans-serif;">Management Actions</h4>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <a href="{% url 'custom_admin_users' %}" class="admin-action-card" style="--card-color: #3B82F6; --card-color-dark: #2563EB;">
+                <div class="admin-action-icon"><i class="bi bi-person-lines-fill"></i></div>
+                <div class="admin-action-title">Manage Users</div>
+                <div class="admin-action-desc">View all registered users, fetch their complete profile, loans, and group data, and safely deactivate accounts.</div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'custom_admin_groups' %}" class="admin-action-card" style="--card-color: #8B5CF6; --card-color-dark: #6D28D9;">
+                <div class="admin-action-icon"><i class="bi bi-box-seam"></i></div>
+                <div class="admin-action-title">Manage Groups</div>
+                <div class="admin-action-desc">View and track all SHG groups, their EMI settings, and activity status across the platform.</div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'admin_broadcast' %}" class="admin-action-card" style="--card-color: #F59E0B; --card-color-dark: #D97706;">
+                <div class="admin-action-icon"><i class="bi bi-broadcast"></i></div>
+                <div class="admin-action-title">System Broadcast</div>
+                <div class="admin-action-desc">Send system-wide push notification alerts that all users will receive instantly in their Alerts section.</div>
+            </a>
+        </div>
+        {% if current_user.is_admin %}
+        <div class="col-md-6">
+            <a href="{% url 'admin_add_staff' %}" class="admin-action-card" style="--card-color: #EF4444; --card-color-dark: #DC2626;">
+                <div class="admin-action-icon"><i class="bi bi-person-badge"></i></div>
+                <div class="admin-action-title">Technical Staff</div>
+                <div class="admin-action-desc">Generate secure, restricted technical support accounts to help you manage the platform.</div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'admin_tickets' %}" class="admin-action-card" style="--card-color: #14B8A6; --card-color-dark: #0F766E;">
+                <div class="admin-action-icon"><i class="bi bi-inbox-fill"></i></div>
+                <div class="admin-action-title">Support Tickets</div>
+                <div class="admin-action-desc">Monitor customer support requests and staff responses in real-time.</div>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

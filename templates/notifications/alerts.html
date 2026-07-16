@@ -10,12 +10,12 @@
         <h2>Notifications</h2>
         <div class="ms-auto d-flex gap-2">
             {% if unread_count > 0 %}
-            <a href="{% url 'mark_all_read' %}" class="gs-btn gs-btn-secondary gs-btn-sm" style="width:auto;">
+            <a href="{% url 'mark_all_read' %}" class="btn btn-secondary btn-sm rounded-pill px-3 shadow-sm" style="font-size:0.85rem;">
                 <i class="bi bi-check-all"></i> Mark all read
             </a>
             {% endif %}
             {% if notifications %}
-            <a href="{% url 'delete_all_notifications' %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" data-confirm="Delete all notifications?">
+            <a href="{% url 'delete_all_notifications' %}" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm" style="font-size:0.85rem;" data-confirm="Delete all notifications?">
                 <i class="bi bi-trash"></i> Delete all
             </a>
             {% endif %}
@@ -37,13 +37,13 @@
                 <p>{{ notif.message }}</p>
             </div>
             <div class="text-end d-flex flex-column align-items-end justify-content-between" style="min-height: 50px;">
-                <div class="gs-notif-time">{{ notif.created_at|timesince }} ago</div>
+                <div class="gs-notif-time text-muted" style="font-size:0.8rem; font-weight:500;">{{ notif.created_at|timesince }} ago</div>
                 <div class="d-flex gap-2 align-items-center mt-2">
                     {% if not notif.is_read %}
-                    <a href="{% url 'mark_read' notif|get_item:'_id' %}" class="btn btn-sm btn-outline-success p-1" style="font-size:0.75rem; border-radius: 4px; padding: 2px 6px !important; line-height: 1;"><i class="bi bi-check"></i> Read</a>
+                    <a href="{% url 'mark_read' notif|get_item:'_id' %}" class="btn btn-outline-success btn-sm rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 28px; height: 28px; border-width: 2px;" title="Mark Read"><i class="bi bi-check-lg"></i></a>
                     {% endif %}
-                    <a href="{% url 'delete_notification' notif|get_item:'_id' %}" class="btn btn-sm btn-outline-danger p-1" style="font-size:0.75rem; border-radius: 4px; padding: 2px 6px !important; line-height: 1;" data-confirm="Delete this notification?">
-                        <i class="bi bi-trash"></i>
+                    <a href="{% url 'delete_notification' notif|get_item:'_id' %}" class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 28px; height: 28px; border-width: 2px;" data-confirm="Delete this notification?" title="Delete">
+                        <i class="bi bi-trash-fill"></i>
                     </a>
                 </div>
             </div>

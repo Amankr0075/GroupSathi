@@ -51,9 +51,11 @@
             </div>
         </div>
 
-        <a href="{% url 'profile_edit' %}" class="gs-btn gs-btn-primary gs-mt-3" style="width: auto; padding: 0.6rem 2rem;">
-            <i class="bi bi-pencil"></i> Edit Profile
-        </a>
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'profile_edit' %}" class="btn btn-primary rounded-pill shadow-sm gs-mt-3" style="padding: 0.8rem 2.5rem; font-size: 1.05rem; background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary)); border: none;">
+                <i class="bi bi-pencil-fill me-2"></i> Edit Profile
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

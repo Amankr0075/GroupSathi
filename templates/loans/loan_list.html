@@ -126,7 +126,7 @@
                                 <input type="hidden" name="repay_type" value="principal">
                                 <div class="d-flex gap-2">
                                     <input type="number" name="principal_amount" class="gs-input" id="p-input-{{ ld.loan|get_item:'_id' }}" placeholder="Principal Amount" value="{{ ld.loan.remaining_amount }}" step="0.01" min="0.01" max="{{ ld.loan.remaining_amount }}" style="flex:1; font-size:0.85rem;" readonly required>
-                                    <button type="submit" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto;">Pay Principal</button>
+                                    <button type="submit" class="btn btn-success btn-sm rounded-pill shadow-sm px-3 mt-2 w-100">Pay Principal</button>
                                 </div>
                             </form>
                         </div>
@@ -140,7 +140,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="repay_type" value="interest">
                                 <input type="number" name="interest_amount" class="gs-input" placeholder="Interest Amount" value="{{ ld.loan.interest_amount|subtract:ld.loan.interest_paid }}" step="0.01" min="0.01" style="flex:1; font-size:0.85rem;" readonly required>
-                                <button type="submit" class="gs-btn gs-btn-success gs-btn-sm" style="width:auto;">Pay Interest</button>
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill shadow-sm px-3">Pay Interest</button>
                             </form>
                         </div>
                     </div>
@@ -153,7 +153,7 @@
                             <form method="post" action="{% url 'extend_loan_request' ld.loan|get_item:'_id' %}" class="d-flex gap-2">
                                 {% csrf_token %}
                                 <input type="number" name="extra_months" class="gs-input" placeholder="Extra Months to Add" step="1" min="1" style="flex:1; font-size:0.85rem;" required>
-                                <button type="submit" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto; color: #000;">Request Extension</button>
+                                <button type="submit" class="btn btn-warning btn-sm rounded-pill shadow-sm px-3 text-dark">Request Extension</button>
                             </form>
                             <small class="gs-text-muted mt-1 d-block" style="font-size:0.75rem;">This will recalculate interest and requires leadership approval.</small>
                         </div>
@@ -225,7 +225,7 @@
             <ul class="pagination justify-content-center gap-2" style="border: none;">
                 {% if completed_loans_history.has_previous %}
                 <li class="page-item">
-                    <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page={{ completed_loans_history.previous_page_number }}">
+                    <a class="btn btn-light btn-sm rounded-pill px-3 shadow-sm border" href="?page={{ completed_loans_history.previous_page_number }}">
                         <i class="bi bi-chevron-left"></i> Previous
                     </a>
                 </li>
@@ -239,7 +239,7 @@
 
                 {% if completed_loans_history.has_next %}
                 <li class="page-item">
-                    <a class="gs-btn gs-btn-sm" style="background-color: var(--gs-body-bg); color: var(--gs-primary); border: 1px solid var(--gs-border-color); width: auto;" href="?page={{ completed_loans_history.next_page_number }}">
+                    <a class="btn btn-light btn-sm rounded-pill px-3 shadow-sm border" href="?page={{ completed_loans_history.next_page_number }}">
                         Next <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>

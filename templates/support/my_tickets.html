@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}My Support Tickets - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'dashboard' %}" class="gs-back-btn mb-0 position-relative" style="bottom: auto; left: auto;"><i class="bi bi-arrow-left"></i></a>
+        <h2 class="fw-bold mb-0" style="font-family: 'Outfit', sans-serif;">My Support Tickets</h2>
+        <a href="{% url 'create_ticket' %}" class="btn btn-primary rounded-pill shadow-sm"><i class="bi bi-plus-lg me-1"></i>New Ticket</a>
+    </div>
+
+    {% if tickets %}
+    <div class="list-group shadow-sm" style="border-radius: 16px; overflow: hidden;">
+        {% for ticket in tickets %}
+        <a href="{% url 'ticket_chat' ticket|get_item:'_id' %}" class="list-group-item list-group-item-action p-4 border-0 border-bottom" style="transition: background-color 0.2s;">
+            <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                <h5 class="mb-0 fw-bold" style="color: #0F172A;">{{ ticket.subject }}</h5>
+                <small class="text-muted">{{ ticket.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted text-truncate" style="max-width: 70%;">{{ ticket.messages.0.text }}</small>
+                
+                {% if ticket.status == 'open' %}
+                <span class="badge bg-warning rounded-pill text-dark">Open</span>
+                {% elif ticket.status == 'in_progress' %}
+                <span class="badge bg-primary rounded-pill">In Progress</span>
+                {% elif ticket.status == 'escalated' %}
+                <span class="badge bg-danger rounded-pill">Escalated</span>
+                {% else %}
+                <span class="badge bg-success rounded-pill">Resolved</span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-chat-dots text-muted mb-3" style="font-size: 3rem;"></i>
+        <h5 class="fw-bold text-muted">No Support Tickets</h5>
+        <p class="text-muted mb-4">You haven't submitted any support requests yet.</p>
+        <a href="{% url 'create_ticket' %}" class="btn btn-primary rounded-pill shadow-sm">Contact Support</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

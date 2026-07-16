@@ -140,82 +140,115 @@ a:hover { color: var(--gs-primary-dark); }
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: radial-gradient(circle at top right, #3B82F6 0%, transparent 40%),
+                radial-gradient(circle at bottom left, #8B5CF6 0%, transparent 40%),
+                #0F172A;
     padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.gs-auth-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+    opacity: 0.05;
+    z-index: 0;
 }
 
 .gs-auth-card {
-    background: var(--gs-card-bg);
-    border-radius: 24px;
-    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
     width: 100%;
     max-width: 440px;
-    box-shadow: var(--gs-shadow-lg);
-    animation: slideUp 0.5s ease-out;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1) inset;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .gs-auth-logo {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .gs-auth-logo i {
-    font-size: 3rem;
-    background: var(--gs-gradient);
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.2));
 }
 
 .gs-auth-logo h1 {
+    font-family: 'Outfit', sans-serif;
     font-weight: 800;
-    font-size: 1.8rem;
-    color: var(--gs-dark);
+    font-size: 2rem;
+    color: #0F172A;
     margin-top: 0.5rem;
+    letter-spacing: -0.5px;
 }
 
 .gs-auth-logo p {
-    color: var(--gs-text-muted);
-    font-size: 0.9rem;
+    color: #64748B;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 .gs-auth-tagline {
     text-align: center;
-    color: var(--gs-text-muted);
-    font-size: 0.85rem;
-    margin-bottom: 2rem;
-    line-height: 1.5;
+    color: #64748B;
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
 }
 
 /* --- Form Styles --- */
 .gs-form-group {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
 }
 
 .gs-form-group label {
     font-weight: 600;
     font-size: 0.85rem;
-    color: var(--gs-text);
-    margin-bottom: 0.4rem;
+    color: #334155;
+    margin-bottom: 0.5rem;
     display: block;
+    letter-spacing: 0.2px;
 }
 
 .gs-input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--gs-border);
-    border-radius: var(--gs-radius-sm);
-    font-size: 0.95rem;
+    padding: 0.85rem 1.2rem;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    font-size: 1rem;
     font-family: 'Inter', sans-serif;
-    transition: var(--gs-transition);
-    background: #fafafa;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #F8FAFC;
+    color: #0F172A;
 }
 
 .gs-input:focus {
     outline: none;
-    border-color: var(--gs-primary);
-    box-shadow: 0 0 0 4px rgba(108,92,231,0.1);
-    background: #fff;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background: #ffffff;
+}
+
+.gs-input::placeholder {
+    color: #94A3B8;
 }
 
 .gs-input-icon {
@@ -224,14 +257,21 @@ a:hover { color: var(--gs-primary-dark); }
 
 .gs-input-icon i {
     position: absolute;
-    left: 14px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--gs-text-muted);
+    color: #64748B;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.gs-input-icon .gs-input:focus + i,
+.gs-input-icon .gs-input:focus ~ i {
+    color: #3B82F6;
 }
 
 .gs-input-icon .gs-input {
-    padding-left: 2.8rem;
+    padding-left: 3rem;
 }
 
 /* --- Buttons --- */
@@ -240,38 +280,40 @@ a:hover { color: var(--gs-primary-dark); }
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     border: none;
-    border-radius: var(--gs-radius-sm);
+    border-radius: 14px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: var(--gs-transition);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     width: 100%;
 }
 
 .gs-btn-primary {
-    background: var(--gs-gradient);
-    color: #fff;
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 .gs-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108,92,231,0.35);
-    color: #fff;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+    color: #ffffff;
 }
 
 .gs-btn-secondary {
-    background: var(--gs-card-bg);
-    color: var(--gs-text);
-    border: 2px solid var(--gs-border);
+    background: #ffffff;
+    color: #0F172A;
+    border: 2px solid #E2E8F0;
 }
 
 .gs-btn-secondary:hover {
-    border-color: var(--gs-primary);
-    color: var(--gs-primary);
+    border-color: #3B82F6;
+    color: #3B82F6;
+    background: #F8FAFC;
 }
 
 .gs-btn-success {
@@ -280,13 +322,26 @@ a:hover { color: var(--gs-primary-dark); }
 }
 
 .gs-btn-danger {
-    background: linear-gradient(135deg, #E17055, #fab1a0);
+    background: linear-gradient(135deg, #EF4444, #FCA5A5);
     color: #fff;
 }
 
 .gs-btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
+}
+
+/* Global override for default bootstrap buttons */
+.btn {
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* --- Dashboard --- */

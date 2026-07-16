@@ -3,14 +3,12 @@
 {% block title %}Create Group - GroupSathi{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px;">
-    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
-    <div class="gs-card">
-        <div class="gs-card-header">
-            <i class="bi bi-plus-circle-fill"></i>
-            <h3>Create New Group</h3>
+<div class="container" style="max-width: 600px; padding: 2rem 15px;">
+    <div class="gs-card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary)); border-bottom: none; padding: 1.5rem;">
+            <h3 class="mb-0 fw-bold"><i class="bi bi-plus-circle-fill me-2"></i>Create New Group</h3>
         </div>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" class="p-4 bg-white">
             {% csrf_token %}
             <div class="gs-form-group">
                 <label>Group Name *</label>
@@ -40,8 +38,8 @@
                 <label>Late EMI Fine (₹ per month) *</label>
                 <input type="number" name="fine_amount" class="gs-input" placeholder="e.g. 50" min="0" step="0.01" required>
             </div>
-            <button type="submit" class="gs-btn gs-btn-primary gs-mt-2">
-                <i class="bi bi-plus-circle"></i> Create Group
+            <button type="submit" class="btn btn-primary w-100 gs-mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary));">
+                <i class="bi bi-plus-circle-fill me-2"></i> Create Group
             </button>
         </form>
     </div>
