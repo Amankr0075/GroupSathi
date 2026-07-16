@@ -17,13 +17,13 @@ SYSTEM_PROMPT = """You are GroupSathi AI Assistant.
 You are the official support assistant for the GroupSathi platform.
 
 Your responsibilities:
-- Help users with anything related to GroupSathi.
-- Explain features and guide users step-by-step.
-- Answer questions about notifications, meetings, groups, profiles, and announcements.
+- Help users with anything related to GroupSathi features (groups, loans, notifications, meetings).
 - Provide personalized responses using authenticated user data.
-- Be friendly, concise, and professional.
+- Be friendly, conversational, concise, and professional.
 - Support English, Hindi, and Gujarati.
-- If a user asks something unrelated to GroupSathi, politely inform them that you are specialized in assisting with the GroupSathi platform."""
+
+STRICT RULE: You MUST ONLY answer questions related to the GroupSathi platform, Self Help Groups, micro-loans, and app usage. 
+If the user asks ANY question about general knowledge, science, history, coding, or any other unrelated topic (e.g., photosynthesis), you MUST refuse to answer it. Simply reply with: "I am only programmed to assist with the GroupSathi platform. I cannot answer questions about outside topics." Do NOT provide the answer to their off-topic question under any circumstances."""
 
 @api_view(['GET'])
 def get_jwt_token_view(request):
@@ -93,9 +93,6 @@ class ChatbotAskView(APIView):
     permission_classes = [AllowAny] # We handle auth manually in post()
 
     def post(self, request):
-        if not settings.GEMINI_API_KEY:
-            return Response({'error': 'Gemini API not configured'}, status=500)
-            
         user_message = request.data.get('message', '').strip()
         if not user_message:
             return Response({'error': 'Message is required'}, status=400)
@@ -164,9 +161,10 @@ class PublicChatbotAskView(APIView):
             return Response({'error': 'Message is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         public_system_prompt = """You are the public GroupSathi AI Assistant. 
-You answer general questions about the GroupSathi platform, its features, and its goals to help Self Help Groups. 
+You answer questions ONLY about the GroupSathi platform, Self Help Groups (SHGs), finance, and community building.
 You are speaking to an unregistered visitor. You do NOT have access to any personal data, so do not attempt to provide personalized information. 
-Keep your responses helpful, encouraging, and relatively concise. Encourage the user to register or login to unlock full capabilities."""
+
+STRICT RULE: You MUST NOT answer general knowledge questions, science questions, or anything outside the scope of GroupSathi. If asked about an unrelated topic, reply exactly with: "I am only programmed to assist with the GroupSathi platform. I cannot answer questions about outside topics." Do NOT answer their unrelated question."""
 
         # Fetch recent public chat history from request (optional, usually landing page bots are stateless or keep state in frontend)
         history = request.data.get('history', [])

@@ -46,10 +46,14 @@ class AIManager:
 
     @staticmethod
     def generate_response(user_id: str, full_prompt: str) -> str:
-        providers = [
-            ("gemini-2.0", GeminiProvider('gemini-2.0-flash')),
-            ("groq", GroqProvider('llama-3.3-70b-versatile'))
-        ]
+        providers = []
+        if getattr(settings, 'GEMINI_API_KEY', None):
+            providers.append(("gemini-2.0", GeminiProvider('gemini-2.0-flash')))
+        if getattr(settings, 'GROQ_API_KEY', None):
+            providers.append(("groq", GroqProvider('llama-3.3-70b-versatile')))
+            
+        if not providers:
+            return "GroupSathi AI Assistant is currently unconfigured. Please contact support."
         
         # Exponential backoff delays
         delays = [1, 2, 4]
