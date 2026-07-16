@@ -3,7 +3,10 @@ URL configuration for GroupSathi core app.
 """
 
 from django.urls import path
-from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view
+from core.views.auth_views import (
+    register_view, login_view, admin_login_view, logout_view, 
+    forgot_pin_view, reset_pin_submit, auth_check_view
+)
 from core.views.dashboard_views import dashboard_view
 from core.views.landing_views import landing_page_view
 from core.views.profile_views import profile_complete_view, profile_view, profile_edit_view
@@ -60,6 +63,7 @@ urlpatterns = [
     path('api/chatbot/history/', ChatbotHistoryView.as_view(), name='chatbot_history'),
     path('auth/register/', register_view, name='register'),
     path('auth/login/', login_view, name='login'),
+    path('auth/staff-login/', admin_login_view, name='admin_login'),
     path('auth/logout/', logout_view, name='logout'),
     path('auth/forgot-pin/', forgot_pin_view, name='forgot_pin'),
     path('auth/forgot-pin/reset/', reset_pin_submit, name='reset_pin_submit'),

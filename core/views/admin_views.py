@@ -220,13 +220,13 @@ def admin_user_pdf_view(request, user_id):
 def admin_add_staff_view(request):
     """Create a new technical staff account."""
     if request.method == 'POST':
-        mobile = request.POST.get('mobile', '').strip()
+        email = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '').strip()
         name = request.POST.get('name', '').strip()
         
         users_col = get_collection('users')
-        if users_col.find_one({'mobile': mobile}):
-            messages.error(request, 'Mobile number already registered.')
+        if users_col.find_one({'email': email}):
+            messages.error(request, 'Email address already registered.')
             return redirect('admin_add_staff')
             
         import bcrypt
@@ -234,7 +234,7 @@ def admin_add_staff_view(request):
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
         user_data = {
-            'mobile': mobile,
+            'email': email,
             'password': hashed,
             'is_active': True,
             'role': 'tech_staff',
@@ -247,7 +247,7 @@ def admin_add_staff_view(request):
         from core.utils import generate_member_id
         profile_data = {
             'user_id': str(res.inserted_id),
-            'mobile': mobile,
+            'email': email,
             'full_name': name,
             'member_id': generate_member_id(),
             'created_at': datetime.now()

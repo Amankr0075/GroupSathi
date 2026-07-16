@@ -112,6 +112,47 @@ def login_view(request):
     return render(request, 'auth/login.html')
 
 
+def admin_login_view(request):
+    """Handle admin and technical staff login via email."""
+    if request.session.get('user_id'):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '').strip()
+
+        users = get_collection('users')
+        user = users.find_one({'email': email})
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            if not user.get('is_active', True):
+                messages.error(request, 'Your account has been deactivated.')
+                return render(request, 'auth/admin_login.html')
+
+            # Ensure they actually have admin or tech_staff privileges
+            if not user.get('is_admin') and user.get('role') != 'tech_staff':
+                messages.error(request, 'You do not have staff permissions.')
+                return render(request, 'auth/admin_login.html')
+
+            # Set session
+            request.session['user_id'] = str(user['_id'])
+            request.session['mobile'] = user.get('mobile', '')
+            request.session['email'] = user.get('email', '')
+
+            # Update last login
+            users.update_one(
+                {'_id': user['_id']},
+                {'$set': {'last_login': datetime.now()}}
+            )
+
+            messages.success(request, 'Staff Login successful!')
+            return redirect('custom_admin_dashboard' if user.get('is_admin') else 'dashboard')
+        else:
+            messages.error(request, 'Invalid email or password.')
+
+    return render(request, 'auth/admin_login.html')
+
+
 def logout_view(request):
     """Handle user logout."""
     request.session.flush()
