@@ -3,7 +3,7 @@ URL configuration for GroupSathi core app.
 """
 
 from django.urls import path
-from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view, verify_pin_api
+from core.views.auth_views import register_view, login_view, logout_view, forgot_pin_view, reset_pin_submit, auth_check_view
 from core.views.dashboard_views import dashboard_view
 from core.views.landing_views import landing_page_view
 from core.views.profile_views import profile_complete_view, profile_view, profile_edit_view
@@ -53,7 +53,6 @@ urlpatterns = [
 
     # Auth
     path('api/auth/check/', auth_check_view, name='auth_check'),
-    path('api/verify-pin/', verify_pin_api, name='verify_pin_api'),
     path('api/auth/jwt-token/', get_jwt_token_view, name='jwt_token'),
     # Chatbot Endpoints
     path('api/chatbot/ask/', ChatbotAskView.as_view(), name='chatbot_ask'),
