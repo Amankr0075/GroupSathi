@@ -99,70 +99,93 @@
 
     .gs-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1.25rem;
     }
 
     .gs-dash-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 1.25rem 0.75rem;
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border-radius: 20px;
+        padding: 1.5rem 1rem;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border: 1px solid #E2E8F0;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), inset 0 2px 5px rgba(255,255,255,1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
         text-decoration: none;
         display: flex;
         flex-direction: column;
         align-items: center;
         position: relative;
+        overflow: hidden;
+    }
+
+    .gs-dash-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 4px;
+        background: var(--card-color, #3B82F6);
+        opacity: 0.8;
+        transition: all 0.3s ease;
     }
 
     .gs-dash-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        border-color: rgba(59, 130, 246, 0.3);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12);
+        border-color: rgba(226, 232, 240, 0.1);
+    }
+    
+    .gs-dash-card:hover::before {
+        height: 100%;
+        opacity: 0.03;
     }
 
     .gs-dash-card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.4rem;
-        color: #fff;
-        margin-bottom: 0.75rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 6px 12px -4px var(--card-color, #3B82F6);
-        background: linear-gradient(135deg, var(--card-color), var(--card-color));
-        opacity: 0.9;
+        font-size: 1.6rem;
+        color: var(--card-color, #3B82F6);
+        margin-bottom: 1rem;
+        transition: all 0.4s ease;
+        background: rgba(255,255,255,1);
+        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,1);
+        border: 1px solid rgba(0,0,0,0.02);
+        position: relative;
+        z-index: 1;
     }
 
     .gs-dash-card:hover .gs-dash-card-icon {
-        transform: scale(1.1) rotate(5deg);
-        opacity: 1;
+        transform: scale(1.1) rotate(8deg);
+        background: linear-gradient(135deg, var(--card-color), var(--card-color));
+        color: white;
+        box-shadow: 0 12px 20px -5px var(--card-color);
+        border-color: transparent;
     }
 
     .gs-dash-card-name {
-        font-weight: 600;
-        font-size: 0.75rem;
-        color: #334155;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #1E293B;
+        letter-spacing: -0.2px;
+        position: relative;
+        z-index: 1;
     }
 
     .gs-dash-card-badge {
         position: absolute;
-        top: -8px;
-        right: -8px;
+        top: 10px;
+        right: 10px;
         background: #EF4444;
         color: #fff;
-        font-size: 0.75rem;
-        padding: 4px 10px;
-        border-radius: 50px;
-        font-weight: 700;
-        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 30px;
+        font-weight: 800;
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
         border: 2px solid #fff;
         z-index: 10;
         animation: badgePulse 2s infinite;

@@ -34,7 +34,8 @@ from core.views.notification_views import (
 from core.views.admin_views import (
     admin_dashboard_view, admin_users_view, admin_groups_view,
     admin_user_detail_view, admin_remove_user_view, admin_user_pdf_view,
-    admin_add_staff_view, admin_broadcast_view, staff_dashboard_view, admin_edit_user_view
+    admin_add_staff_view, admin_broadcast_view, staff_dashboard_view, admin_edit_user_view,
+    admin_hard_delete_user_view, admin_hard_delete_group_view, admin_edit_group_view
 )
 from core.views.support_views import (
     my_tickets_view, create_ticket_view, ticket_chat_view, admin_tickets_view,
@@ -46,7 +47,7 @@ from core.views.settings_views import settings_view, change_password_view
 from core.views.help_views import help_view
 from core.views.calculator_views import calculator_view
 from core.views.download_views import download_apk_view
-from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView
+from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView, ai_summarize_view
 
 urlpatterns = [
     # Home / Landing
@@ -57,6 +58,7 @@ urlpatterns = [
     # Auth
     path('api/auth/check/', auth_check_view, name='auth_check'),
     path('api/auth/jwt-token/', get_jwt_token_view, name='jwt_token'),
+    path('api/ai/summarize/', ai_summarize_view, name='ai_summarize'),
     # Chatbot Endpoints
     path('api/chatbot/ask/', ChatbotAskView.as_view(), name='chatbot_ask'),
     path('api/chatbot/public-ask/', PublicChatbotAskView.as_view(), name='chatbot_public_ask'),
@@ -151,7 +153,10 @@ urlpatterns = [
     path('custom-admin/users/<str:user_id>/edit/', admin_edit_user_view, name='admin_edit_user'),
     path('custom-admin/users/<str:user_id>/delete/', admin_remove_user_view, name='admin_remove_user'),
     path('custom-admin/users/<str:user_id>/pdf/', admin_user_pdf_view, name='admin_user_pdf'),
+    path('custom-admin/users/<str:user_id>/hard-delete/', admin_hard_delete_user_view, name='admin_hard_delete_user'),
     path('custom-admin/groups/', admin_groups_view, name='custom_admin_groups'),
+    path('custom-admin/groups/<str:group_id>/delete/', admin_hard_delete_group_view, name='admin_hard_delete_group'),
+    path('custom-admin/groups/<str:group_id>/edit/', admin_edit_group_view, name='admin_edit_group'),
     path('custom-admin/staff/add/', admin_add_staff_view, name='admin_add_staff'),
     path('custom-admin/broadcast/', admin_broadcast_view, name='admin_broadcast'),
     

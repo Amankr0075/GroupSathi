@@ -25,6 +25,25 @@ Your responsibilities:
 STRICT RULE: You MUST ONLY answer questions related to the GroupSathi platform, Self Help Groups, micro-loans, and app usage. 
 If the user asks ANY question about general knowledge, science, history, coding, or any other unrelated topic (e.g., photosynthesis), you MUST refuse to answer it. Simply reply with: "I am only programmed to assist with the GroupSathi platform. I cannot answer questions about outside topics." Do NOT provide the answer to their off-topic question under any circumstances."""
 
+@api_view(['POST'])
+def ai_summarize_view(request):
+    """Summarize text using AI, mainly for broadcast titles/summaries."""
+    text = request.data.get('text', '').strip()
+    if not text:
+        return JsonResponse({'error': 'No text provided'}, status=400)
+    
+    try:
+        from core.ai_manager import AIManager
+        ai = AIManager()
+        prompt = f"Please provide a very short, concise, and catchy title (max 6 words) for the following broadcast message:\n\n{text}"
+        response = ai.client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
+        return JsonResponse({'summary': response.text.strip().strip('"')})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 @api_view(['GET'])
 def get_jwt_token_view(request):
     """

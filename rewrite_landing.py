@@ -1,4 +1,6 @@
-{% extends 'base.html' %}
+import os
+
+html_content = """{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}GroupSathi | Empowering Self Help Groups{% endblock %}
@@ -102,106 +104,6 @@
     .portfolio-section { background: var(--gs-primary); color: white; padding: 60px 0; text-align: center; }
     .portfolio-link { color: var(--gs-secondary); text-decoration: none; font-weight: 700; transition: color 0.3s; font-size: 1.1rem; }
     .portfolio-link:hover { color: white; text-decoration: underline; }
-
-    /* Chatbot Widget Styles */
-    .chatbot-widget {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 320px;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        display: none;
-        flex-direction: column;
-        z-index: 10000;
-        border: 1px solid rgba(0,0,0,0.1);
-        overflow: hidden;
-        animation: scaleUp 0.3s ease-out;
-    }
-    @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .chatbot-header {
-        background: var(--gs-primary);
-        color: white;
-        padding: 12px 16px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .chatbot-body {
-        height: 250px;
-        overflow-y: auto;
-        padding: 16px;
-        background: #f8fafc;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .chat-message {
-        padding: 10px 14px;
-        border-radius: 14px;
-        font-size: 0.9rem;
-        max-width: 85%;
-        line-height: 1.4;
-    }
-    .bot-message {
-        background: white;
-        color: var(--gs-dark);
-        border-bottom-left-radius: 4px;
-        align-self: flex-start;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .user-message {
-        background: var(--gs-secondary);
-        color: white;
-        border-bottom-right-radius: 4px;
-        align-self: flex-end;
-        box-shadow: 0 2px 5px rgba(59,130,246,0.3);
-    }
-    .chatbot-footer {
-        padding: 12px;
-        background: white;
-        border-top: 1px solid rgba(0,0,0,0.05);
-        display: flex;
-        gap: 8px;
-    }
-    .chatbot-footer input {
-        border-radius: 20px;
-        font-size: 0.9rem;
-    }
-    .chatbot-footer button {
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .chatbot-toggle-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary));
-        color: white;
-        border: none;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        cursor: pointer;
-        transition: transform 0.3s;
-    }
-    .chatbot-toggle-btn:hover {
-        transform: scale(1.1);
-    }
-
 </style>
 {% endblock %}
 
@@ -391,68 +293,9 @@
             <img src="{% static 'images/GroupSathi.png' %}" alt="Logo" style="height: 30px; margin-right: 10px; border-radius:8px;">
             <h5 class="mb-0 fw-bold">GroupSathi</h5>
         </div>
-        <div class="mb-3">
-            <a href="#" class="text-white-50 text-decoration-none me-3" data-bs-toggle="modal" data-bs-target="#termsModal"><small>Terms & Conditions</small></a>
-            <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal" data-bs-target="#privacyModal"><small>Privacy Policy</small></a>
-        </div>
         <p class="text-muted mb-0">&copy; 2026 GroupSathi. All rights reserved. Empowering rural India.</p>
     </div>
 </footer>
-
-<!-- Modals for Policies -->
-<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-dark fw-bold" id="termsModalLabel">Terms & Conditions</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark text-start">
-        <p><strong>1. Record Keeping Only:</strong> GroupSathi is strictly a digital ledger and management tool for Self Help Groups (SHGs). We are only keeping the records of your group's transactions. We are <strong>not</strong> collecting any money from users, nor are we acting as a bank or financial institution.</p>
-        <p><strong>2. Future Subscriptions:</strong> Please be advised that in the future, this platform may charge users a subscription fee to continue accessing its features and services.</p>
-        <p><strong>3. User Responsibility:</strong> All groups and individuals are fully responsible for managing their own physical funds securely outside of the platform. We only maintain the records you input.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-dark fw-bold" id="privacyModalLabel">Privacy Policy</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark text-start">
-        <p>Your privacy is important to us. GroupSathi only collects information necessary to maintain accurate records of your Self Help Group's activities.</p>
-        <p><strong>Data Usage:</strong> The financial records inputted into GroupSathi are maintained solely for your group's organizational purposes. We do not process actual monetary transactions or collect money.</p>
-        <p><strong>Future Subscription Notice:</strong> In the future, this platform may charge a subscription fee to use. If and when this happens, any changes regarding payment processing and billing data will be updated here and communicated to you.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Floating Chatbot Widget -->
-<div id="landing-chatbot-widget" class="chatbot-widget">
-    <div class="chatbot-header">
-        <span><i class="bi bi-robot me-2"></i>AI Assistant</span>
-        <button id="chatbot-close" class="btn-close btn-close-white" aria-label="Close"></button>
-    </div>
-    <div class="chatbot-body" id="chatbot-messages">
-        <div class="chat-message bot-message">
-            Hello! I am the GroupSathi AI. Ask me anything about our platform, features, or how we empower Self Help Groups!
-        </div>
-    </div>
-    <div class="chatbot-footer">
-        <input type="text" id="chatbot-input" class="form-control" placeholder="Ask a question..." autocomplete="off">
-        <button id="chatbot-send" class="btn btn-primary"><i class="bi bi-send"></i></button>
-    </div>
-</div>
-
-<button id="chatbot-toggle" class="chatbot-toggle-btn" style="padding:0; overflow:hidden;">
-    <img src="{% static 'images/GroupSathi.png' %}" alt="AI" style="width:100%; height:100%; object-fit:cover;">
-</button>
-
 
 {% endblock %}
 
@@ -466,82 +309,8 @@
         duration: 800
     });
 </script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const toggleBtn = document.getElementById('chatbot-toggle');
-        const widget = document.getElementById('landing-chatbot-widget');
-        const closeBtn = document.getElementById('chatbot-close');
-        const sendBtn = document.getElementById('chatbot-send');
-        const inputField = document.getElementById('chatbot-input');
-        const messagesContainer = document.getElementById('chatbot-messages');
-
-        toggleBtn.addEventListener('click', () => {
-            widget.style.display = widget.style.display === 'flex' ? 'none' : 'flex';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            widget.style.display = 'none';
-        });
-
-        const sendMessage = () => {
-            const text = inputField.value.trim();
-            if (!text) return;
-
-            // Add user message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message user-message';
-            userMsg.textContent = text;
-            messagesContainer.appendChild(userMsg);
-            
-            inputField.value = '';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Add typing indicator
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'chat-message bot-message';
-            typingMsg.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Thinking...';
-            messagesContainer.appendChild(typingMsg);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Send to public API
-            fetch("{% url 'chatbot_public_ask' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ message: text })
-            })
-            .then(res => res.json())
-            .then(data => {
-                messagesContainer.removeChild(typingMsg);
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot-message';
-                if (data.error) {
-                    botMsg.textContent = data.error;
-                    botMsg.classList.add('text-danger');
-                } else {
-                    botMsg.textContent = data.reply || data.response || "Sorry, I couldn't understand that.";
-                }
-                messagesContainer.appendChild(botMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            })
-            .catch(err => {
-                messagesContainer.removeChild(typingMsg);
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'chat-message bot-message text-danger';
-                errorMsg.textContent = "Network error. Please try again later.";
-                messagesContainer.appendChild(errorMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
-        };
-
-        sendBtn.addEventListener('click', sendMessage);
-        inputField.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-    });
-</script>
-
 {% endblock %}
+"""
+
+with open('templates/landing/landing.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)

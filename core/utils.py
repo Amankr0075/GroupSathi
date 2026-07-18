@@ -51,7 +51,7 @@ def is_profile_complete(user_id):
     return True
 
 
-def create_notification(user_id, title, message, notification_type='info', group_id=None):
+def create_notification(user_id, title, message, notification_type='info', group_id=None, **kwargs):
     """Create a notification for a user."""
     notifications = get_collection('notifications')
     notification = {
@@ -63,6 +63,7 @@ def create_notification(user_id, title, message, notification_type='info', group
         'is_read': False,
         'created_at': datetime.now(),
     }
+    notification.update(kwargs)
     notifications.insert_one(notification)
 
 

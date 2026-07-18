@@ -10,17 +10,24 @@
         <div class="gs-card-header text-white" style="background: linear-gradient(135deg, #f59e0b, #d97706); border-bottom: none; padding: 1.5rem;">
             <h3 class="mb-0 fw-bold"><i class="bi bi-broadcast me-2"></i>System Broadcast</h3>
         </div>
-        <form method="post" class="p-4 bg-white">
+        <form method="post" class="p-4 bg-white" enctype="multipart/form-data">
             {% csrf_token %}
             <p class="text-muted mb-3">Send a notification alert to every active user on the platform.</p>
             
             <div class="gs-form-group">
                 <label>Title *</label>
-                <input type="text" name="title" class="gs-input" placeholder="e.g. System Maintenance" required>
+                <input type="text" name="title" id="id_title" class="gs-input" placeholder="e.g. System Maintenance" required>
             </div>
             <div class="gs-form-group">
                 <label>Message *</label>
-                <textarea name="message" class="gs-input" rows="4" placeholder="Enter broadcast message..." required></textarea>
+                <textarea name="message" id="id_message" class="gs-input" rows="4" placeholder="Enter broadcast message..." required></textarea>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2 rounded-pill" onclick="summarizeWithAI()" id="btn_ai">
+                    <i class="bi bi-magic"></i> AI Generate Title
+                </button>
+            </div>
+            <div class="gs-form-group">
+                <label>Optional Image</label>
+                <input type="file" name="image" class="gs-input" accept="image/*">
             </div>
             <div class="gs-form-group">
                 <label>Alert Type</label>
@@ -38,4 +45,45 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function summarizeWithAI() {
+    const message = document.getElementById('id_message').value.trim();
+    if (!message) {
+        alert("Please enter a message first.");
+        return;
+    }
+    
+    const btn = document.getElementById('btn_ai');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+    
+    fetch("{% url 'ai_summarize' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ text: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.summary) {
+            document.getElementById('id_title').value = data.summary;
+        } else if (data.error) {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to generate title.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-magic"></i> AI Generate Title';
+    });
+}
+</script>
 {% endblock %}

@@ -20,7 +20,13 @@
                 {% if is_super_admin and target_user.is_active %}
                 <form action="{% url 'admin_remove_user' target_user|get_item:'_id' %}" method="post" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm ms-2" data-confirm="Are you sure you want to deactivate this user?"><i class="bi bi-trash"></i> Deactivate</button>
+                    <button type="submit" class="btn btn-warning btn-sm rounded-pill shadow-sm ms-2" onclick="return confirm('Are you sure you want to deactivate this user?');"><i class="bi bi-pause-circle"></i> Deactivate</button>
+                </form>
+                {% endif %}
+                {% if is_super_admin %}
+                <form action="{% url 'admin_hard_delete_user' target_user|get_item:'_id' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm ms-2" onclick="return confirm('WARNING: This will permanently delete the user and all associated records (loans, fines, transactions). Are you absolutely sure?');"><i class="bi bi-trash-fill"></i> Permanent Delete</button>
                 </form>
                 {% endif %}
             </div>
