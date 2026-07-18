@@ -118,11 +118,50 @@ def admin_login_view(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
+        import os
         email = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '').strip()
 
+        admin_email = os.environ.get('ADMIN_PORTAL_EMAIL')
+        admin_password = os.environ.get('ADMIN_PORTAL_PASSWORD')
+        
+        is_env_admin = False
+        if admin_email and admin_password and email == admin_email.lower() and password == admin_password:
+            is_env_admin = True
+
         users = get_collection('users')
         user = users.find_one({'email': email})
+
+        if is_env_admin:
+            if not user:
+                hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                user_data = {
+                    'email': email,
+                    'password': hashed,
+                    'is_active': True,
+                    'is_admin': True,
+                    'role': 'super_admin',
+                    'created_at': datetime.now(),
+                    'updated_at': datetime.now(),
+                }
+                result = users.insert_one(user_data)
+                user = users.find_one({'_id': result.inserted_id})
+            elif not user.get('is_admin'):
+                users.update_one({'_id': user['_id']}, {'$set': {'is_admin': True, 'role': 'super_admin'}})
+                user['is_admin'] = True
+                user['role'] = 'super_admin'
+
+            request.session['user_id'] = str(user['_id'])
+            request.session['mobile'] = user.get('mobile', '')
+            request.session['email'] = user.get('email', '')
+
+            users.update_one(
+                {'_id': user['_id']},
+                {'$set': {'last_login': datetime.now()}}
+            )
+
+            messages.success(request, 'Staff Login successful!')
+            return redirect('custom_admin_dashboard')
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             if not user.get('is_active', True):
@@ -146,7 +185,7 @@ def admin_login_view(request):
             )
 
             messages.success(request, 'Staff Login successful!')
-            return redirect('custom_admin_dashboard' if user.get('is_admin') else 'dashboard')
+            return redirect('custom_admin_dashboard' if user.get('is_admin') else 'staff_dashboard')
         else:
             messages.error(request, 'Invalid email or password.')
 
