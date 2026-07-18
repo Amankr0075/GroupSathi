@@ -250,7 +250,9 @@
             document.getElementById(typingId).remove();
 
             if (data.reply) {
-                appendMessage('Bot', data.reply);
+                // Ensure marked is available before parsing
+                const replyHtml = typeof marked !== 'undefined' ? marked.parse(data.reply) : data.reply;
+                appendMessage('Bot', replyHtml);
                 chatHistory.push({ is_user: false, text: data.reply });
             } else {
                 appendMessage('Bot', data.error || 'Sorry, I encountered an error.');
@@ -271,3 +273,4 @@
         body.scrollTop = body.scrollHeight;
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
