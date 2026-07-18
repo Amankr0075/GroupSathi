@@ -233,8 +233,10 @@ def admin_add_staff_view(request):
         from datetime import datetime
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
+        import uuid
         user_data = {
             'email': email,
+            'mobile': 'staff_' + str(uuid.uuid4())[:8],
             'password': hashed,
             'is_active': True,
             'role': 'tech_staff',

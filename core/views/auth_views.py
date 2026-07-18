@@ -134,9 +134,11 @@ def admin_login_view(request):
 
         if is_env_admin:
             if not user:
+                import uuid
                 hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
                 user_data = {
                     'email': email,
+                    'mobile': 'admin_' + str(uuid.uuid4())[:8],
                     'password': hashed,
                     'is_active': True,
                     'is_admin': True,
