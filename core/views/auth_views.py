@@ -9,8 +9,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from core.db import get_collection
 from core.utils import generate_member_id
+from django_ratelimit.decorators import ratelimit
 
 
+@ratelimit(key='ip', rate='10/5m', block=True)
 def register_view(request):
     """Handle user registration with mobile number and 5-digit numeric password."""
     if request.session.get('user_id'):
@@ -77,6 +79,7 @@ def register_view(request):
     return render(request, 'auth/register.html')
 
 
+@ratelimit(key='ip', rate='10/5m', block=True)
 def login_view(request):
     """Handle user login."""
     if request.session.get('user_id'):
@@ -112,6 +115,7 @@ def login_view(request):
     return render(request, 'auth/login.html')
 
 
+@ratelimit(key='ip', rate='10/5m', block=True)
 def admin_login_view(request):
     """Handle admin and technical staff login via email."""
     if request.session.get('user_id'):
@@ -201,6 +205,7 @@ def logout_view(request):
     return redirect('landing_page')
 
 
+@ratelimit(key='ip', rate='5/h', block=True)
 def forgot_pin_view(request):
     """Handle verification for PIN reset."""
     if request.session.get('user_id'):
@@ -234,6 +239,7 @@ def forgot_pin_view(request):
     return render(request, 'auth/forgot_pin.html', {'step': 'verify'})
 
 
+@ratelimit(key='ip', rate='5/h', block=True)
 def reset_pin_submit(request):
     """Submit the new PIN."""
     from bson import ObjectId

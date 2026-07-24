@@ -19,7 +19,7 @@ from core.views.group_views import (
     reject_waive_request, send_emi_alert_view, edit_group_view,
     impose_fine_request_view, approve_impose_fine_view, reject_impose_fine_view,
     pay_imposed_fine_view, approve_fine_payment_view, reject_fine_payment_view,
-    waive_imposed_fine_request_view,
+    waive_imposed_fine_request_view, group_settlement_preview_view, execute_group_settlement_view
 )
 from core.views.loan_views import (
     loan_list_view, loan_request_view, loan_approve_view, loan_reject_view, loan_repay_view,
@@ -35,7 +35,10 @@ from core.views.admin_views import (
     admin_dashboard_view, admin_users_view, admin_groups_view,
     admin_user_detail_view, admin_remove_user_view, admin_user_pdf_view,
     admin_add_staff_view, admin_broadcast_view, staff_dashboard_view, admin_edit_user_view,
-    admin_hard_delete_user_view, admin_hard_delete_group_view, admin_edit_group_view
+    admin_hard_delete_user_view, admin_hard_delete_group_view, admin_edit_group_view,
+    admin_chatbot_train_view, admin_db_explorer_view, admin_db_collection_view,
+    admin_db_document_edit_view, admin_db_document_delete_view, admin_db_document_bulk_delete_view,
+    admin_staff_list_view, admin_edit_staff_view, admin_delete_staff_view
 )
 from core.views.support_views import (
     my_tickets_view, create_ticket_view, ticket_chat_view, admin_tickets_view,
@@ -47,7 +50,7 @@ from core.views.settings_views import settings_view, change_password_view
 from core.views.help_views import help_view
 from core.views.calculator_views import calculator_view
 from core.views.download_views import download_apk_view
-from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView, ai_summarize_view
+from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView, ai_summarize_view, ai_generate_message_view, ai_generate_image_view
 
 urlpatterns = [
     # Home / Landing
@@ -59,6 +62,8 @@ urlpatterns = [
     path('api/auth/check/', auth_check_view, name='auth_check'),
     path('api/auth/jwt-token/', get_jwt_token_view, name='jwt_token'),
     path('api/ai/summarize/', ai_summarize_view, name='ai_summarize'),
+    path('api/ai/generate-message/', ai_generate_message_view, name='ai_generate_message'),
+    path('api/ai/generate-image/', ai_generate_image_view, name='ai_generate_image'),
     # Chatbot Endpoints
     path('api/chatbot/ask/', ChatbotAskView.as_view(), name='chatbot_ask'),
     path('api/chatbot/public-ask/', PublicChatbotAskView.as_view(), name='chatbot_public_ask'),
@@ -95,6 +100,8 @@ urlpatterns = [
     path('groups/<str:group_id>/waive-imposed-fine/', waive_imposed_fine_request_view, name='waive_imposed_fine_request'),
     path('waive-request/<str:request_id>/approve/', approve_waive_request, name='approve_waive_request'),
     path('waive-request/<str:request_id>/reject/', reject_waive_request, name='reject_waive_request'),
+    path('groups/<str:group_id>/settlement/', group_settlement_preview_view, name='group_settlement_preview'),
+    path('groups/<str:group_id>/settlement/execute/', execute_group_settlement_view, name='execute_group_settlement'),
 
     # General Fine Imposition Consensus Flow
     path('groups/<str:group_id>/impose-fine/<str:target_user_id>/', impose_fine_request_view, name='impose_fine_request'),
@@ -158,7 +165,16 @@ urlpatterns = [
     path('custom-admin/groups/<str:group_id>/delete/', admin_hard_delete_group_view, name='admin_hard_delete_group'),
     path('custom-admin/groups/<str:group_id>/edit/', admin_edit_group_view, name='admin_edit_group'),
     path('custom-admin/staff/add/', admin_add_staff_view, name='admin_add_staff'),
+    path('custom-admin/staff/list/', admin_staff_list_view, name='admin_staff_list'),
+    path('custom-admin/staff/edit/<str:staff_id>/', admin_edit_staff_view, name='admin_edit_staff'),
+    path('custom-admin/staff/delete/<str:staff_id>/', admin_delete_staff_view, name='admin_delete_staff'),
     path('custom-admin/broadcast/', admin_broadcast_view, name='admin_broadcast'),
+    path('custom-admin/chatbot-train/', admin_chatbot_train_view, name='admin_chatbot_train'),
+    path('custom-admin/db/', admin_db_explorer_view, name='admin_db_explorer'),
+    path('custom-admin/db/<str:collection_name>/', admin_db_collection_view, name='admin_db_collection'),
+    path('custom-admin/db/<str:collection_name>/edit/<str:doc_id>/', admin_db_document_edit_view, name='admin_db_document_edit'),
+    path('custom-admin/db/<str:collection_name>/delete/<str:doc_id>/', admin_db_document_delete_view, name='admin_db_document_delete'),
+    path('custom-admin/db/<str:collection_name>/bulk-delete/', admin_db_document_bulk_delete_view, name='admin_db_document_bulk_delete'),
     
     # Technical Staff Dashboard
     path('staff-dashboard/', staff_dashboard_view, name='staff_dashboard'),

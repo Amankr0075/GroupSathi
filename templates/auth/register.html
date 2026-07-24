@@ -102,6 +102,12 @@
                     <input type="password" name="confirm_password" class="gs-input" placeholder="Confirm 5-digit PIN" maxlength="5" data-numeric required>
                 </div>
             </div>
+            <div class="form-check mt-3 mb-3">
+                <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
+                <label class="form-check-label text-muted" for="termsCheck" style="font-size: 0.85rem;">
+                    I have read and agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-decoration-none">Terms & Conditions</a> and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal" class="text-decoration-none">Privacy Policy</a>.
+                </label>
+            </div>
             <button type="submit" class="gs-btn gs-btn-primary gs-mt-2">
                 <i class="bi bi-person-plus"></i> Register
             </button>
@@ -125,6 +131,40 @@
     </div>
     </div>
 </div>
+
+<!-- Modals for Policies -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark fw-bold" id="termsModalLabel">Terms & Conditions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-dark text-start">
+        <p><strong>1. Record Keeping Only:</strong> GroupSathi is strictly a digital ledger and management tool for Self Help Groups (SHGs). We are only keeping the records of your group's transactions. We are <strong>not</strong> collecting any money from users, nor are we acting as a bank or financial institution.</p>
+        <p><strong>2. Future Subscriptions:</strong> Please be advised that in the future, this platform may charge users a subscription fee to continue accessing its features and services.</p>
+        <p><strong>3. User Responsibility:</strong> All groups and individuals are fully responsible for managing their own physical funds securely outside of the platform. We only maintain the records you input.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark fw-bold" id="privacyModalLabel">Privacy Policy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-dark text-start">
+        <p>Your privacy is important to us. GroupSathi only collects information necessary to maintain accurate records of your Self Help Group's activities.</p>
+        <p><strong>Data Usage:</strong> The financial records inputted into GroupSathi are maintained solely for your group's organizational purposes. We do not process actual monetary transactions or collect money.</p>
+        <p><strong>Future Subscription Notice:</strong> In the future, this platform may charge a subscription fee to use. If and when this happens, any changes regarding payment processing and billing data will be updated here and communicated to you.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
 </body>

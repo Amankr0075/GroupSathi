@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Settlement Distribution Plan - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; padding-bottom: 3rem;">
+    <a href="{% url 'group_detail' group.group_id %}" class="gs-back-btn gs-mb-3 d-inline-block" style="text-decoration: none; font-weight: 600;">
+        <i class="bi bi-arrow-left"></i> Back to Group
+    </a>
+
+    <div class="gs-card gs-mb-4" style="border-top: 5px solid var(--gs-info);">
+        <div class="gs-card-header">
+            <i class="bi bi-cash-stack" style="color: var(--gs-info); font-size: 1.5rem;"></i>
+            <h3>Settlement & Distribution Plan</h3>
+        </div>
+        <p class="gs-text-muted gs-mb-4">
+            This plan shows the equitable distribution of all group assets. Any outstanding dues (unpaid loans or fines) are automatically deducted from a member's share before their final payout.
+        </p>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 gs-mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded text-center" style="background-color: rgba(13, 110, 253, 0.05); border: 1px solid rgba(13, 110, 253, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Cash Available</div>
+                    <h4 class="m-0" style="color: var(--gs-primary);">?{{ total_cash|floatformat:2 }}</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded text-center" style="background-color: rgba(220, 53, 69, 0.05); border: 1px solid rgba(220, 53, 69, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Dues to Recover</div>
+                    <h4 class="m-0" style="color: var(--gs-danger);">?{{ total_dues|floatformat:2 }}</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded text-center" style="background-color: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Group Wealth</div>
+                    <h4 class="m-0" style="color: var(--gs-success);">?{{ total_wealth|floatformat:2 }}</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded text-center" style="background-color: rgba(108, 117, 125, 0.05); border: 1px solid rgba(108, 117, 125, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Base Share Per Member</div>
+                    <h4 class="m-0 text-dark">?{{ base_share|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle gs-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Member Name</th>
+                        <th class="text-end">Base Share</th>
+                        <th class="text-end">Pending Loans</th>
+                        <th class="text-end">Unpaid Fines</th>
+                        <th class="text-end">Net Payout</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in member_plans %}
+                    <tr>
+                        <td>
+                            <strong>{{ plan.name }}</strong>
+                            {% if plan.role == 'leader' or plan.role == 'co-leader' %}
+                                <span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">{{ plan.role|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end text-muted">?{{ plan.base_share|floatformat:2 }}</td>
+                        <td class="text-end {% if plan.loan_dues > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                            {% if plan.loan_dues > 0 %}-?{{ plan.loan_dues|floatformat:2 }}{% else %}?0.00{% endif %}
+                        </td>
+                        <td class="text-end {% if plan.fine_dues > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                            {% if plan.fine_dues > 0 %}-?{{ plan.fine_dues|floatformat:2 }}{% else %}?0.00{% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if plan.net_payout > 0 %}
+                                <span class="text-success fw-bold">+?{{ plan.net_payout|floatformat:2 }}</span>
+                            {% elif plan.net_payout < 0 %}
+                                <span class="text-danger fw-bold">Owes ₹{{ plan.net_payout|stringformat:".2f"|slice:"1:" }}</span>
+                            {% else %}
+                                <span class="text-muted fw-bold">?0.00</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if user_role == 'leader' or user_role == 'co-leader' %}
+        <div class="mt-4 p-4 rounded text-center" style="background: rgba(255, 193, 7, 0.1); border: 1px dashed rgba(255, 193, 7, 0.5);">
+            <h5 class="text-warning mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Execute Distribution</h5>
+            <p class="text-muted small mb-3">
+                By executing this, the calculated Net Payouts will be recorded as final distribution transactions. 
+                All pending loans and unpaid fines will be automatically marked as settled. <strong>This action cannot be undone.</strong>
+            </p>
+            <form method="post" action="{% url 'execute_group_settlement' group.group_id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning fw-bold px-4 rounded-pill shadow-sm" onclick="return confirm('Are you absolutely sure you want to execute the final distribution? This will clear all dues and deduct the cash balance.');">
+                    Confirm & Execute Distribution
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="mt-4 text-center">
+            <p class="text-muted small"><i class="bi bi-info-circle me-1"></i> Only Group Leaders can execute this distribution plan.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

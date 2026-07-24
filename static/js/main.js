@@ -65,12 +65,47 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Confirm actions
+    // Confirm actions with SweetAlert2
     const confirmBtns = document.querySelectorAll('[data-confirm]');
     confirmBtns.forEach(function (btn) {
         btn.addEventListener('click', function (e) {
-            if (!confirm(this.getAttribute('data-confirm'))) {
-                e.preventDefault();
+            e.preventDefault();
+            const message   = this.getAttribute('data-confirm');
+            const icon      = this.getAttribute('data-confirm-icon') || 'warning';
+            const targetUrl = this.getAttribute('href');
+            const self      = this;
+
+            if (typeof Swal !== 'undefined') {
+                const confirmColor = (icon === 'error') ? '#E17055' : '#6C5CE7';
+                const titles = { warning: 'Confirm Action', error: 'Confirm Deletion', info: 'Confirm', question: 'Are you sure?', success: 'Confirm' };
+
+                Swal.fire({
+                    title              : titles[icon] || 'Confirm Action',
+                    text               : message,
+                    icon               : icon,
+                    showCancelButton   : true,
+                    confirmButtonColor : confirmColor,
+                    cancelButtonColor  : '#636e72',
+                    confirmButtonText  : 'Yes, proceed',
+                    cancelButtonText   : 'Cancel',
+                    backdrop           : 'rgba(15,23,42,0.6)'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (targetUrl && targetUrl !== '#') {
+                            window.location.href = targetUrl;
+                        } else if (self.closest('form')) {
+                            self.closest('form').submit();
+                        }
+                    }
+                });
+            } else {
+                if (confirm(message)) {
+                    if (targetUrl && targetUrl !== '#') {
+                        window.location.href = targetUrl;
+                    } else if (this.closest('form')) {
+                        this.closest('form').submit();
+                    }
+                }
             }
         });
     });

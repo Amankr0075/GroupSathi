@@ -21,6 +21,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from core.decorators import login_required_custom
 from core.db import get_collection
 from core.utils import get_group_balance
+from django_ratelimit.decorators import ratelimit
 
 
 # --- Color Palette ---
@@ -85,14 +86,30 @@ def _get_labels(lang_code):
 def _make_watermark_footer(lbl):
     """Return a canvas callback that draws watermark + header/footer using given labels."""
     def _draw(canvas, doc):
+        from django.conf import settings
+        import os
+        
+        # --- Watermark Image (Top Right) ---
         canvas.saveState()
-        canvas.setFont('Helvetica-Bold', 52)
-        canvas.setFillColor(WATERMARK_COLOR)
+        logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'GroupSathi.png')
+        if os.path.exists(logo_path):
+            try:
+                # Draw the logo at the top right so it doesn't obscure the table data
+                canvas.drawImage(logo_path, A4[0] - 80, A4[1] - 80, width=50, height=50, mask='auto')
+            except Exception:
+                pass
+        canvas.restoreState()
+
+        # --- Text Watermark (Centered & Faint) ---
+        canvas.saveState()
         canvas.translate(A4[0] / 2, A4[1] / 2)
+        canvas.setFont('Helvetica-Bold', 65)
+        canvas.setFillColor(WATERMARK_COLOR)
         canvas.rotate(35)
         canvas.drawCentredString(0, 0, "GroupSathi")
         canvas.restoreState()
 
+        # --- Header ---
         canvas.saveState()
         canvas.setStrokeColor(ACCENT)
         canvas.setLineWidth(2)
@@ -102,14 +119,29 @@ def _make_watermark_footer(lbl):
         canvas.drawString(40, A4[1] - 30, lbl['header'])
         canvas.restoreState()
 
+        # --- Footer ---
         canvas.saveState()
         canvas.setStrokeColor(colors.HexColor('#cccccc'))
         canvas.setLineWidth(0.5)
-        canvas.line(40, 35, A4[0] - 40, 35)
+        # Raised the line to fit 3 lines of text
+        canvas.line(40, 50, A4[0] - 40, 50)
+        
         canvas.setFont('Helvetica', 7)
         canvas.setFillColor(colors.grey)
-        canvas.drawString(40, 22, lbl['generated'].format(dt=datetime.now().strftime('%d/%m/%Y %H:%M')))
-        canvas.drawRightString(A4[0] - 40, 22, lbl['page'].format(n=canvas.getPageNumber()))
+        
+        # Line 1: Timestamp & Page number
+        timestamp_str = lbl['generated'].format(dt=datetime.now().strftime('%d/%m/%Y %H:%M:%S'))
+        canvas.drawString(40, 38, timestamp_str)
+        canvas.drawRightString(A4[0] - 40, 38, lbl['page'].format(n=canvas.getPageNumber()))
+        
+        # Line 2: Disclaimer
+        disclaimer = "DISCLAIMER: This is a system generated report and it does not require any physical signature of GroupSathi."
+        canvas.drawCentredString(A4[0] / 2, 26, disclaimer)
+        
+        # Line 3: Privacy Policy & Terms
+        policies = "By using GroupSathi, you agree to our Privacy Policy and Terms & Conditions."
+        canvas.drawCentredString(A4[0] / 2, 14, policies)
+        
         canvas.restoreState()
     return _draw
 
@@ -160,6 +192,7 @@ def reports_view(request):
 
 
 @login_required_custom
+@ratelimit(key='user', rate='10/h', block=True)
 def generate_report_pdf(request, group_id):
     """Generate a comprehensive PDF report for a group filtered by date."""
     user_id = request.session['user_id']

@@ -98,20 +98,23 @@
             <a href="{% url 'waive_fine_request' group.group_id %}" class="gs-btn gs-btn-warning gs-btn-sm" style="width:auto;">
                 <i class="bi bi-gift"></i> Request Late Fine Waiver
             </a>
-            {% if user_role in 'leader,co-leader' %}
+            {% if user_role == 'leader' or user_role == 'co-leader' or outstanding_imposed_fines %}
             <a href="{% url 'waive_imposed_fine_request' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;">
                 <i class="bi bi-exclamation-triangle"></i> Request Imposed Fine Waiver
             </a>
             {% endif %}
+            <a href="{% url 'group_settlement_preview' group.group_id %}" class="gs-btn gs-btn-info gs-btn-sm" style="width:auto; color: white;">
+                <i class="bi bi-cash-stack"></i> Distribute Money
+            </a>
             {% if user_role == 'leader' %}
             <a href="{% url 'edit_group' group.group_id %}" class="gs-btn gs-btn-info gs-btn-sm" style="width:auto; color: white;">
                 <i class="bi bi-pencil-square"></i> Edit Details
             </a>
-            <a href="{% url 'delete_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" onclick="return confirm('Are you absolutely sure you want to DESTROY this group? This action cannot be undone.');">
+            <a href="{% url 'delete_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" data-confirm="Are you sure you want to permanently destroy this group? This cannot be undone." data-confirm-icon="error">
                 <i class="bi bi-trash"></i> Destroy
             </a>
             {% else %}
-            <a href="{% url 'leave_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" onclick="return confirm('Request to leave the group?');">
+            <a href="{% url 'leave_group' group.group_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto;" data-confirm="Request to leave this group?" data-confirm-icon="question">
                 <i class="bi bi-box-arrow-left"></i> Leave
             </a>
             {% endif %}
@@ -177,10 +180,12 @@
                         </a>
                         {% endif %}
 
-                        {% if user_role in 'leader,co-leader' and md.member.user_id != request.session.user_id %}
-                        <a href="{% url 'impose_fine_request' group.group_id md.member.user_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem;" title="Impose Fine">
-                            <i class="bi bi-exclamation-octagon"></i> Impose Fine
-                        </a>
+                        {% if user_role == 'leader' or user_role == 'co-leader' %}
+                            {% if md.member.user_id != request.session.user_id %}
+                            <a href="{% url 'impose_fine_request' group.group_id md.member.user_id %}" class="gs-btn gs-btn-danger gs-btn-sm" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem;" title="Impose Fine">
+                                <i class="bi bi-exclamation-octagon"></i> Impose Fine
+                            </a>
+                            {% endif %}
                         {% endif %}
 
                         {% if user_role == 'leader' and md.member.user_id != request.session.user_id %}

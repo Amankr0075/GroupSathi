@@ -13,6 +13,7 @@ from core.utils import (
     get_group_balance, calculate_simple_interest,
     notify_group_members
 )
+from django_ratelimit.decorators import ratelimit
 
 
 @login_required_custom
@@ -119,6 +120,7 @@ def loan_list_view(request):
 
 
 @login_required_custom
+@ratelimit(key='user', rate='5/h', block=True)
 def loan_request_view(request, group_id):
     """Request a loan from a group."""
     user_id = request.session['user_id']

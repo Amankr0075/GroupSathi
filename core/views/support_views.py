@@ -57,9 +57,11 @@ def create_ticket_view(request):
     if request.method == 'POST':
         subject = request.POST.get('subject', '').strip()
         description = request.POST.get('description', '').strip()
+        member_id = request.POST.get('member_id', '').strip()
+        mobile_number = request.POST.get('mobile_number', '').strip()
         
-        if not subject or not description:
-            messages.error(request, 'Subject and description are required.')
+        if not subject or not description or not member_id or not mobile_number:
+            messages.error(request, 'Subject, description, Member ID, and Mobile are required.')
             return redirect('create_ticket')
             
         img_path, error = handle_image_upload(request, 'screenshot')
@@ -68,13 +70,11 @@ def create_ticket_view(request):
             return redirect('create_ticket')
             
         user_id = request.session.get('user_id')
-        users_col = get_collection('users')
-        user = users_col.find_one({'_id': ObjectId(user_id)})
-        mobile = user.get('mobile', 'Unknown') if user else 'Unknown'
         
         ticket = {
             'user_id': user_id,
-            'mobile': mobile,
+            'member_id': member_id,
+            'mobile': mobile_number,
             'subject': subject,
             'status': 'open',
             'created_at': datetime.now(),
@@ -167,16 +167,24 @@ def admin_tickets_view(request):
     """Staff/Admin: List all tickets."""
     tickets_col = get_collection('tickets')
     status_filter = request.GET.get('status')
+    search_query = request.GET.get('search', '').strip()
     
     query = {}
     if status_filter and status_filter in ['open', 'in_progress', 'resolved', 'escalated']:
         query['status'] = status_filter
         
+    if search_query:
+        query['$or'] = [
+            {'mobile': {'$regex': search_query, '$options': 'i'}},
+            {'member_id': {'$regex': search_query, '$options': 'i'}}
+        ]
+        
     tickets = list(tickets_col.find(query).sort('updated_at', -1))
     
     return render(request, 'admin/admin_tickets.html', {
         'tickets': tickets,
-        'current_status': status_filter
+        'current_status': status_filter,
+        'search_query': search_query
     })
 
 @admin_required

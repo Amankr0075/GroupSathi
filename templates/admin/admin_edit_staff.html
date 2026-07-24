@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Staff - Admin - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: 2rem 15px;">
+    <div class="gs-card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary)); border-bottom: none; padding: 1.5rem;">
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'admin_staff_list' %}" class="text-white"><i class="bi bi-arrow-left fs-5"></i></a>
+                <h3 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Edit Technical Staff</h3>
+            </div>
+        </div>
+        <form method="post" class="p-4 bg-white">
+            {% csrf_token %}
+            <div class="gs-form-group">
+                <label>Full Name *</label>
+                <input type="text" name="name" class="gs-input" value="{{ staff_profile.full_name }}" placeholder="e.g. Rahul Kumar" required>
+            </div>
+            <div class="gs-form-group">
+                <label>Email Address *</label>
+                <input type="email" name="email" class="gs-input" value="{{ staff_user.email }}" placeholder="e.g. rahul@groupsathi.com" required>
+            </div>
+            
+            <div class="gs-form-group mb-4">
+                <label>Reset Password (Optional)</label>
+                <input type="password" name="password" class="gs-input" placeholder="Leave blank to keep current password">
+                <small class="text-muted">Only enter a new password if you want to change their current one.</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 gs-mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; font-weight:600;">
+                <i class="bi bi-save-fill me-2"></i> Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -238,7 +238,10 @@
                 <p class="hero-desc">GroupSathi replaces traditional paper logbooks with a 100% transparent, consensus-driven digital ecosystem. Manage loans, automate EMI tracking, and empower rural women to achieve financial independence.</p>
                 <div class="d-flex flex-wrap gap-3 mt-4">
                     <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-3 fs-5">Get Started for Free <i class="bi bi-arrow-right ms-2"></i></a>
-                    <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent px-4 py-3 fs-5"><i class="bi bi-android2 me-2"></i>Download APK</a>
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent px-4 py-3 fs-5"><i class="bi bi-android2 me-2"></i>Download APK</a>
+                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the website.</small>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6 mt-5 mt-lg-0" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="200">
@@ -299,25 +302,32 @@
         </div>
         
         <div class="row mt-5">
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
                     <h4>Consensus Approvals</h4>
-                    <p class="text-muted mt-3">Democracy is built into the code. Loan requests and fine waivers require a majority vote from active group members before they are processed. No single leader holds absolute financial power.</p>
+                    <p class="text-muted mt-3">Democracy is built into the code. Loan requests and fine waivers require a majority vote from active group members before they are processed.</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
                     <h4>Live Notifications</h4>
-                    <p class="text-muted mt-3">Stay informed the second a transaction occurs. Whether an EMI is due or a member has requested a loan extension, instant alerts keep the entire group aligned and responsible.</p>
+                    <p class="text-muted mt-3">Stay informed the second a transaction occurs. Instant alerts keep the entire group aligned and responsible.</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="bi bi-robot"></i></div>
                     <h4>AI Support Assistant</h4>
-                    <p class="text-muted mt-3">Integrated Gemini AI is available 24/7 to answer questions, guide users through the app, and summarize complex administrative broadcasts, bridging the digital literacy gap.</p>
+                    <p class="text-muted mt-3">Integrated Gemini AI is available 24/7 to answer questions and guide users, bridging the digital literacy gap.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-exclamation-octagon"></i></div>
+                    <h4>Fine Management</h4>
+                    <p class="text-muted mt-3">Maintain group discipline easily. Group leaders have the option to impose fines on the members, fully tracked on the digital ledger.</p>
                 </div>
             </div>
         </div>
@@ -333,7 +343,10 @@
                 <p class="feature-subtitle">Experience real-time financial tracking. Our interface is designed to be intuitive, ensuring that managing loans is as simple as sending a text message.</p>
                 <div class="d-flex flex-wrap gap-3">
                     <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary rounded-pill px-4 py-2 fw-bold">Explore the Dashboard</a>
-                    <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent rounded-pill px-4 py-2 fw-bold"><i class="bi bi-download me-2"></i>Get the App</a>
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent rounded-pill px-4 py-2 fw-bold"><i class="bi bi-download me-2"></i>Get the App</a>
+                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the website.</small>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6 offset-lg-1" data-aos="fade-left">

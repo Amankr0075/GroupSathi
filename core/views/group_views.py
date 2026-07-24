@@ -17,6 +17,8 @@ from core.utils import (
     notify_group_members, check_and_send_all_active_reminders,
     format_currency
 )
+from django.core.cache import cache
+from django_ratelimit.decorators import ratelimit
 
 
 def sync_to_waiver_history(req_id_or_obj):
@@ -50,6 +52,7 @@ def cleanup_old_waiver_requests():
 
 
 @login_required_custom
+@ratelimit(key='ip', rate='5/m', block=True)
 def create_group_view(request):
     """Create a new SHG group."""
     user_id = request.session['user_id']
@@ -92,6 +95,9 @@ def create_group_view(request):
             'role': 'leader', 'status': 'active',
             'joined_at': datetime.now(),
         })
+
+        cache.delete(f'my_groups_{user_id}')
+        cache.delete(f'groups_count_{user_id}')
 
         messages.success(request, f'Group created! Group ID: {group_id}')
         return redirect('my_groups')
@@ -156,6 +162,7 @@ def edit_group_view(request, group_id):
 
 
 @login_required_custom
+@ratelimit(key='ip', rate='5/m', block=True)
 def join_group_view(request):
     """Join an existing group using Group ID."""
     user_id = request.session['user_id']
@@ -208,20 +215,24 @@ def join_group_view(request):
 def my_groups_view(request):
     """Show all groups the user belongs to."""
     user_id = request.session['user_id']
-    gm = get_collection('group_members')
-    groups_col = get_collection('groups')
+    
+    user_groups = cache.get(f'my_groups_{user_id}')
+    if user_groups is None:
+        gm = get_collection('group_members')
+        groups_col = get_collection('groups')
 
-    memberships = list(gm.find({'user_id': user_id, 'status': 'active'}))
-    user_groups = []
-    for m in memberships:
-        group = groups_col.find_one({'group_id': m['group_id']})
-        if group:
-            member_count = gm.count_documents({'group_id': m['group_id'], 'status': 'active'})
-            balance = get_group_balance(m['group_id'])
-            user_groups.append({
-                'group': group, 'role': m['role'],
-                'member_count': member_count, 'balance': balance,
-            })
+        memberships = list(gm.find({'user_id': user_id, 'status': 'active'}))
+        user_groups = []
+        for m in memberships:
+            group = groups_col.find_one({'group_id': m['group_id']})
+            if group:
+                member_count = gm.count_documents({'group_id': m['group_id'], 'status': 'active'})
+                balance = get_group_balance(m['group_id'])
+                user_groups.append({
+                    'group': group, 'role': m['role'],
+                    'member_count': member_count, 'balance': balance,
+                })
+        cache.set(f'my_groups_{user_id}', user_groups, 300)
 
     return render(request, 'groups/my_groups.html', {'user_groups': user_groups})
 
@@ -578,6 +589,7 @@ def group_detail_view(request, group_id):
 
 
 @login_required_custom
+@ratelimit(key='user', rate='2/h', block=True)
 def send_emi_alert_view(request, group_id):
     """Send manual EMI notification alert to all active group members (leaders/co-leaders only, available on EMI day only)."""
     user_id = request.session['user_id']
@@ -670,6 +682,10 @@ def approve_join_request(request, request_id):
             },
             upsert=True
         )
+        cache.delete(f'my_groups_{join_req["user_id"]}')
+        cache.delete(f'groups_count_{join_req["user_id"]}')
+        cache.delete(f'my_groups_{user_id}') # clear leader's cache too
+        
         groups = get_collection('groups')
         group = groups.find_one({'group_id': join_req['group_id']})
         create_notification(
@@ -1094,19 +1110,24 @@ def waive_imposed_fine_request_view(request, group_id):
 
     gm = get_collection('group_members')
     membership = gm.find_one({'group_id': group_id, 'user_id': user_id, 'status': 'active'})
-    if not membership or membership.get('role', 'member') not in ['leader', 'co-leader']:
-        messages.error(request, 'Permission denied. Only leaders and co-leaders can access this page.')
+    if not membership:
+        messages.error(request, 'Permission denied. Only active members can access this page.')
         return redirect('group_detail', group_id=group_id)
 
+    user_role = membership.get('role', 'member')
     if_col = get_collection('imposed_fines')
 
-    # Fetch all unpaid fines in the group (available to leaders/co-leaders to waive)
-    unpaid_fines = []
-    profiles = get_collection('profiles')
-    raw_fines = list(if_col.find({
+    # Fetch all unpaid fines in the group (available to leaders/co-leaders to waive for anyone; members can only waive for themselves)
+    query = {
         'group_id': group_id,
         'status': 'unpaid'
-    }))
+    }
+    if user_role == 'member':
+        query['user_id'] = user_id
+
+    unpaid_fines = []
+    profiles = get_collection('profiles')
+    raw_fines = list(if_col.find(query))
     for fine in raw_fines:
         target_profile = profiles.find_one({'user_id': fine['user_id']})
         target_name = target_profile.get('full_name', 'Unknown') if target_profile else 'Unknown'
@@ -1693,4 +1714,179 @@ def reject_fine_payment_view(request, fine_id):
 
     messages.error(request, 'Fine payment request has been rejected.')
     return redirect('group_detail', group_id=group_id)
+
+
+@login_required_custom
+def group_settlement_preview_view(request, group_id):
+    """Show the distribution plan of the group's assets to members."""
+    user_id = request.session['user_id']
+    groups = get_collection('groups')
+    group = groups.find_one({'group_id': group_id})
+    if not group:
+        messages.error(request, 'Group not found.')
+        return redirect('my_groups')
+
+    gm = get_collection('group_members')
+    membership = gm.find_one({'group_id': group_id, 'user_id': user_id, 'status': 'active'})
+    if not membership:
+        messages.error(request, 'You are not a member of this group.')
+        return redirect('my_groups')
+
+    # Get active members
+    active_members = list(gm.find({'group_id': group_id, 'status': 'active'}))
+    num_members = len(active_members)
+
+    total_cash = get_group_balance(group_id)
+
+    loans = get_collection('loans')
+    if_col = get_collection('imposed_fines')
+    profiles = get_collection('profiles')
+
+    member_plans = []
+    total_loan_dues = 0
+    total_fine_dues = 0
+
+    # Calculate dues for each member first to find total_dues
+    for m in active_members:
+        m_user_id = m['user_id']
+        p = profiles.find_one({'user_id': m_user_id})
+        name = p.get('full_name', 'Unknown') if p else 'Unknown'
+
+        # Sum of active/approved loans
+        active_loans = list(loans.find({'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}}))
+        loan_dues = sum(l.get('remaining_amount', 0.0) for l in active_loans)
+
+        # Sum of unpaid fines
+        unpaid_fines = list(if_col.find({'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'}))
+        fine_dues = sum(f.get('amount', 0.0) for f in unpaid_fines)
+
+        total_loan_dues += loan_dues
+        total_fine_dues += fine_dues
+
+        member_plans.append({
+            'user_id': m_user_id,
+            'name': name,
+            'role': m.get('role', 'member'),
+            'loan_dues': loan_dues,
+            'fine_dues': fine_dues,
+        })
+
+    total_dues = total_loan_dues + total_fine_dues
+    total_wealth = total_cash + total_dues
+    base_share = total_wealth / num_members if num_members > 0 else 0.0
+
+    # Fill in base share and net payout for each member
+    for plan in member_plans:
+        plan['base_share'] = base_share
+        plan['net_payout'] = base_share - plan['loan_dues'] - plan['fine_dues']
+
+    context = {
+        'group': group,
+        'total_cash': total_cash,
+        'total_dues': total_dues,
+        'total_wealth': total_wealth,
+        'base_share': base_share,
+        'member_plans': member_plans,
+        'user_role': membership.get('role', 'member'),
+    }
+    return render(request, 'groups/settlement_preview.html', context)
+
+
+@login_required_custom
+def execute_group_settlement_view(request, group_id):
+    """Execute the final settlement distribution plan (leaders only)."""
+    if request.method != 'POST':
+        return redirect('group_settlement_preview', group_id=group_id)
+
+    user_id = request.session['user_id']
+    groups = get_collection('groups')
+    group = groups.find_one({'group_id': group_id})
+    if not group:
+        messages.error(request, 'Group not found.')
+        return redirect('my_groups')
+
+    gm = get_collection('group_members')
+    membership = gm.find_one({'group_id': group_id, 'user_id': user_id, 'status': 'active'})
+    if not membership or membership.get('role') not in ['leader', 'co-leader']:
+        messages.error(request, 'Permission denied. Only leaders and co-leaders can execute settlement.')
+        return redirect('group_detail', group_id=group_id)
+
+    active_members = list(gm.find({'group_id': group_id, 'status': 'active'}))
+    num_members = len(active_members)
+    if num_members == 0:
+        messages.error(request, 'No active members to distribute assets to.')
+        return redirect('group_detail', group_id=group_id)
+
+    total_cash = get_group_balance(group_id)
+
+    loans = get_collection('loans')
+    if_col = get_collection('imposed_fines')
+    txns = get_collection('transactions')
+
+    # Gather totals
+    total_loan_dues = 0
+    total_fine_dues = 0
+    member_data = []
+
+    for m in active_members:
+        m_user_id = m['user_id']
+        active_loans = list(loans.find({'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}}))
+        loan_dues = sum(l.get('remaining_amount', 0.0) for l in active_loans)
+
+        unpaid_fines = list(if_col.find({'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'}))
+        fine_dues = sum(f.get('amount', 0.0) for f in unpaid_fines)
+
+        total_loan_dues += loan_dues
+        total_fine_dues += fine_dues
+
+        member_data.append({
+            'user_id': m_user_id,
+            'loan_dues': loan_dues,
+            'fine_dues': fine_dues,
+        })
+
+    total_dues = total_loan_dues + total_fine_dues
+    total_wealth = total_cash + total_dues
+    base_share = total_wealth / num_members
+
+    # Process each member
+    for item in member_data:
+        m_user_id = item['user_id']
+        net_payout = base_share - item['loan_dues'] - item['fine_dues']
+
+        # Record payout transaction
+        txns.insert_one({
+            'group_id': group_id,
+            'user_id': m_user_id,
+            'type': 'settlement_payout',
+            'amount': -net_payout,
+            'description': f'Settlement distribution payout: {format_currency(net_payout)}',
+            'created_at': datetime.now(),
+        })
+
+        # Mark all pending/active loans of this member in this group as completed
+        loans.update_many(
+            {'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}},
+            {'$set': {'status': 'completed', 'remaining_amount': 0.0, 'settled_at': datetime.now()}}
+        )
+
+        # Mark all unpaid fines as paid
+        if_col.update_many(
+            {'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'},
+            {'$set': {'status': 'paid', 'settled_at': datetime.now()}}
+        )
+
+        # Notify member
+        create_notification(
+            m_user_id,
+            'Group Settlement Executed',
+            f'The final distribution plan has been executed. Your net payout is {format_currency(net_payout)}.',
+            'success',
+            group_id
+        )
+
+    messages.success(request, 'Group settlement executed successfully! All dues cleared and cash distributed.')
+    return redirect('group_detail', group_id=group_id)
+
+
 

@@ -326,6 +326,18 @@ a:hover { color: var(--gs-primary-dark); }
     color: #fff;
 }
 
+.gs-btn-info {
+    background: linear-gradient(135deg, var(--gs-info), #0984e3);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(116, 185, 255, 0.25);
+}
+
+.gs-btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(116, 185, 255, 0.35);
+    color: #ffffff;
+}
+
 .gs-btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
@@ -835,11 +847,19 @@ a:hover { color: var(--gs-primary-dark); }
 /* --- Alerts --- */
 .gs-alert {
     border: none;
-    border-radius: var(--gs-radius-sm);
+    border-radius: 12px;
     font-weight: 500;
     font-size: 0.9rem;
-    animation: slideDown 0.3s ease-out;
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-left: 4px solid rgba(0,0,0,0.15);
+    padding: 0.85rem 1.1rem;
 }
+
+.alert-success.gs-alert { border-left-color: #00B894; }
+.alert-danger.gs-alert, .alert-error.gs-alert { border-left-color: #E17055; }
+.alert-warning.gs-alert { border-left-color: #FDCB6E; }
+.alert-info.gs-alert { border-left-color: #74B9FF; }
 
 /* --- Footer --- */
 .gs-footer {
@@ -942,11 +962,11 @@ a:hover { color: var(--gs-primary-dark); }
 
 @media (max-width: 480px) {
     .gs-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.6rem;
     }
-    .gs-dash-card { padding: 1rem 0.7rem; }
-    .gs-dash-card-icon { width: 46px; height: 46px; font-size: 1.2rem; }
+    .gs-dash-card { padding: 1rem 0.4rem; }
+    .gs-dash-card-icon { width: 42px; height: 42px; font-size: 1.15rem; }
     .gs-stats-row { gap: 0.5rem; }
     .gs-stat-chip { padding: 0.4rem 1rem; font-size: 0.8rem; }
 }
@@ -1060,4 +1080,38 @@ a:hover { color: var(--gs-primary-dark); }
 @keyframes downloadBounce {
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(3px); }
+}
+
+/* --- SweetAlert2 Custom Theme --- */
+.swal2-popup {
+    border-radius: 20px !important;
+    font-family: 'Inter', sans-serif !important;
+    padding: 2rem !important;
+    box-shadow: 0 25px 60px -12px rgba(0,0,0,0.35) !important;
+}
+
+.swal2-title {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.3rem !important;
+    color: #1E293B !important;
+}
+
+.swal2-html-container {
+    font-family: 'Inter', sans-serif !important;
+    color: #475569 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+}
+
+.swal2-confirm, .swal2-cancel {
+    border-radius: 10px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 0.65rem 1.5rem !important;
+    font-size: 0.9rem !important;
+}
+
+.swal2-icon {
+    border-width: 3px !important;
 }

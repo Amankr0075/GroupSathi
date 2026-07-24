@@ -1,60 +1,114 @@
 {% extends 'base.html' %}
 
-{% block title %}Reports - GroupSathi{% endblock %}
+{% block title %}Generate Reports - GroupSathi{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px;">
-    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
-    <div class="gs-card">
-        <div class="gs-card-header">
-            <i class="bi bi-file-earmark-bar-graph-fill"></i>
-            <h3>Generate Reports</h3>
-        </div>
+<div class="container" style="max-width: 800px; padding-bottom: 3rem;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn gs-mb-3 d-inline-block" style="text-decoration: none; font-weight: 600;">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+    
+    <!-- Hero Header -->
+    <div class="text-center gs-mb-4 p-4" style="background: linear-gradient(135deg, var(--gs-primary) 0%, var(--gs-secondary) 100%); border-radius: 16px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        
+        <i class="bi bi-file-earmark-pdf-fill gs-mb-2" style="font-size: 3rem; display: block; animation: float 3s ease-in-out infinite;"></i>
+        <h2 style="font-weight: 800; letter-spacing: -0.5px;">Professional Reports</h2>
+        <p style="opacity: 0.9; max-width: 500px; margin: 0 auto;">Generate comprehensive, fully-detailed, and system-verified PDF statements for your groups in real-time.</p>
+    </div>
 
-        {% if user_groups %}
-        <p class="gs-text-muted gs-mb-2">Select a group and pick a date to download a comprehensive PDF report. Leave the date empty to get all records.</p>
-
+    {% if user_groups %}
+    <div class="row g-4">
         {% for group in user_groups %}
-        <div class="p-3 mb-3" style="border: 1px solid var(--gs-border-color, #dee2e6); border-radius: 10px; background: var(--gs-body-bg);">
-            <div class="d-flex align-items-center gap-3 mb-2">
-                {% if group.logo %}
-                <img src="/media/{{ group.logo }}" alt="" class="gs-group-logo">
-                {% else %}
-                <div class="gs-group-logo-placeholder"><i class="bi bi-people"></i></div>
-                {% endif %}
-                <div style="flex:1;">
-                    <strong>{{ group.name }}</strong>
-                    <br><small class="gs-text-muted">Group Code: {{ group.group_id }}</small>
+        <div class="col-12">
+            <div class="report-card p-4" style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.03);">
+                
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    {% if group.logo %}
+                    <img src="/media/{{ group.logo }}" alt="" style="width: 55px; height: 55px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    {% else %}
+                    <div style="width: 55px; height: 55px; border-radius: 12px; background: linear-gradient(135deg, var(--gs-primary), var(--gs-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    {% endif %}
+                    <div style="flex:1;">
+                        <h4 style="margin: 0; font-weight: 700; color: var(--gs-primary);">{{ group.name }}</h4>
+                        <span class="badge bg-light text-dark border mt-1"><i class="bi bi-upc-scan me-1"></i> {{ group.group_id }}</span>
+                    </div>
                 </div>
-            </div>
 
-            <form method="get" action="{% url 'generate_report_pdf' group.group_id %}" class="d-flex gap-2 align-items-end flex-wrap">
-                {% csrf_token %}
-                <div style="flex:1; min-width: 130px;">
-                    <label class="form-label gs-text-muted" style="font-size: 0.8rem; margin-bottom: 0.25rem;">
-                        <i class="bi bi-calendar-event me-1"></i>From Date (optional)
-                    </label>
-                    <input type="date" name="from_date" class="gs-input" style="font-size: 0.9rem;">
-                </div>
-                <div style="flex:1; min-width: 130px;">
-                    <label class="form-label gs-text-muted" style="font-size: 0.8rem; margin-bottom: 0.25rem;">
-                        <i class="bi bi-calendar-event me-1"></i>To Date (optional)
-                    </label>
-                    <input type="date" name="to_date" class="gs-input" style="font-size: 0.9rem;">
-                </div>
-                <button type="submit" class="btn btn-primary rounded-pill shadow-sm" style="width:auto; white-space: nowrap; height: fit-content; padding: 0.6rem 1.2rem;">
-                    <i class="bi bi-download me-1"></i> Download PDF
-                </button>
-            </form>
+                <form method="get" action="{% url 'generate_report_pdf' group.group_id %}" class="d-flex gap-3 align-items-end flex-wrap report-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group flex-grow-1" style="min-width: 200px;">
+                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: var(--gs-slate);">
+                            <i class="bi bi-calendar-event me-1"></i> Start Date <small class="fw-normal">(Optional)</small>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-calendar3"></i></span>
+                            <input type="date" name="from_date" class="form-control border-start-0 ps-0 gs-input-interactive">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group flex-grow-1" style="min-width: 200px;">
+                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: var(--gs-slate);">
+                            <i class="bi bi-calendar-event me-1"></i> End Date <small class="fw-normal">(Optional)</small>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-calendar3"></i></span>
+                            <input type="date" name="to_date" class="form-control border-start-0 ps-0 gs-input-interactive">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-pro-primary d-flex align-items-center gap-2" style="height: 48px; border-radius: 8px; font-weight: 600; padding: 0 1.5rem; transition: transform 0.2s, box-shadow 0.2s; background: var(--gs-primary); color: white; border: none;">
+                        <i class="bi bi-download"></i> Generate PDF
+                    </button>
+                </form>
+            </div>
         </div>
         {% endfor %}
-        {% else %}
-        <div class="gs-empty">
-            <i class="bi bi-file-earmark-x"></i>
-            <h5>No Groups</h5>
-            <p>Join a group to generate reports.</p>
-        </div>
-        {% endif %}
     </div>
+    {% else %}
+    <div class="text-center p-5" style="background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <i class="bi bi-file-earmark-x" style="font-size: 4rem; color: #cbd5e1; display: block; margin-bottom: 1rem;"></i>
+        <h4 style="font-weight: 700; color: var(--gs-primary);">No Groups Available</h4>
+        <p class="text-muted">You need to join or create a group to generate financial reports.</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary rounded-pill mt-2">Go to Dashboard</a>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+    /* Unique Animations for Report UI */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+    }
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+    }
+    .gs-input-interactive {
+        box-shadow: none !important;
+        transition: all 0.2s;
+    }
+    .gs-input-interactive:focus {
+        border-color: #dee2e6;
+        background: #f8fafc;
+    }
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: var(--gs-secondary);
+    }
+    .btn-pro-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+    }
+    .btn-pro-primary:active {
+        transform: translateY(0);
+    }
+</style>
 {% endblock %}

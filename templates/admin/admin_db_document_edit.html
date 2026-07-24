@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Document - GroupSathi{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_db_explorer' %}">Database Explorer</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_db_collection' collection_name %}">{{ collection_name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ doc_id }}</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold"><i class="bi bi-pencil-square text-warning me-2"></i>Edit Document</h3>
+            <p class="text-muted mb-0">Modify the raw JSON structure of this MongoDB document. Be careful not to break data types.</p>
+        </div>
+        <a href="{% url 'admin_db_collection' collection_name %}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-dark text-white rounded-top-4 py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 font-monospace"><i class="bi bi-filetype-json me-2"></i>{{ collection_name }} / {{ doc_id }}</h6>
+                </div>
+                <div class="card-body p-0 bg-light">
+                    <form method="POST" id="jsonForm">
+                        {% csrf_token %}
+                        <!-- We use a textarea with monospace font to simulate a code editor -->
+                        <textarea name="json_data" id="json_data" class="form-control border-0 rounded-0 font-monospace bg-dark text-light p-4" rows="25" style="font-size: 0.9rem; resize: vertical;" spellcheck="false">{{ document_json }}</textarea>
+                        
+                        <div class="p-4 bg-white rounded-bottom-4 border-top text-end">
+                            <button type="submit" class="btn btn-success px-5 py-2 fw-bold" onclick="return confirm('Are you sure you want to replace this document?');">
+                                <i class="bi bi-save me-2"></i> Save Changes to MongoDB
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4 border-0 shadow-sm rounded-4">
+                <h5 class="alert-heading fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Editing Tips</h5>
+                <p class="mb-0">GroupSathi uses PyMongo's Extended JSON representation (`bson.json_util`). When editing BSON types like `ObjectId` or `ISODate`, make sure you preserve their JSON structure, for example:</p>
+                <ul class="mb-0 mt-2 font-monospace" style="font-size: 0.85rem;">
+                    <li>{"$oid": "507f1f77bcf86cd799439011"} for ObjectId</li>
+                    <li>{"$date": 1609459200000} for Dates</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple script to allow tab indentation in textarea
+    document.getElementById('json_data').addEventListener('keydown', function(e) {
+        if (e.key == 'Tab') {
+            e.preventDefault();
+            var start = this.selectionStart;
+            var end = this.selectionEnd;
+            this.value = this.value.substring(0, start) +
+                "    " + this.value.substring(end);
+            this.selectionStart =
+                this.selectionEnd = start + 4;
+        }
+    });
+</script>
+{% endblock %}

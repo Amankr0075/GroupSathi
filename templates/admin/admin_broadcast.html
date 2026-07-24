@@ -14,6 +14,17 @@
             {% csrf_token %}
             <p class="text-muted mb-3">Send a notification alert to every active user on the platform.</p>
             
+            <div class="gs-form-group mb-4 p-3 rounded" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                <label class="fw-bold text-primary"><i class="bi bi-robot"></i> AI Message Generator (Optional)</label>
+                <p class="text-muted small mb-2">Describe a scenario and let AI draft a professional message for you.</p>
+                <div class="input-group">
+                    <input type="text" id="id_scenario" class="form-control" placeholder="e.g. Server maintenance tomorrow from 2 AM to 4 AM">
+                    <button type="button" class="btn btn-primary" onclick="generateMessageWithAI()" id="btn_ai_msg">
+                        <i class="bi bi-magic"></i> Generate
+                    </button>
+                </div>
+            </div>
+
             <div class="gs-form-group">
                 <label>Title *</label>
                 <input type="text" name="title" id="id_title" class="gs-input" placeholder="e.g. System Maintenance" required>
@@ -21,14 +32,27 @@
             <div class="gs-form-group">
                 <label>Message *</label>
                 <textarea name="message" id="id_message" class="gs-input" rows="4" placeholder="Enter broadcast message..." required></textarea>
-                <button type="button" class="btn btn-sm btn-outline-primary mt-2 rounded-pill" onclick="summarizeWithAI()" id="btn_ai">
-                    <i class="bi bi-magic"></i> AI Generate Title
-                </button>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="summarizeWithAI()" id="btn_ai_title">
+                        <i class="bi bi-magic"></i> AI Generate Title
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill" onclick="generateImageWithAI()" id="btn_ai_img">
+                        <i class="bi bi-image"></i> AI Generate Image
+                    </button>
+                </div>
             </div>
             <div class="gs-form-group">
-                <label>Optional Image</label>
+                <label>Optional Image (Manual Upload)</label>
                 <input type="file" name="image" class="gs-input" accept="image/*">
             </div>
+            
+            <div id="ai_image_preview_container" class="mb-3 d-none text-center p-3 rounded" style="background: #f1f5f9;">
+                <label class="d-block fw-bold mb-2">Generated Image Preview</label>
+                <img id="ai_image_preview" src="" alt="Generated Preview" class="img-fluid rounded shadow-sm" style="max-height: 200px;">
+                <input type="hidden" name="generated_image_path" id="generated_image_path">
+                <div class="mt-2 text-muted small"><i class="bi bi-check-circle-fill text-success"></i> GroupSathi logo applied automatically</div>
+            </div>
+            
             <div class="gs-form-group">
                 <label>Alert Type</label>
                 <select name="type" class="gs-input">
@@ -56,7 +80,7 @@ function summarizeWithAI() {
         return;
     }
     
-    const btn = document.getElementById('btn_ai');
+    const btn = document.getElementById('btn_ai_title');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
     
@@ -83,6 +107,83 @@ function summarizeWithAI() {
     .finally(() => {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-magic"></i> AI Generate Title';
+    });
+}
+
+function generateMessageWithAI() {
+    const scenario = document.getElementById('id_scenario').value.trim();
+    if (!scenario) {
+        alert("Please enter a scenario first.");
+        return;
+    }
+    
+    const btn = document.getElementById('btn_ai_msg');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    
+    fetch("{% url 'ai_generate_message' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ scenario: scenario })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            document.getElementById('id_message').value = data.message;
+        } else if (data.error) {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to generate message.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-magic"></i> Generate';
+    });
+}
+
+function generateImageWithAI() {
+    const title = document.getElementById('id_title').value.trim();
+    const message = document.getElementById('id_message').value.trim();
+    if (!title && !message) {
+        alert("Please enter a title or message first so the AI knows what to generate.");
+        return;
+    }
+    
+    const btn = document.getElementById('btn_ai_img');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Generating...';
+    
+    fetch("{% url 'ai_generate_image' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ title: title, message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.image_url) {
+            document.getElementById('ai_image_preview').src = data.image_url;
+            document.getElementById('generated_image_path').value = data.image_path;
+            document.getElementById('ai_image_preview_container').classList.remove('d-none');
+        } else if (data.error) {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to generate image.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-image"></i> AI Generate Image';
     });
 }
 </script>

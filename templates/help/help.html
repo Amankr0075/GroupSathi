@@ -2,277 +2,759 @@
 
 {% block title %}App Guide - GroupSathi{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ============================================
+       GroupSathi - Premium Guide Page Styles
+       ============================================ */
+
+    .guide-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+    }
+
+    .guide-hero::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(108,92,231,0.4) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .guide-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -60px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(0,206,201,0.25) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .guide-hero-content { position: relative; z-index: 1; }
+
+    .guide-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(108,92,231,0.3);
+        border: 1px solid rgba(108,92,231,0.5);
+        border-radius: 50px;
+        padding: 0.3rem 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: #a29bfe;
+        margin-bottom: 1rem;
+    }
+
+    .guide-hero-title {
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .guide-hero-subtitle {
+        color: rgba(255,255,255,0.6);
+        font-size: 0.92rem;
+        line-height: 1.6;
+        max-width: 560px;
+    }
+
+    .guide-hero-stats {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .guide-hero-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .guide-hero-stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a29bfe, #74B9FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .guide-hero-stat-label {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.5);
+        font-weight: 500;
+    }
+
+    /* Quick Nav */
+    .guide-quicknav {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .guide-quicknav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 50px;
+        padding: 0.45rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .guide-quicknav-btn:hover {
+        background: #6C5CE7;
+        color: white;
+        border-color: #6C5CE7;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(108,92,231,0.25);
+    }
+
+    .guide-quicknav-btn i { font-size: 0.85rem; }
+
+    /* Section Cards */
+    .guide-section {
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .guide-section:hover {
+        border-color: #c7d2fe;
+        box-shadow: 0 8px 24px rgba(108,92,231,0.08);
+    }
+
+    .guide-section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.1rem 1.5rem;
+        cursor: pointer;
+        user-select: none;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        transition: background 0.2s ease;
+    }
+
+    .guide-section-header:hover { background: #FAFBFF; }
+
+    .guide-section-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .guide-section-info { flex: 1; }
+
+    .guide-section-num {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #94A3B8;
+        margin-bottom: 0.15rem;
+    }
+
+    .guide-section-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1E293B;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .guide-section-arrow {
+        color: #94A3B8;
+        font-size: 0.9rem;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .guide-section-header[aria-expanded="true"] .guide-section-arrow {
+        transform: rotate(180deg);
+    }
+
+    .guide-body {
+        padding: 0 1.5rem 1.5rem;
+        font-size: 0.88rem;
+        line-height: 1.75;
+        color: #475569;
+        border-top: 1px solid #F1F5F9;
+        margin-top: 0;
+    }
+
+    .guide-body p { margin-bottom: 0.75rem; }
+
+    .guide-body ul, .guide-body ol {
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .guide-body li { margin-bottom: 0.4rem; }
+
+    .guide-body strong { color: #1E293B; }
+
+    /* Info boxes inside guide */
+    .guide-infobox {
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+        font-size: 0.84rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        margin-top: 0.75rem;
+    }
+
+    .guide-infobox.tip { background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; }
+    .guide-infobox.warn { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+    .guide-infobox.danger { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
+    .guide-infobox.info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+
+    .guide-infobox i { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* Feature pills */
+    .guide-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: #F1F5F9;
+        color: #475569;
+        border-radius: 50px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin: 0.15rem;
+    }
+
+    /* Compare cards */
+    .guide-compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 0.75rem 0;
+    }
+
+    @media (max-width: 576px) {
+        .guide-compare { grid-template-columns: 1fr; }
+        .guide-hero-title { font-size: 1.5rem; }
+    }
+
+    .guide-compare-card {
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid;
+        font-size: 0.83rem;
+    }
+
+    .guide-compare-card h6 {
+        font-weight: 700;
+        font-size: 0.88rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .guide-compare-card.green { background: #F0FDF4; border-color: #BBF7D0; color: #166534; }
+    .guide-compare-card.green h6 { color: #15803D; }
+    .guide-compare-card.red { background: #FEF2F2; border-color: #FECACA; color: #7F1D1D; }
+    .guide-compare-card.red h6 { color: #DC2626; }
+    .guide-compare-card.blue { background: #EFF6FF; border-color: #BFDBFE; color: #1E3A8A; }
+    .guide-compare-card.blue h6 { color: #1D4ED8; }
+    .guide-compare-card.purple { background: #F5F3FF; border-color: #DDD6FE; color: #4C1D95; }
+    .guide-compare-card.purple h6 { color: #7C3AED; }
+
+    /* Step list */
+    .guide-steps { counter-reset: step-counter; list-style: none; padding: 0; margin: 0.75rem 0; }
+    .guide-steps li {
+        counter-increment: step-counter;
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        align-items: flex-start;
+    }
+    .guide-steps li::before {
+        content: counter(step-counter);
+        background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+        color: white;
+        min-width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    /* Footer note */
+    .guide-footer-note {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(108,92,231,0.04), rgba(0,206,201,0.04));
+        border-radius: 16px;
+        border: 1px solid rgba(108,92,231,0.1);
+        margin-top: 2rem;
+        color: #64748B;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container animate__animated animate__fadeIn" style="max-width: 900px;">
-    <div class="gs-page-header">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-journal-bookmark-fill" style="color: var(--gs-accent); font-size: 2rem;"></i>
-            <div>
-                <h2 class="mb-0 gs-fw-800">GroupSathi Comprehensive Guide</h2>
-                <small class="gs-text-muted">Mastering Self Help Group management, rules, and smart financial operations</small>
+<div class="container" style="max-width: 860px; padding: 1.5rem 15px 3rem;">
+
+    <!-- Hero Banner -->
+    <div class="guide-hero">
+        <div class="guide-hero-content">
+            <div class="guide-hero-badge">
+                <i class="bi bi-journal-bookmark-fill"></i> Official Operations Manual
+            </div>
+            <h1 class="guide-hero-title">GroupSathi Complete Guide</h1>
+            <p class="guide-hero-subtitle">
+                Your comprehensive reference for every feature, workflow, role, and financial rule on the GroupSathi platform.
+            </p>
+            <div class="guide-hero-stats">
+                <div class="guide-hero-stat">
+                    <span class="guide-hero-stat-value">10</span>
+                    <span class="guide-hero-stat-label">Guide Sections</span>
+                </div>
+                <div class="guide-hero-stat">
+                    <span class="guide-hero-stat-value">3</span>
+                    <span class="guide-hero-stat-label">Role Levels</span>
+                </div>
+                <div class="guide-hero-stat">
+                    <span class="guide-hero-stat-value">100%</span>
+                    <span class="guide-hero-stat-label">Platform Coverage</span>
+                </div>
             </div>
         </div>
-        <a href="{% url 'dashboard' %}" class="gs-btn gs-btn-secondary gs-btn-sm ms-auto" style="width:auto;">
-            <i class="bi bi-arrow-left"></i> Dashboard
-        </a>
     </div>
 
-    <!-- Intro Card -->
-    <div class="gs-card mb-4" style="background: linear-gradient(135deg, rgba(108, 92, 231, 0.08) 0%, rgba(108, 92, 231, 0.01) 100%); border-left: 4px solid var(--gs-primary); padding: 1.5rem; border-radius: var(--gs-radius);">
-        <h4 class="gs-fw-700 mb-2 text-primary" style="color: var(--gs-primary);"><i class="bi bi-compass-fill me-2"></i>Welcome to the Official GroupSathi Operations Manual</h4>
-        <p class="mb-0 gs-text-muted" style="font-size: 0.92rem; line-height: 1.6;">
-            This guide provides an exhaustive documentation of every single feature, workflow, role responsibility, and financial rule running within the GroupSathi platform. Click on any section below to view highly detailed, step-by-step instructions.
-        </p>
+    <!-- Quick Navigation -->
+    <div class="guide-quicknav">
+        <a href="#sec1" class="guide-quicknav-btn"><i class="bi bi-person-badge"></i> Registration</a>
+        <a href="#sec2" class="guide-quicknav-btn"><i class="bi bi-plus-circle"></i> Create Group</a>
+        <a href="#sec3" class="guide-quicknav-btn"><i class="bi bi-people"></i> Join &amp; Leave</a>
+        <a href="#sec4" class="guide-quicknav-btn"><i class="bi bi-lock-fill"></i> EMI &amp; Reminders</a>
+        <a href="#sec5" class="guide-quicknav-btn"><i class="bi bi-cash-stack"></i> Loans</a>
+        <a href="#sec6" class="guide-quicknav-btn"><i class="bi bi-percent"></i> Repayments</a>
+        <a href="#sec7" class="guide-quicknav-btn"><i class="bi bi-gift"></i> Fine Waivers</a>
+        <a href="#sec8" class="guide-quicknav-btn"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+        <a href="#sec9" class="guide-quicknav-btn"><i class="bi bi-bell"></i> Alerts &amp; Security</a>
+        <a href="#sec10" class="guide-quicknav-btn"><i class="bi bi-currency-rupee"></i> Distribute Money</a>
     </div>
 
-    <div class="gs-card">
-        <!-- Exhaustive Accordion -->
-        <div class="accordion" id="guideAccordion">
-            
-            <!-- Section 1 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide1" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">1</span> 🔐 Registration, Profile Completion & Login Security
-                    </button>
-                </h2>
-                <div id="guide1" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">To maintain database integrity and physical security, GroupSathi enforces a robust multi-step onboarding system:</p>
-                        <ul class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Secure Registration:</strong> Register using your full legal name, phone number, and a unique password.</li>
-                            <li class="mb-2"><strong>5-Digit PIN Setup:</strong> To make logins extremely convenient on mobile and shared devices, users set a personal 5-digit numeric PIN as their quick security credential.</li>
-                            <li class="mb-2"><strong>Mandatory Profile Completion:</strong> You must complete your demographic profile (Gender, detailed Address, and Pin Code). Once completed, the system auto-generates a unique <strong>5-digit Member ID</strong> (e.g. <code>MB102</code>) which acts as your unique identity within the network.</li>
-                        </ul>
-                        <div class="alert alert-info py-2 px-3 mb-0" style="font-size: 0.85rem; border-radius: 8px;">
-                            <i class="bi bi-shield-fill-check me-1 text-info"></i> <strong>Security Tip:</strong> Never share your 5-digit PIN with anyone. PIN resets require official identity verification of your full name and mobile number.
-                        </div>
-                    </div>
+    <!-- Guide Sections -->
+    <div id="sec1" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body1" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #6C5CE7, #a29bfe);">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 01</div>
+                <h3 class="guide-section-title">Registration, Profile &amp; Login Security</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body1" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi enforces a secure, structured onboarding to protect every member's financial identity.</p>
+                <ol class="guide-steps">
+                    <li><strong>Register your account</strong> using your full legal name, mobile number, and a strong password.</li>
+                    <li><strong>Set a 5-Digit Security PIN</strong> — a fast, numeric credential for quick logins on mobile and shared devices.</li>
+                    <li><strong>Complete your profile</strong> by filling in Gender, full Address, and Pin Code. The system then auto-generates a unique <strong>Member ID</strong> (e.g. <code>MB102</code>) — your permanent identity across all groups.</li>
+                </ol>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    <span class="guide-pill"><i class="bi bi-shield-lock-fill text-primary"></i> PIN-Based Login</span>
+                    <span class="guide-pill"><i class="bi bi-person-check-fill text-success"></i> Auto Member ID</span>
+                    <span class="guide-pill"><i class="bi bi-phone-fill text-info"></i> Mobile-First</span>
+                </div>
+                <div class="guide-infobox info">
+                    <i class="bi bi-shield-fill-check"></i>
+                    <div><strong>Security Tip:</strong> Never share your 5-digit PIN. PIN resets require verification of your registered full name and mobile number on the Forgot PIN page.</div>
                 </div>
             </div>
-
-            <!-- Section 2 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide2" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">2</span> ➕ Group Creation, Configurations & Leadership Roles
-                    </button>
-                </h2>
-                <div id="guide2" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">Creating a Self-Help Group (SHG) initializes a strict microfinance repository with customized rules:</p>
-                        <ul class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Configurations (Locked Rules):</strong> The creator sets parameters including:
-                                <ul>
-                                    <li><strong>Monthly EMI Amount:</strong> The fixed monthly saving requirement (e.g., ₹500). Once created, this is <strong>fixed</strong> and cannot be altered to maintain steady financial pools.</li>
-                                    <li><strong>EMI Due Day:</strong> The designated calendar date (1st to 28th) of every month when saving collections are strictly due.</li>
-                                    <li><strong>Interest Rate:</strong> Monthly percentage charged on loans (e.g., 2% per month).</li>
-                                    <li><strong>Late Penalty Fine:</strong> Fixed charge added immediately if a member fails to submit their monthly EMI on time.</li>
-                                </ul>
-                            </li>
-                            <li class="mb-2"><strong>Group Leadership Roles:</strong>
-                                <ul>
-                                    <li><strong>Group Leader:</strong> The creator automatically assumes this role, holding absolute administrative control (approving requests, promoting members, managing settings, and deleting the group).</li>
-                                    <li><strong>Group Co-Leader:</strong> Appointed by the Group Leader to assist in handling loan/join/leave approvals and manually issuing payment alerts.</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 3 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide3" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">3</span> 🤝 Joining a Group, Consensuses & Leaves
-                    </button>
-                </h2>
-                <div id="guide3" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">To maintain mutual accountability, joining and leaving groups requires structured workflows:</p>
-                        <ol class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Join Request:</strong> Paste the group's unique 6-digit Group ID to submit a request. The Group Leader or Co-leader must review and approve it from their dashboard.</li>
-                            <li class="mb-2"><strong>Leaving a Group:</strong> An active member can request to leave.
-                                <ul>
-                                    <li><strong>Prerequisites:</strong> The member must have <strong>zero outstanding loans</strong> and <strong>no pending EMI payments or late fines</strong>.</li>
-                                    <li><strong>Leader Check:</strong> Once the member has cleared all liabilities, the Leader or Co-leader reviews and approves the request, permanently removing them.</li>
-                                </ul>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 4 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide4" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">4</span> 🔒 Date-Locked EMI Savings & Reminders
-                    </button>
-                </h2>
-                <div id="guide4" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">GroupSathi enforces a highly structured, automated, and secure savings pattern to build financial discipline:</p>
-                        <ul class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Strict Date-Locked Payments:</strong> To maintain strict regular savings, monthly EMI payments are strictly locked to the designated monthly <code>EMI Date</code>. 
-                                <ul>
-                                    <li>On any other day of the month, the "Pay EMI" form and button are <strong>entirely disabled and set to readonly</strong> on the dashboard and group details pages.</li>
-                                    <li>Any manual backend requests attempted on non-scheduled days are rejected.</li>
-                                </ul>
-                            </li>
-                            <li class="mb-2"><strong>Automated 24-Hour Reminders:</strong>
-                                <ul>
-                                    <li>A background automated service runs daily, checking if tomorrow is exactly 24 hours prior to the group's EMI due date.</li>
-                                    <li>It instantly drafts and delivers direct notifications to members' alerts center. Borrowers with active loans receive custom alerts to prepare their EMIs, and all active members get a generalized saving reminder.</li>
-                                    <li>The system utilizes secure <code>reminder_logs</code> to ensure members are never sent duplicate reminders for the same monthly cycle.</li>
-                                </ul>
-                            </li>
-                            <li class="mb-2"><strong>Manual Leader Alerts:</strong> On the group's official EMI day, Leaders and Co-leaders have access to a <strong>"Send EMI Alert"</strong> button on the group details panel to manually nudge pending members with instant alerts.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 5 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide5" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">5</span> 💸 Advanced Loan Processing: Normal vs. High Value
-                    </button>
-                </h2>
-                <div id="guide5" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">To safeguard group capital, loan requests are bifurcated based on the risk amount:</p>
-                        <div class="row mb-3">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <div class="p-3 border rounded" style="background: rgba(46, 204, 113, 0.05); height: 100%;">
-                                    <h5 class="gs-fw-700 text-success"><i class="bi bi-wallet2"></i> Normal Loans (≤ ₹50,000)</h5>
-                                    <p class="mb-0" style="font-size: 0.85rem;">
-                                        Approved directly and instantly by the Group Leader or Co-leader once requested. Requires basic mortgage detail and tenure input.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 border rounded" style="background: rgba(231, 76, 60, 0.05); height: 100%;">
-                                    <h5 class="gs-fw-700 text-danger"><i class="bi bi-shield-exclamation"></i> High-Value Loans (> ₹50,000)</h5>
-                                    <p class="mb-0" style="font-size: 0.85rem;">Requires strict safety checks:
-                                        <ul class="ps-3 mt-2" style="font-size: 0.82rem;">
-                                            <li>Must fill in a verified **Guarantor Profile** (Name, Contact, Address).</li>
-                                            <li>Must upload a signed **Agreement Document** (.pdf/.jpg/.png).</li>
-                                            <li>Requires **100% unanimous consensus approval** from *every single active member* of the group. If even one member votes "Reject", the loan is permanently rejected.</li>
-                                        </ul>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 6 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide6" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">6</span> 📉 Smart Loan Repayments: Principal vs. Interest Split
-                    </button>
-                </h2>
-                <div id="guide6" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">Unlike rigid bank models, GroupSathi utilizes an advanced mathematical repayment split to protect borrower interest. Loan outstanding values are updated day-wise. Borrowers can choose how to repay:</p>
-                        <div class="row">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <div class="p-3 border rounded bg-white">
-                                    <h6 class="gs-fw-700 text-primary"><i class="bi bi-cash-stack"></i> Option A: Pay Principal</h6>
-                                    <p class="mb-0" style="font-size: 0.85rem; color: var(--gs-text-muted);">
-                                        This payment directly reduces your core outstanding principal balance. Since interest is calculated strictly on a day-wise principal, making principal payments instantly lowers all future interest charges.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 border rounded bg-white">
-                                    <h6 class="gs-fw-700 text-accent"><i class="bi bi-percent"></i> Option B: Pay Accumulated Interest</h6>
-                                    <p class="mb-0" style="font-size: 0.85rem; color: var(--gs-text-muted);">
-                                        This payment settles only the interest accumulated up to the current day. It keeps the core principal untouched, allowing members to clear off accumulated charges without touching the loan body.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 7 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide7" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">7</span> 🎙️ Voice-Recorded Fine Waivers & Consensus
-                    </button>
-                </h2>
-                <div id="guide7" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">If a member is penalized for a late EMI, the system allows them to request a waiver under a strict consensus model:</p>
-                        <ol class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Waiver Request Panel:</strong> Click "Waive Fine" next to your active fine on the group page.</li>
-                            <li class="mb-2"><strong>Voice Recording Testimony:</strong> Type your excuse, and use the **integrated microphone** directly in-app to record your verbal explanation. This adds a human element for members who might struggle with typing.</li>
-                            <li class="mb-2"><strong>Unanimous Voting:</strong> Once submitted, the system requests a **100% consensus vote** from all active group members. If every single member votes "Approve", the fine is instantly waived and removed from liabilities.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 8 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide8" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">8</span> 📊 Custom-Filtered PDF Financial Reporting
-                    </button>
-                </h2>
-                <div id="guide8" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">GroupSathi features a professional ReportLab PDF generator to export auditable, print-ready reports with an elegant, diagonal brand watermark:</p>
-                        <ul class="ps-3 mb-3">
-                            <li class="mb-2"><strong>Custom Date-Range Filters:</strong> Choose a custom period using `From Date` and `To Date` selectors on the Reports dashboard to track activities for specific quarters or audit periods.</li>
-                            <li class="mb-2"><strong>Dynamic Financial Summary Panel:</strong> Automatically aggregates and calculates:
-                                <ul>
-                                    <li><strong>Total EMI Collected:</strong> Sum of all successful date-locked monthly savings.</li>
-                                    <li><strong>Total Interest Collected:</strong> Total interest repaid separately from principal.</li>
-                                    <li><strong>Total Fines:</strong> Accumulated penalties collected from late savers.</li>
-                                    <li><strong>Pending Interest:</strong> Calculated interest charges currently outstanding on all active loans.</li>
-                                    <li><strong>Final Group Balance:</strong> The total absolute group assets (Sum of EMIs + Interests + Fines) representing the physical cash status of the SHG.</li>
-                                </ul>
-                            </li>
-                            <li class="mb-2"><strong>Member Register:</strong> Detailed directory showing leadership designations, active members, and registration dates.</li>
-                            <li class="mb-2"><strong>Loan History Ledger:</strong> Compiles a complete list of issued, active, and completed loans, including interest rates, guarantor info, and remaining balances.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 9 -->
-            <div class="accordion-item" style="border:none; border-bottom: 1px solid var(--gs-border); margin-bottom: 0.5rem;">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guide9" style="font-weight:700; font-size:1rem; color: var(--gs-primary); padding: 1.25rem 1rem;">
-                        <span class="badge bg-primary me-3 px-2 py-1">9</span> 🔔 Alert Centers, PIN Recovery & Administrative Deletion
-                    </button>
-                </h2>
-                <div id="guide9" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
-                    <div class="accordion-body" style="font-size:0.9rem; line-height: 1.7; color: var(--gs-text);">
-                        <p class="mb-3">Additional advanced core operations of GroupSathi include:</p>
-                        <ul class="ps-3 mb-0">
-                            <li class="mb-3"><strong>Alerts Management:</strong> Direct real-time dashboard notifications let you track approvals, warnings, and savings deadlines. Members can mark individual alerts as read, delete specific alerts, or clear their inbox entirely using the "Delete all" header button.</li>
-                            <li class="mb-3"><strong>Security PIN Recovery:</strong> If you forget your 5-digit security PIN, click "Forgot PIN" on the login portal. Providing your registered Full Name and Mobile Number validates your account and instantly lets you update your PIN.</li>
-                            <li class="mb-3"><strong>Permanent Group Destruction:</strong> To prevent empty or unused groups from bloating the system, Group Leaders have the ultimate administrative authority to permanently delete a group directly from the group settings panel.
-                                <div class="alert alert-warning py-2 px-3 mt-2 mb-0" style="font-size: 0.85rem; border-radius: 8px;">
-                                    <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i> <strong>Note:</strong> Deletion is irreversible and is strictly blocked if there are any active members (other than the leader) or outstanding loans in the group.
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
+
+    <div id="sec2" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body2" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #00CEC9, #81ecec);">
+                <i class="bi bi-plus-circle-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 02</div>
+                <h3 class="guide-section-title">Group Creation, Configuration &amp; Leadership Roles</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body2" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>Creating a Self-Help Group (SHG) initializes a locked financial repository with custom rules that govern how the group operates.</p>
+                <p><strong>Configuration Fields (set once at creation):</strong></p>
+                <div class="guide-compare">
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-cash me-1"></i> Monthly EMI Amount</h6>
+                        The fixed monthly saving each member contributes (e.g. ₹500). Fixed permanently after creation.
+                    </div>
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-calendar-date me-1"></i> EMI Due Day</h6>
+                        The calendar date (1st–28th) of every month when EMI collections are due. Payments are locked to this date only.
+                    </div>
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-percent me-1"></i> Interest Rate</h6>
+                        Monthly percentage charged on all loans disbursed from the group pool (e.g. 2% per month).
+                    </div>
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-exclamation-circle me-1"></i> Late Fine Amount</h6>
+                        Penalty automatically applied if a member misses their monthly EMI on the due date.
+                    </div>
+                </div>
+                <p class="mt-2"><strong>Leadership Hierarchy:</strong></p>
+                <ul>
+                    <li><strong>Group Leader:</strong> The creator. Holds absolute administrative control — approves all requests, promotes/demotes members, edits group info, and can permanently destroy the group.</li>
+                    <li><strong>Co-Leader:</strong> Appointed by the Leader. Can approve/reject join, leave, EMI, and loan requests. Can also send manual EMI alerts.</li>
+                    <li><strong>Member:</strong> Standard participant. Can pay EMI, request loans, request fine waivers, and vote on group consensus decisions.</li>
+                </ul>
+                <div class="guide-infobox tip">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <div>The group creator automatically becomes the Leader. Promote a trusted member to Co-Leader from the group's Members section to share administrative responsibilities.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec3" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body3" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #FD79A8, #fab1c4);">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 03</div>
+                <h3 class="guide-section-title">Joining a Group, Consensuses &amp; Leaving</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body3" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>All membership changes are structured workflows requiring leader verification to maintain group accountability.</p>
+                <p><strong>Joining a Group:</strong></p>
+                <ol class="guide-steps">
+                    <li>Go to <strong>Join Group</strong> on your dashboard.</li>
+                    <li>Enter the group's unique <strong>6-digit Group ID</strong> shared by the leader.</li>
+                    <li>Your request appears in the leader's dashboard under <em>Pending Requests</em>.</li>
+                    <li>The Leader or Co-Leader approves/rejects. On approval, you're instantly activated as a member.</li>
+                </ol>
+                <p><strong>Leaving a Group:</strong></p>
+                <ol class="guide-steps">
+                    <li>Ensure you have <strong>zero outstanding loans</strong> and no unpaid EMIs or fines.</li>
+                    <li>Click <strong>Leave</strong> from the group details page.</li>
+                    <li>The Leader or Co-Leader reviews your leave request and approves it.</li>
+                </ol>
+                <div class="guide-infobox warn">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>Leave requests with any outstanding financial liabilities (loans, fines, EMIs) will be blocked by the system and cannot be approved.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec4" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body4" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #FDCB6E, #ffeaa7);">
+                <i class="bi bi-lock-fill" style="color: #2d3436;"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 04</div>
+                <h3 class="guide-section-title">Date-Locked EMI Savings &amp; Smart Reminders</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body4" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi enforces strict financial discipline through automated, date-locked saving controls.</p>
+                <div class="guide-compare">
+                    <div class="guide-compare-card green">
+                        <h6><i class="bi bi-calendar-check me-1"></i> On the EMI Day</h6>
+                        The "Pay EMI" button is active. Members can submit their monthly saving. Leaders can send a manual alert to all members.
+                    </div>
+                    <div class="guide-compare-card red">
+                        <h6><i class="bi bi-lock-fill me-1"></i> Any Other Day</h6>
+                        The "Pay EMI" button is disabled and locked. Any backend attempt to bypass the lock is rejected automatically.
+                    </div>
+                </div>
+                <p class="mt-2"><strong>Automated Reminder System:</strong></p>
+                <ul>
+                    <li>A background service runs daily, detecting when EMI day is exactly 24 hours away.</li>
+                    <li>It sends personalized notifications to every member — borrowers get loan-specific reminders, and all members get a general savings reminder.</li>
+                    <li>A <code>reminder_logs</code> system ensures no member is ever sent duplicate reminders for the same monthly cycle.</li>
+                </ul>
+                <div class="guide-infobox info">
+                    <i class="bi bi-bell-fill"></i>
+                    <div>Leaders and Co-Leaders can manually trigger an EMI alert on the EMI day using the <strong>"Send EMI Alert"</strong> button from the group details page.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec5" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body5" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #00B894, #55efc4);">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 05</div>
+                <h3 class="guide-section-title">Advanced Loan Processing: Normal vs. High-Value</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body5" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi uses a two-tier loan system to protect group capital based on loan risk level.</p>
+                <div class="guide-compare">
+                    <div class="guide-compare-card green">
+                        <h6><i class="bi bi-wallet2 me-1"></i> Normal Loans (≤ ₹50,000)</h6>
+                        Approved directly by the Leader or Co-Leader. Requires mortgage details, loan amount, and repayment tenure. No consensus needed.
+                    </div>
+                    <div class="guide-compare-card red">
+                        <h6><i class="bi bi-shield-exclamation me-1"></i> High-Value Loans (&gt; ₹50,000)</h6>
+                        Requires a verified <strong>Guarantor Profile</strong> (name, contact, address), a signed <strong>Agreement Document</strong> upload, and <strong>100% unanimous approval</strong> from every active member. Even one rejection permanently rejects the loan.
+                    </div>
+                </div>
+                <p class="mt-2"><strong>Loan Extension Requests:</strong></p>
+                <ul>
+                    <li>Borrowers can request extra repayment months from the group details page.</li>
+                    <li>Extensions require consensus approval from all leaders and co-leaders before the tenure is extended.</li>
+                </ul>
+                <div class="guide-infobox warn">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>Members can only have <strong>one active loan at a time</strong>. A second loan request is blocked until the current one is fully repaid.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec6" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body6" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #74B9FF, #0984e3);">
+                <i class="bi bi-percent"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 06</div>
+                <h3 class="guide-section-title">Smart Loan Repayments: Principal vs. Interest Split</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body6" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi uses a day-wise interest model. Outstanding loan values and accrued interest are updated in real-time based on how many days the loan has been active. Borrowers choose how to repay:</p>
+                <div class="guide-compare">
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-cash-stack me-1"></i> Option A: Pay Principal</h6>
+                        Directly reduces your core outstanding loan balance. Since interest is calculated day-wise on the remaining principal, this instantly reduces all future interest charges too.
+                    </div>
+                    <div class="guide-compare-card purple">
+                        <h6><i class="bi bi-percent me-1"></i> Option B: Pay Interest Only</h6>
+                        Settles only the interest accumulated to the current date. The principal balance remains unchanged, letting borrowers clear pending charges without reducing the loan body.
+                    </div>
+                </div>
+                <div class="guide-infobox tip">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <div>Repayment requests are submitted by the borrower and require leader/co-leader approval before they are applied to the loan ledger. The group financial balance updates automatically upon approval.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec7" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body7" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #E17055, #fab1a0);">
+                <i class="bi bi-gift-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 07</div>
+                <h3 class="guide-section-title">Fines, Imposed Fines &amp; Voice-Recorded Waivers</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body7" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi has two types of fines with separate waiver workflows:</p>
+                <p><strong>1. Late EMI Fine (Automatic):</strong></p>
+                <ul>
+                    <li>Applied automatically when a member pays their EMI late.</li>
+                    <li>The member can request a waiver from the group detail page → <em>"Request Late Fine Waiver"</em>.</li>
+                    <li>They record a verbal explanation using the in-app microphone and type a written reason.</li>
+                    <li><strong>100% consensus</strong> from all other group members is required to waive it.</li>
+                </ul>
+                <p><strong>2. Consensus-Imposed Fine:</strong></p>
+                <ul>
+                    <li>Leaders or Co-Leaders can initiate a fine imposition on any member for misconduct.</li>
+                    <li>The fine is only imposed if all other active members collectively approve it.</li>
+                    <li>The targeted member can request a waiver, which again requires unanimous approval from the group (excluding themselves).</li>
+                </ul>
+                <div class="guide-infobox info">
+                    <i class="bi bi-mic-fill"></i>
+                    <div>The <strong>in-app voice recorder</strong> on the waiver request page allows members to record their verbal explanation directly in the browser — no external app needed.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec8" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body8" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #6C5CE7, #a29bfe);">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 08</div>
+                <h3 class="guide-section-title">Custom-Filtered PDF Financial Reporting</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body8" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>GroupSathi generates professional, print-ready PDF reports with a diagonal brand watermark for audit and record-keeping.</p>
+                <p><strong>Report Contents:</strong></p>
+                <div class="guide-compare">
+                    <div class="guide-compare-card blue">
+                        <h6><i class="bi bi-bar-chart-fill me-1"></i> Financial Summary</h6>
+                        Total EMI collected, interest earned, fines collected, pending interest on active loans, and the final group balance — all within your selected date range.
+                    </div>
+                    <div class="guide-compare-card purple">
+                        <h6><i class="bi bi-people-fill me-1"></i> Member Register</h6>
+                        Directory of all members with their roles, Member IDs, and registration dates.
+                    </div>
+                    <div class="guide-compare-card green">
+                        <h6><i class="bi bi-receipt-cutoff me-1"></i> Transaction Ledger</h6>
+                        Full log of all EMI payments, repayments, interest credits, and fine collections within the date filter.
+                    </div>
+                    <div class="guide-compare-card red">
+                        <h6><i class="bi bi-cash me-1"></i> Loan History</h6>
+                        Complete loan history including active loans, completed loans, guarantor details, interest rates, and remaining balances.
+                    </div>
+                </div>
+                <div class="guide-infobox tip">
+                    <i class="bi bi-calendar2-range-fill"></i>
+                    <div>Use the <strong>From Date</strong> and <strong>To Date</strong> selectors on the Reports page to generate a report for any custom period (e.g. quarterly audit, annual review).</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec9" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body9" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #FF6B6B, #ffa07a);">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 09</div>
+                <h3 class="guide-section-title">Alerts, PIN Recovery &amp; Group Deletion</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body9" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <ul>
+                    <li class="mb-3">
+                        <strong>Alerts Center:</strong> All important notifications — approvals, rejections, EMI reminders, fine alerts — appear here in real-time. You can mark alerts as read, delete individual ones, or clear your entire inbox with <em>"Delete All"</em>.
+                    </li>
+                    <li class="mb-3">
+                        <strong>5-Digit PIN Recovery:</strong> Forgot your PIN? Click <em>"Forgot PIN"</em> on the login screen, enter your registered <strong>Full Name</strong> and <strong>Mobile Number</strong> to verify your identity, and set a new PIN immediately.
+                    </li>
+                    <li class="mb-2">
+                        <strong>Group Settings &amp; Account:</strong> Update your profile information, toggle app settings, and contact support all from the Settings page.
+                    </li>
+                    <li class="mb-0">
+                        <strong>Permanent Group Destruction:</strong> Only the Group Leader can permanently delete the group. This is an irreversible action.
+                        <div class="guide-infobox danger mt-2">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <div>Group deletion is blocked if there are <strong>active members</strong> (other than the leader) or any <strong>outstanding loans</strong> remaining. All liabilities must be cleared first.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec10" class="guide-section">
+        <button class="guide-section-header" data-bs-toggle="collapse" data-bs-target="#body10" aria-expanded="false">
+            <div class="guide-section-icon" style="background: linear-gradient(135deg, #00CEC9, #55efc4);">
+                <i class="bi bi-currency-rupee"></i>
+            </div>
+            <div class="guide-section-info">
+                <div class="guide-section-num">Section 10</div>
+                <h3 class="guide-section-title">Distribute Money (Group Settlement &amp; Wind-Down)</h3>
+            </div>
+            <i class="bi bi-chevron-down guide-section-arrow"></i>
+        </button>
+        <div id="body10" class="accordion-collapse collapse">
+            <div class="guide-body pt-3">
+                <p>When a group's cycle is complete or the group is being wound down, the <strong>Distribute Money</strong> feature allows a fair distribution of the group's financial pool to all members.</p>
+                <p><strong>How it works:</strong></p>
+                <ol class="guide-steps">
+                    <li>Go to your group page (or My Groups) and click <strong>"Distribute Money"</strong>. Only Leaders and Co-Leaders can access this.</li>
+                    <li>A <strong>Settlement Preview</strong> page calculates the total group assets: EMI pool + interest collected + fines collected − outstanding loan balances.</li>
+                    <li>Each member's fair share is calculated proportionally based on their EMI contributions.</li>
+                    <li>After reviewing the breakdown, the Leader clicks <strong>Execute Settlement</strong> to finalize the distribution. This action clears all pending loans and settles any unpaid fines.</li>
+                </ol>
+                <div class="guide-compare">
+                    <div class="guide-compare-card green">
+                        <h6><i class="bi bi-check-circle me-1"></i> What Gets Cleared</h6>
+                        All pending EMI requests, outstanding loan balances, and unpaid imposed fines are settled and marked complete.
+                    </div>
+                    <div class="guide-compare-card red">
+                        <h6><i class="bi bi-exclamation-circle me-1"></i> Important Note</h6>
+                        Settlement is a <strong>permanent action</strong>. Review the distribution preview carefully before executing. This is typically used at the end of a group's financial year or cycle.
+                    </div>
+                </div>
+                <div class="guide-infobox warn mt-2">
+                    <i class="bi bi-shield-fill-exclamation"></i>
+                    <div>Only the <strong>Group Leader</strong> can execute the final settlement. Co-Leaders can view the preview but cannot finalize it.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="guide-footer-note">
+        <i class="bi bi-patch-check-fill me-2" style="color: #6C5CE7;"></i>
+        <strong>GroupSathi Operations Manual</strong> — This guide covers all features as of the current platform version.
+        <br><span class="mt-1 d-block">Need help? Use <strong>Contact Support</strong> from the dashboard to submit a support ticket.</span>
+    </div>
+
 </div>
 {% endblock %}
