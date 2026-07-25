@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.ProfileCompletionMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
 ]
 
 ROOT_URLCONF = 'groupsathi.urls'
@@ -147,6 +148,7 @@ REST_FRAMEWORK = {
 # django-ratelimit settings
 RATELIMIT_USE_CACHE = 'default'
 RATELIMIT_VIEW = 'core.views.error_views.ratelimit_error_view'
+RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR'
 
 # SimpleJWT Settings
 from datetime import timedelta
