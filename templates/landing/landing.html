@@ -5,7 +5,9 @@
 
 {% block extra_css %}
 <!-- Modern Fonts & AOS -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
 <style>
@@ -22,86 +24,349 @@
 
     body {
         font-family: var(--font-main);
-        background-color: var(--gs-light);
-        color: var(--gs-dark);
+        background-color: #F8FAFC;
+        color: #0F172A;
         overflow-x: hidden;
     }
 
-    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading);
+    }
 
     .bg-animation {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
         background: radial-gradient(120% 100% at 50% 0%, #FFFFFF 0%, #F1F5F9 100%);
     }
 
     /* Navbar */
     .landing-nav {
-        background: rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(24px);
         border-bottom: 1px solid rgba(0, 0, 0, 0.04);
         padding: 1.2rem 0;
     }
+
     .gs-brand-v3 {
-        font-family: var(--font-heading); font-weight: 800; font-size: 1.8rem;
-        color: var(--gs-primary); letter-spacing: -0.5px;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 1.8rem;
+        color: var(--gs-primary);
+        letter-spacing: -0.5px;
     }
 
     /* Hero */
-    .hero-v3 { padding: 180px 0 100px; position: relative; }
-    .hero-title-v3 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; color: var(--gs-primary); margin-bottom: 24px; }
-    .hero-title-v3 span { background: linear-gradient(135deg, var(--gs-secondary), #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-desc { font-size: 1.15rem; color: var(--gs-slate); line-height: 1.7; margin-bottom: 40px; }
+    .hero-v3 { 
+        min-height: calc(100vh - 120px); /* Subtract Navbar and Marquee heights */
+        display: flex; 
+        align-items: center; 
+        padding: 40px 0; 
+        position: relative; 
+        color: #0F172A; 
+        overflow: hidden; 
+        background: radial-gradient(120% 100% at 50% 0%, #FFFFFF 0%, #F1F5F9 100%); 
+    }
+    .hero-title-v3 { font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 800; line-height: 1.1; letter-spacing: -2px; color: #0F172A; margin-bottom: 24px; text-shadow: none; }
+    .hero-title-v3 span { background: linear-gradient(135deg, #3B82F6, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-desc { font-size: 1.15rem; color: #475569; line-height: 1.7; margin-bottom: 40px; font-weight: 400; max-width: 90%; }
 
     /* Buttons */
-    .btn-pro { padding: 14px 32px; font-weight: 600; border-radius: 12px; transition: all 0.3s; white-space: nowrap; }
-    .btn-pro-primary { background: var(--gs-primary); color: white !important; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15); }
-    .btn-pro-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25); background: var(--gs-dark); }
-    .btn-pro-accent { background: var(--gs-accent); color: white !important; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15); }
-    .btn-pro-accent:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.25); background: #059669; }
-    
-    /* Image Wrappers with Logos */
-    .hero-img-wrapper { position: relative; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); }
-    .hero-img-wrapper img.main-img { width: 100%; height: auto; transition: transform 0.8s ease; }
-    .hero-img-wrapper:hover img.main-img { transform: scale(1.03); }
-    .watermark-logo { position: absolute; bottom: 20px; right: 20px; height: 45px; opacity: 0.9; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .btn-pro {
+        padding: 14px 32px;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
 
-    .pulse-dot { position: absolute; top: 30px; right: 30px; width: 15px; height: 15px; background: #10B981; border-radius: 50%; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    .btn-pro-primary {
+        background: var(--gs-primary);
+        color: white !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-pro-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25);
+        background: var(--gs-dark);
+    }
+
+    .btn-pro-accent {
+        background: var(--gs-accent);
+        color: white !important;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+    }
+
+    .btn-pro-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(16, 185, 129, 0.25);
+        background: #059669;
+    }
+
+    /* Image Wrappers with Logos */
+    .hero-img-wrapper {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero-img-wrapper img.main-img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.8s ease;
+    }
+
+    .hero-img-wrapper:hover img.main-img {
+        transform: scale(1.03);
+    }
+
+    .watermark-logo {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        height: 45px;
+        opacity: 0.9;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .pulse-dot {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 15px;
+        height: 15px;
+        background: #10B981;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
 
     /* Infinite Marquee */
-    .marquee-container { width: 100%; background: var(--gs-primary); color: white; padding: 20px 0; overflow: hidden; white-space: nowrap; position: relative; display: flex; align-items: center; }
-    .marquee-content { display: inline-block; animation: marquee 30s linear infinite; font-family: var(--font-heading); font-weight: 500; font-size: 1.1rem; letter-spacing: 1px; }
-    .marquee-content span { margin: 0 40px; color: rgba(255,255,255,0.8); }
-    .marquee-content span b { color: #3B82F6; }
-    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .marquee-container {
+        width: 100%;
+        background: var(--gs-primary);
+        color: white;
+        padding: 20px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .marquee-content {
+        display: inline-block;
+        animation: marquee 30s linear infinite;
+        font-family: var(--font-heading);
+        font-weight: 500;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    .marquee-content span {
+        margin: 0 40px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .marquee-content span b {
+        color: #3B82F6;
+    }
+
+    @keyframes marquee {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
 
     /* Features Section */
-    .features-section { padding: 120px 0; }
-    .feature-title { font-size: 2.8rem; font-weight: 800; color: var(--gs-primary); margin-bottom: 20px; }
-    .feature-subtitle { font-size: 1.2rem; color: var(--gs-slate); margin-bottom: 60px; max-width: 600px; }
-    
-    .feature-card { background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: all 0.4s ease; height: 100%; }
-    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: rgba(59,130,246,0.2); }
-    .feature-icon { font-size: 2.5rem; color: var(--gs-secondary); margin-bottom: 24px; background: rgba(59,130,246,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px; }
+    .features-section {
+        padding: 120px 0;
+        background-color: #FFFFFF;
+        color: #0F172A;
+    }
 
-    /* Live Mockup UI */
-    .mockup-container { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-    .mockup-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; margin-bottom: 15px; }
-    .mockup-title { font-weight: 700; font-family: var(--font-heading); }
-    .mockup-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; background: #f8fafc; margin-bottom: 10px; animation: slideUp 0.5s ease-out backwards; }
-    .mockup-item:nth-child(2) { animation-delay: 0.2s; }
-    .mockup-item:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes slideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-    .btn-mockup { background: #10B981; color: white; border: none; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; animation: pulseBtn 2s infinite; }
-    @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    
-    .tech-image { width: 100%; }
-    
+    .feature-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 20px;
+    }
+
+    .feature-subtitle {
+        font-size: 1.2rem;
+        color: #475569;
+        margin-bottom: 60px;
+        max-width: 600px;
+    }
+
+    /* Animated Images */
+    .floating-img {
+        animation: floatImg 6s ease-in-out infinite;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        border: 4px solid white;
+    }
+
+    @keyframes floatImg {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.2);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    }
+    .mobile-mockup-header i { color: #3B82F6; font-size: 1.2rem; }
+    .mobile-mockup-header span { font-weight: 800; font-family: var(--font-heading); color: #0F172A; font-size: 1.1rem; }
+    .mobile-mockup-body { padding: 15px; background: #ffffff; }
+    .mockup-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .mockup-container {
+        background: white;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mockup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 15px;
+    }
+
+    .mockup-title {
+        font-weight: 700;
+        font-family: var(--font-heading);
+    }
+
+    .mockup-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        border-radius: 12px;
+        background: #f8fafc;
+        margin-bottom: 10px;
+        animation: slideUp 0.5s ease-out backwards;
+    }
+
+    .mockup-item:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .mockup-item:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes slideUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-mockup {
+        background: #10B981;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        animation: pulseBtn 2s infinite;
+    }
+
+    @keyframes pulseBtn {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .tech-image {
+        width: 100%;
+    }
+
     /* Developer Portfolio Section */
-    .portfolio-section { background: var(--gs-primary); color: white; padding: 60px 0; text-align: center; }
-    .portfolio-link { color: var(--gs-secondary); text-decoration: none; font-weight: 700; transition: color 0.3s; font-size: 1.1rem; }
-    .portfolio-link:hover { color: white; text-decoration: underline; }
+    .portfolio-section {
+        background: var(--gs-primary);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+    }
+
+    .portfolio-link {
+        color: var(--gs-secondary);
+        text-decoration: none;
+        font-weight: 700;
+        transition: color 0.3s;
+        font-size: 1.1rem;
+    }
+
+    .portfolio-link:hover {
+        color: white;
+        text-decoration: underline;
+    }
 
     /* Chatbot Widget Styles */
     .chatbot-widget {
@@ -111,15 +376,27 @@
         width: 320px;
         background: white;
         border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         display: none;
         flex-direction: column;
         z-index: 10000;
-        border: 1px solid rgba(0,0,0,0.1);
+        border: 1px solid rgba(0, 0, 0, 0.1);
         overflow: hidden;
         animation: scaleUp 0.3s ease-out;
     }
-    @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    @keyframes scaleUp {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
     .chatbot-header {
         background: var(--gs-primary);
         color: white;
@@ -129,6 +406,7 @@
         justify-content: space-between;
         align-items: center;
     }
+
     .chatbot-body {
         height: 250px;
         overflow-y: auto;
@@ -138,6 +416,7 @@
         flex-direction: column;
         gap: 10px;
     }
+
     .chat-message {
         padding: 10px 14px;
         border-radius: 14px;
@@ -145,31 +424,36 @@
         max-width: 85%;
         line-height: 1.4;
     }
+
     .bot-message {
         background: white;
         color: var(--gs-dark);
         border-bottom-left-radius: 4px;
         align-self: flex-start;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
+
     .user-message {
         background: var(--gs-secondary);
         color: white;
         border-bottom-right-radius: 4px;
         align-self: flex-end;
-        box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
     }
+
     .chatbot-footer {
         padding: 12px;
         background: white;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         gap: 8px;
     }
+
     .chatbot-footer input {
         border-radius: 20px;
         font-size: 0.9rem;
     }
+
     .chatbot-footer button {
         border-radius: 50%;
         width: 40px;
@@ -179,6 +463,7 @@
         align-items: center;
         justify-content: center;
     }
+
     .chatbot-toggle-btn {
         position: fixed;
         bottom: 20px;
@@ -189,7 +474,7 @@
         background: linear-gradient(135deg, var(--gs-secondary), var(--gs-primary));
         color: white;
         border: none;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         font-size: 1.5rem;
         display: flex;
         align-items: center;
@@ -198,10 +483,10 @@
         cursor: pointer;
         transition: transform 0.3s;
     }
+
     .chatbot-toggle-btn:hover {
         transform: scale(1.1);
     }
-
 </style>
 {% endblock %}
 
@@ -212,16 +497,20 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top landing-nav">
     <div class="container">
         <a class="navbar-brand gs-brand-v3" href="{% url 'landing_page' %}">
-            <img src="{% static 'images/GroupSathi.png' %}" alt="Logo" style="height: 40px; margin-right: 12px; border-radius: 12px;">
+            <img src="{% static 'images/GroupSathi.png' %}" alt="Logo"
+                style="height: 40px; margin-right: 12px; border-radius: 12px;">
             <span class="gs-brand-v3">GroupSathi</span>
         </a>
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#landingNavCollapse">
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#landingNavCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="landingNavCollapse">
             <div class="ms-auto d-flex flex-column flex-lg-row gap-3 mt-3 mt-lg-0 align-items-lg-center">
-                <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent"><i class="bi bi-download me-2"></i>Download App</a>
-                <a href="{% url 'login' %}" class="btn btn-pro" style="color: var(--gs-primary); border: 2px solid var(--gs-slate);">Login</a>
+                <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent"><i
+                        class="bi bi-download me-2"></i>Download App</a>
+                <a href="{% url 'login' %}" class="btn btn-pro"
+                    style="color: var(--gs-primary); border: 2px solid var(--gs-slate);">Login</a>
                 <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary">Join Now</a>
             </div>
         </div>
@@ -233,22 +522,27 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
-                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-4 fw-bold">🚀 Revolutionizing Rural Microfinance</div>
-                <h1 class="hero-title-v3">Empowering <span>Self Help Groups</span> with Digital Ledgers</h1>
-                <p class="hero-desc">GroupSathi replaces traditional paper logbooks with a 100% transparent, consensus-driven digital ecosystem. Manage loans, automate EMI tracking, and empower rural women to achieve financial independence.</p>
+                <div class="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill mb-4 fw-bold"
+                    style="font-size: 0.9rem;">🚀 Revolutionizing Rural Microfinance</div>
+                <h1 class="hero-title-v3">Empowering<br><span>Self Help Groups</span><br>with Digital Ledgers</h1>
+                <p class="hero-desc">GroupSathi replaces traditional paper logbooks with a 100% transparent,
+                    consensus-driven digital ecosystem. Manage loans, automate EMI tracking, and empower rural women to
+                    achieve financial independence.</p>
                 <div class="d-flex flex-wrap gap-3 mt-4">
-                    <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-3 fs-5">Get Started for Free <i class="bi bi-arrow-right ms-2"></i></a>
+                    <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-3 fs-5 gs-btn-glow"
+                        style="border-radius: 50px;">Get Started for Free <i class="bi bi-arrow-right ms-2"></i></a>
                     <div class="d-flex flex-column">
-                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent px-4 py-3 fs-5"><i class="bi bi-android2 me-2"></i>Download APK</a>
-                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the website.</small>
+                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent px-4 py-3 fs-5"><i
+                                class="bi bi-android2 me-2"></i>Download APK</a>
+                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i
+                                class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the
+                            website.</small>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 mt-5 mt-lg-0" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="200">
-                <div class="hero-img-wrapper">
-                    <div class="pulse-dot"></div>
-                    <img src="{% static 'images/shg_meeting.png' %}" alt="Rural women SHG meeting" class="main-img img-fluid">
-                    <img src="{% static 'images/GroupSathi.png' %}" alt="GroupSathi Logo" class="watermark-logo">
+                <div class="hero-mockup-wrapper">
+                    <img src="{% static 'images/shg_meeting_modern.png' %}" alt="Rural women SHG meeting" class="img-fluid floating-img shadow-lg" style="border-radius: 24px; border: 4px solid white; object-fit: contain; max-height: 550px; width: 100%;">
                 </div>
             </div>
         </div>
@@ -261,15 +555,15 @@
         <span><b>LIVE:</b> Automated EMI Tracking Active</span>
         <span>100% Transparent Financial Ledgers</span>
         <span>Empowering Rural India Digitally</span>
-        <span>Zero Hidden Fees</span>
+        <span>No Unnecessary Fees</span>
         <span>Consensus-Driven Group Approvals</span>
         <span>AI-Powered Support Assistant</span>
-        
+
         <!-- Duplicate for infinite loop -->
         <span><b>LIVE:</b> Automated EMI Tracking Active</span>
         <span>100% Transparent Financial Ledgers</span>
         <span>Empowering Rural India Digitally</span>
-        <span>Zero Hidden Fees</span>
+        <span>No Unnecessary Fees</span>
         <span>Consensus-Driven Group Approvals</span>
         <span>AI-Powered Support Assistant</span>
     </div>
@@ -280,54 +574,86 @@
     <div class="container">
         <div class="text-center mb-5" data-aos="fade-up">
             <h2 class="feature-title">Complete Financial Inclusion</h2>
-            <p class="feature-subtitle mx-auto">GroupSathi isn't just an app; it's a movement. We bring enterprise-grade financial transparency to the heart of rural India.</p>
+            <p class="feature-subtitle mx-auto">GroupSathi isn't just an app; it's a movement. We bring enterprise-grade
+                financial transparency to the heart of rural India.</p>
         </div>
-        
+
         <div class="row align-items-center mb-5">
             <div class="col-lg-6 order-lg-2 mb-5 mb-lg-0" data-aos="fade-left">
-                <div class="hero-img-wrapper">
-                    <img src="{% static 'images/rural_digital.png' %}" alt="Digital Technology in Rural India" class="main-img tech-image img-fluid">
-                    <img src="{% static 'images/GroupSathi.png' %}" alt="GroupSathi Logo" class="watermark-logo">
+                <div class="position-relative">
+                    <img src="{% static 'images/rural_digital_modern.png' %}" alt="Digital Technology in Rural India"
+                        class="img-fluid floating-img" style="animation-delay: 1s;">
                 </div>
             </div>
             <div class="col-lg-6 order-lg-1 pe-lg-5" data-aos="fade-right">
                 <h3 class="fw-bold mb-4">Digitizing Paper Logbooks</h3>
-                <p class="text-muted fs-5 lh-lg mb-4">For decades, Self Help Groups have relied on vulnerable paper ledgers. GroupSathi brings these records into the digital age, ensuring that every contribution, loan disbursement, and fine is securely recorded and instantly visible to all members.</p>
+                <p class="text-muted fs-5 lh-lg mb-4" style="color: #475569 !important;">For decades, Self Help Groups
+                    have relied on vulnerable paper ledgers. GroupSathi brings these records into the digital age,
+                    ensuring that every contribution, loan disbursement, and fine is securely recorded and instantly
+                    visible to all members.</p>
                 <ul class="list-unstyled lh-lg">
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Immutable Records:</strong> No more lost or tampered logbooks.</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Instant Synchronization:</strong> Everyone sees the group balance in real-time.</li>
-                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Automated Calculations:</strong> Complex interest rates are handled automatically by the system.</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Immutable Records:</strong> No
+                        more lost or tampered logbooks.</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Instant
+                            Synchronization:</strong> Everyone sees the group balance in real-time.</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Automated
+                            Calculations:</strong> Complex interest rates are handled automatically by the system.</li>
                 </ul>
             </div>
         </div>
-        
+
         <div class="row mt-5">
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
-                    <h4>Consensus Approvals</h4>
-                    <p class="text-muted mt-3">Democracy is built into the code. Loan requests and fine waivers require a majority vote from active group members before they are processed.</p>
+                <div class="feature-card"
+                    style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
+                    <div class="feature-icon"
+                        style="font-size: 2.5rem; color: #3B82F6; margin-bottom: 24px; background: rgba(59,130,246,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h4 class="text-dark">Consensus Approvals</h4>
+                    <p class="text-muted mt-3" style="color: #475569 !important;">Democracy is built into the code. Loan
+                        requests and fine waivers require a majority vote from active group members before they are
+                        processed.</p>
                 </div>
             </div>
+
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
-                    <h4>Live Notifications</h4>
-                    <p class="text-muted mt-3">Stay informed the second a transaction occurs. Instant alerts keep the entire group aligned and responsible.</p>
+                <div class="feature-card"
+                    style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
+                    <div class="feature-icon"
+                        style="font-size: 2.5rem; color: #10B981; margin-bottom: 24px; background: rgba(16,185,129,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+                    <h4 class="text-dark">Live Notifications</h4>
+                    <p class="text-muted mt-3" style="color: #475569 !important;">Stay informed the second a transaction
+                        occurs. Instant alerts keep the entire group aligned and responsible.</p>
                 </div>
             </div>
+
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="bi bi-robot"></i></div>
-                    <h4>AI Support Assistant</h4>
-                    <p class="text-muted mt-3">Integrated Gemini AI is available 24/7 to answer questions and guide users, bridging the digital literacy gap.</p>
+                <div class="feature-card"
+                    style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
+                    <div class="feature-icon"
+                        style="font-size: 2.5rem; color: #8B5CF6; margin-bottom: 24px; background: rgba(139,92,246,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h4 class="text-dark">AI Support Assistant</h4>
+                    <p class="text-muted mt-3" style="color: #475569 !important;">Integrated Gemini AI is available 24/7
+                        to answer questions and guide users, bridging the digital literacy gap.</p>
                 </div>
             </div>
+
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="bi bi-exclamation-octagon"></i></div>
-                    <h4>Fine Management</h4>
-                    <p class="text-muted mt-3">Maintain group discipline easily. Group leaders have the option to impose fines on the members, fully tracked on the digital ledger.</p>
+                <div class="feature-card"
+                    style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
+                    <div class="feature-icon"
+                        style="font-size: 2.5rem; color: #F59E0B; margin-bottom: 24px; background: rgba(245,158,11,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
+                        <i class="bi bi-exclamation-octagon"></i>
+                    </div>
+                    <h4 class="text-dark">Fine Management</h4>
+                    <p class="text-muted mt-3" style="color: #475569 !important;">Maintain group discipline easily.
+                        Group leaders have the option to impose fines on the members, fully tracked on the digital
+                        ledger.</p>
                 </div>
             </div>
         </div>
@@ -340,12 +666,18 @@
         <div class="row align-items-center">
             <div class="col-lg-5 mb-5 mb-lg-0" data-aos="fade-right">
                 <h2 class="feature-title">Live Interactive Platform</h2>
-                <p class="feature-subtitle">Experience real-time financial tracking. Our interface is designed to be intuitive, ensuring that managing loans is as simple as sending a text message.</p>
+                <p class="feature-subtitle">Experience real-time financial tracking. Our interface is designed to be
+                    intuitive, ensuring that managing loans is as simple as sending a text message.</p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary rounded-pill px-4 py-2 fw-bold">Explore the Dashboard</a>
+                    <a href="{% url 'register' %}"
+                        class="btn btn-pro btn-pro-primary rounded-pill px-4 py-2 fw-bold">Explore the Dashboard</a>
                     <div class="d-flex flex-column">
-                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent rounded-pill px-4 py-2 fw-bold"><i class="bi bi-download me-2"></i>Get the App</a>
-                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the website.</small>
+                        <a href="{% url 'download_apk' %}"
+                            class="btn btn-pro btn-pro-accent rounded-pill px-4 py-2 fw-bold"><i
+                                class="bi bi-download me-2"></i>Get the App</a>
+                        <small class="text-muted mt-2" style="font-size: 0.85rem;"><i
+                                class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the
+                            website.</small>
                     </div>
                 </div>
             </div>
@@ -353,10 +685,11 @@
                 <!-- UI Mockup -->
                 <div class="mockup-container">
                     <div class="mockup-header">
-                        <span class="mockup-title"><i class="bi bi-activity text-primary me-2"></i>Live Loan Approvals</span>
+                        <span class="mockup-title"><i class="bi bi-activity text-primary me-2"></i>Live Loan
+                            Approvals</span>
                         <span class="badge bg-primary rounded-pill">Real-time</span>
                     </div>
-                    
+
                     <div class="mockup-item">
                         <div>
                             <strong>Anjali Devi</strong> requested ,15,000<br>
@@ -364,7 +697,7 @@
                         </div>
                         <button class="btn-mockup">Approve</button>
                     </div>
-                    
+
                     <div class="mockup-item">
                         <div>
                             <strong>Priya Sharma</strong> paid EMI ,11,200<br>
@@ -372,7 +705,7 @@
                         </div>
                         <span class="badge bg-success"><i class="bi bi-check-circle"></i> Done</span>
                     </div>
-                    
+
                     <div class="mockup-item">
                         <div>
                             <strong>Kavita Singh</strong> requested fine waiver<br>
@@ -390,8 +723,10 @@
 <section class="portfolio-section">
     <div class="container" data-aos="fade-up">
         <h3 class="fw-bold mb-3">Engineered with Precision</h3>
-        <p class="mb-4 text-white-50">Designed, developed, and maintained by a passionate full-stack developer dedicated to building impactful digital solutions.</p>
-        <a href="https://amankr0075.github.io/FUTURE_FS_01/" target="_blank" rel="noopener noreferrer" class="portfolio-link">
+        <p class="mb-4 text-white-50">Designed, developed, and maintained by a passionate full-stack developer dedicated
+            to building impactful digital solutions.</p>
+        <a href="https://amankr0075.github.io/FUTURE_FS_01/" target="_blank" rel="noopener noreferrer"
+            class="portfolio-link">
             <i class="bi bi-briefcase me-2"></i>View Developer Portfolio
         </a>
     </div>
@@ -401,12 +736,15 @@
 <footer class="bg-dark text-white py-4 text-center mt-auto">
     <div class="container">
         <div class="d-flex justify-content-center align-items-center mb-3">
-            <img src="{% static 'images/GroupSathi.png' %}" alt="Logo" style="height: 30px; margin-right: 10px; border-radius:8px;">
+            <img src="{% static 'images/GroupSathi.png' %}" alt="Logo"
+                style="height: 30px; margin-right: 10px; border-radius:8px;">
             <h5 class="mb-0 fw-bold">GroupSathi</h5>
         </div>
         <div class="mb-3">
-            <a href="#" class="text-white-50 text-decoration-none me-3" data-bs-toggle="modal" data-bs-target="#termsModal"><small>Terms & Conditions</small></a>
-            <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal" data-bs-target="#privacyModal"><small>Privacy Policy</small></a>
+            <a href="#" class="text-white-50 text-decoration-none me-3" data-bs-toggle="modal"
+                data-bs-target="#termsModal"><small>Terms & Conditions</small></a>
+            <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#privacyModal"><small>Privacy Policy</small></a>
         </div>
         <p class="text-muted mb-0">&copy; 2026 GroupSathi. All rights reserved. Empowering rural India.</p>
     </div>
@@ -414,35 +752,47 @@
 
 <!-- Modals for Policies -->
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-dark fw-bold" id="termsModalLabel">Terms & Conditions</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark text-start">
-        <p><strong>1. Record Keeping Only:</strong> GroupSathi is strictly a digital ledger and management tool for Self Help Groups (SHGs). We are only keeping the records of your group's transactions. We are <strong>not</strong> collecting any money from users, nor are we acting as a bank or financial institution.</p>
-        <p><strong>2. Future Subscriptions:</strong> Please be advised that in the future, this platform may charge users a subscription fee to continue accessing its features and services.</p>
-        <p><strong>3. User Responsibility:</strong> All groups and individuals are fully responsible for managing their own physical funds securely outside of the platform. We only maintain the records you input.</p>
-      </div>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark fw-bold" id="termsModalLabel">Terms & Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark text-start">
+                <p><strong>1. Record Keeping Only:</strong> GroupSathi is strictly a digital ledger and management tool
+                    for Self Help Groups (SHGs). We are only keeping the records of your group's transactions. We are
+                    <strong>not</strong> collecting any money from users, nor are we acting as a bank or financial
+                    institution.
+                </p>
+                <p><strong>2. Future Subscriptions:</strong> Please be advised that in the future, this platform may
+                    charge users a subscription fee to continue accessing its features and services.</p>
+                <p><strong>3. User Responsibility:</strong> All groups and individuals are fully responsible for
+                    managing their own physical funds securely outside of the platform. We only maintain the records you
+                    input.</p>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-dark fw-bold" id="privacyModalLabel">Privacy Policy</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark text-start">
-        <p>Your privacy is important to us. GroupSathi only collects information necessary to maintain accurate records of your Self Help Group's activities.</p>
-        <p><strong>Data Usage:</strong> The financial records inputted into GroupSathi are maintained solely for your group's organizational purposes. We do not process actual monetary transactions or collect money.</p>
-        <p><strong>Future Subscription Notice:</strong> In the future, this platform may charge a subscription fee to use. If and when this happens, any changes regarding payment processing and billing data will be updated here and communicated to you.</p>
-      </div>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark fw-bold" id="privacyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark text-start">
+                <p>Your privacy is important to us. GroupSathi only collects information necessary to maintain accurate
+                    records of your Self Help Group's activities.</p>
+                <p><strong>Data Usage:</strong> The financial records inputted into GroupSathi are maintained solely for
+                    your group's organizational purposes. We do not process actual monetary transactions or collect
+                    money.</p>
+                <p><strong>Future Subscription Notice:</strong> In the future, this platform may charge a subscription
+                    fee to use. If and when this happens, any changes regarding payment processing and billing data will
+                    be updated here and communicated to you.</p>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Floating Chatbot Widget -->
@@ -453,7 +803,8 @@
     </div>
     <div class="chatbot-body" id="chatbot-messages">
         <div class="chat-message bot-message">
-            Hello! I am the GroupSathi AI. Ask me anything about our platform, features, or how we empower Self Help Groups!
+            Hello! I am the GroupSathi AI. Ask me anything about our platform, features, or how we empower Self Help
+            Groups!
         </div>
     </div>
     <div class="chatbot-footer">
@@ -481,7 +832,7 @@
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const toggleBtn = document.getElementById('chatbot-toggle');
         const widget = document.getElementById('landing-chatbot-widget');
         const closeBtn = document.getElementById('chatbot-close');
@@ -506,7 +857,7 @@
             userMsg.className = 'chat-message user-message';
             userMsg.textContent = text;
             messagesContainer.appendChild(userMsg);
-            
+
             inputField.value = '';
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
@@ -526,28 +877,28 @@
                 },
                 body: JSON.stringify({ message: text })
             })
-            .then(res => res.json())
-            .then(data => {
-                messagesContainer.removeChild(typingMsg);
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot-message';
-                if (data.error) {
-                    botMsg.textContent = data.error;
-                    botMsg.classList.add('text-danger');
-                } else {
-                    botMsg.textContent = data.reply || data.response || "Sorry, I couldn't understand that.";
-                }
-                messagesContainer.appendChild(botMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            })
-            .catch(err => {
-                messagesContainer.removeChild(typingMsg);
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'chat-message bot-message text-danger';
-                errorMsg.textContent = "Network error. Please try again later.";
-                messagesContainer.appendChild(errorMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
+                .then(res => res.json())
+                .then(data => {
+                    messagesContainer.removeChild(typingMsg);
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'chat-message bot-message';
+                    if (data.error) {
+                        botMsg.textContent = data.error;
+                        botMsg.classList.add('text-danger');
+                    } else {
+                        botMsg.textContent = data.reply || data.response || "Sorry, I couldn't understand that.";
+                    }
+                    messagesContainer.appendChild(botMsg);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    messagesContainer.removeChild(typingMsg);
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'chat-message bot-message text-danger';
+                    errorMsg.textContent = "Network error. Please try again later.";
+                    messagesContainer.appendChild(errorMsg);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
         };
 
         sendBtn.addEventListener('click', sendMessage);

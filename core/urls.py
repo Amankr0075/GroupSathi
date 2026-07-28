@@ -45,7 +45,7 @@ from core.views.support_views import (
     staff_create_escalation_view
 )
 from core.views.search_views import search_member_view
-from core.views.report_views import reports_view, generate_report_pdf
+from core.views.report_views import reports_view, generate_report_pdf, generate_settlement_pdf
 from core.views.settings_views import settings_view, change_password_view
 from core.views.help_views import help_view
 from core.views.calculator_views import calculator_view
@@ -102,6 +102,7 @@ urlpatterns = [
     path('waive-request/<str:request_id>/reject/', reject_waive_request, name='reject_waive_request'),
     path('groups/<str:group_id>/settlement/', group_settlement_preview_view, name='group_settlement_preview'),
     path('groups/<str:group_id>/settlement/execute/', execute_group_settlement_view, name='execute_group_settlement'),
+    path('groups/<str:group_id>/settlement/pdf/', generate_settlement_pdf, name='generate_settlement_pdf'),
 
     # General Fine Imposition Consensus Flow
     path('groups/<str:group_id>/impose-fine/<str:target_user_id>/', impose_fine_request_view, name='impose_fine_request'),

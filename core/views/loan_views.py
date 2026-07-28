@@ -120,7 +120,7 @@ def loan_list_view(request):
 
 
 @login_required_custom
-@ratelimit(key='user', rate='5/h', block=True)
+@ratelimit(key='ip', rate='5/h', block=True)
 def loan_request_view(request, group_id):
     """Request a loan from a group."""
     user_id = request.session['user_id']
@@ -759,6 +759,7 @@ def approve_extend_loan_view(request, request_id):
         return redirect('my_groups')
 
     group_id = req['group_id']
+
     gm = get_collection('group_members')
     membership = gm.find_one({'group_id': group_id, 'user_id': user_id, 'role': {'$in': ['leader', 'co-leader']}, 'status': 'active'})
     if not membership:

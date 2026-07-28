@@ -589,7 +589,7 @@ def group_detail_view(request, group_id):
 
 
 @login_required_custom
-@ratelimit(key='user', rate='2/h', block=True)
+@ratelimit(key='ip', rate='2/h', block=True)
 def send_emi_alert_view(request, group_id):
     """Send manual EMI notification alert to all active group members (leaders/co-leaders only, available on EMI day only)."""
     user_id = request.session['user_id']

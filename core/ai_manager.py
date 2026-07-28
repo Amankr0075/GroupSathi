@@ -55,8 +55,8 @@ class AIManager:
         if not providers:
             return "GroupSathi AI Assistant is currently unconfigured. Please contact support."
         
-        # Exponential backoff delays
-        delays = [1, 2, 4]
+        # Fast retry to avoid UI latency
+        delays = [0.5]
 
         for provider_name, provider in providers:
             # We have len(delays) retries, meaning len(delays) + 1 total attempts

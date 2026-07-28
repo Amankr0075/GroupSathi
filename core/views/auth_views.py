@@ -92,23 +92,29 @@ def login_view(request):
         users = get_collection('users')
         user = users.find_one({'mobile': mobile})
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-            if not user.get('is_active', True):
-                messages.error(request, 'Your account has been deactivated.')
-                return render(request, 'auth/login.html')
+        if user:
+            stored_password = user['password']
+            if isinstance(stored_password, str):
+                stored_password = stored_password.encode('utf-8')
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                if not user.get('is_active', True):
+                    messages.error(request, 'Your account has been deactivated.')
+                    return render(request, 'auth/login.html')
 
-            # Set session
-            request.session['user_id'] = str(user['_id'])
-            request.session['mobile'] = user['mobile']
+                # Set session
+                request.session['user_id'] = str(user['_id'])
+                request.session['mobile'] = user['mobile']
 
-            # Update last login
-            users.update_one(
-                {'_id': user['_id']},
-                {'$set': {'last_login': datetime.now()}}
-            )
+                # Update last login
+                users.update_one(
+                    {'_id': user['_id']},
+                    {'$set': {'last_login': datetime.now()}}
+                )
 
-            messages.success(request, 'Login successful!')
-            return redirect('dashboard')
+                messages.success(request, 'Login successful!')
+                return redirect('dashboard')
+            else:
+                messages.error(request, 'Invalid mobile number or password.')
         else:
             messages.error(request, 'Invalid mobile number or password.')
 
@@ -169,29 +175,35 @@ def admin_login_view(request):
             messages.success(request, 'Staff Login successful!')
             return redirect('custom_admin_dashboard')
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-            if not user.get('is_active', True):
-                messages.error(request, 'Your account has been deactivated.')
-                return render(request, 'auth/admin_login.html')
+        if user:
+            stored_password = user['password']
+            if isinstance(stored_password, str):
+                stored_password = stored_password.encode('utf-8')
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                if not user.get('is_active', True):
+                    messages.error(request, 'Your account has been deactivated.')
+                    return render(request, 'auth/admin_login.html')
 
-            # Ensure they actually have admin or tech_staff privileges
-            if not user.get('is_admin') and user.get('role') != 'tech_staff':
-                messages.error(request, 'You do not have staff permissions.')
-                return render(request, 'auth/admin_login.html')
+                # Ensure they actually have admin or tech_staff privileges
+                if not user.get('is_admin') and user.get('role') != 'tech_staff':
+                    messages.error(request, 'You do not have staff permissions.')
+                    return render(request, 'auth/admin_login.html')
 
-            # Set session
-            request.session['user_id'] = str(user['_id'])
-            request.session['mobile'] = user.get('mobile', '')
-            request.session['email'] = user.get('email', '')
+                # Set session
+                request.session['user_id'] = str(user['_id'])
+                request.session['mobile'] = user.get('mobile', '')
+                request.session['email'] = user.get('email', '')
 
-            # Update last login
-            users.update_one(
-                {'_id': user['_id']},
-                {'$set': {'last_login': datetime.now()}}
-            )
+                # Update last login
+                users.update_one(
+                    {'_id': user['_id']},
+                    {'$set': {'last_login': datetime.now()}}
+                )
 
-            messages.success(request, 'Staff Login successful!')
-            return redirect('custom_admin_dashboard' if user.get('is_admin') else 'staff_dashboard')
+                messages.success(request, 'Staff Login successful!')
+                return redirect('custom_admin_dashboard' if user.get('is_admin') else 'staff_dashboard')
+            else:
+                messages.error(request, 'Invalid email or password.')
         else:
             messages.error(request, 'Invalid email or password.')
 
@@ -307,8 +319,14 @@ def verify_pin_api(request):
             users = get_collection('users')
             user = users.find_one({'_id': ObjectId(request.session['user_id'])})
             
-            if user and bcrypt.checkpw(pin.encode('utf-8'), user['password']):
-                return JsonResponse({'success': True})
+            if user:
+                stored_password = user['password']
+                if isinstance(stored_password, str):
+                    stored_password = stored_password.encode('utf-8')
+                if bcrypt.checkpw(pin.encode('utf-8'), stored_password):
+                    return JsonResponse({'success': True})
+                else:
+                    return JsonResponse({'success': False, 'error': 'Invalid PIN'})
             else:
                 return JsonResponse({'success': False, 'error': 'Invalid PIN'})
         except Exception as e:

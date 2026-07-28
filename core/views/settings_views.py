@@ -27,7 +27,11 @@ def change_password_view(request):
         users = get_collection('users')
         user = users.find_one({'_id': ObjectId(request.session['user_id'])})
 
-        if not bcrypt.checkpw(current.encode('utf-8'), user['password']):
+        stored_password = user['password']
+        if isinstance(stored_password, str):
+            stored_password = stored_password.encode('utf-8')
+
+        if not bcrypt.checkpw(current.encode('utf-8'), stored_password):
             messages.error(request, 'Current password is incorrect.')
             return redirect('settings')
 
