@@ -6,9 +6,12 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-
+# Define BASE_DIR first so we can use it to find the .env file reliably
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from the .env file in BASE_DIR
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
