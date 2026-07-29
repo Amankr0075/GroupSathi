@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'core.middleware.XForwardedForMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,7 +149,7 @@ REST_FRAMEWORK = {
 # django-ratelimit settings
 RATELIMIT_USE_CACHE = 'default'
 RATELIMIT_VIEW = 'core.views.error_views.ratelimit_error_view'
-RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR' if not DEBUG else 'REMOTE_ADDR'
+RATELIMIT_IP_META_KEY = 'REMOTE_ADDR'
 
 # SimpleJWT Settings
 from datetime import timedelta
