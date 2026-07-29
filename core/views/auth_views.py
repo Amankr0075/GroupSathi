@@ -5,11 +5,14 @@ Handles registration, login, logout with MongoDB-backed user storage.
 
 import bcrypt
 from datetime import datetime
+import logging
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from core.db import get_collection
 from core.utils import generate_member_id
 from django_ratelimit.decorators import ratelimit
+
+logger = logging.getLogger(__name__)
 
 
 @ratelimit(key='ip', rate='10/5m', block=True)
@@ -86,37 +89,54 @@ def login_view(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        mobile = request.POST.get('mobile', '').strip()
-        password = request.POST.get('password', '').strip()
+        try:
+            mobile = request.POST.get('mobile', '').strip()
+            password = request.POST.get('password', '').strip()
 
-        users = get_collection('users')
-        user = users.find_one({'mobile': mobile})
+            users = get_collection('users')
+            user = users.find_one({'mobile': mobile})
 
-        if user:
-            stored_password = user['password']
-            if isinstance(stored_password, str):
-                stored_password = stored_password.encode('utf-8')
-            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
-                if not user.get('is_active', True):
-                    messages.error(request, 'Your account has been deactivated.')
+            if user:
+                stored_password = user['password']
+                if isinstance(stored_password, str):
+                    stored_password = stored_password.encode('utf-8')
+                
+                try:
+                    is_valid = bcrypt.checkpw(password.encode('utf-8'), stored_password)
+                except ValueError as e:
+                    logger.error(f"Bcrypt error for user {mobile}: {str(e)}")
+                    messages.error(request, 'System error verifying credentials.')
                     return render(request, 'auth/login.html')
 
-                # Set session
-                request.session['user_id'] = str(user['_id'])
-                request.session['mobile'] = user['mobile']
+                if is_valid:
+                    if not user.get('is_active', True):
+                        messages.error(request, 'Your account has been deactivated.')
+                        return render(request, 'auth/login.html')
 
-                # Update last login
-                users.update_one(
-                    {'_id': user['_id']},
-                    {'$set': {'last_login': datetime.now()}}
-                )
+                    # Set session
+                    request.session['user_id'] = str(user['_id'])
+                    request.session['mobile'] = user['mobile']
+                    
+                    # Force session save to catch SQLite write permission errors early
+                    request.session.save()
 
-                messages.success(request, 'Login successful!')
-                return redirect('dashboard')
+                    # Update last login
+                    users.update_one(
+                        {'_id': user['_id']},
+                        {'$set': {'last_login': datetime.now()}}
+                    )
+
+                    messages.success(request, 'Login successful!')
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, 'Invalid mobile number or password.')
             else:
                 messages.error(request, 'Invalid mobile number or password.')
-        else:
-            messages.error(request, 'Invalid mobile number or password.')
+                
+        except Exception as e:
+            logger.exception("Error during normal login process:")
+            messages.error(request, f'An unexpected error occurred: {str(e)}')
+            return render(request, 'auth/login.html', status=500)
 
     return render(request, 'auth/login.html')
 
@@ -128,84 +148,104 @@ def admin_login_view(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        import os
-        email = request.POST.get('email', '').strip().lower()
-        password = request.POST.get('password', '').strip()
+        try:
+            import os
+            email = request.POST.get('email', '').strip().lower()
+            password = request.POST.get('password', '').strip()
 
-        admin_email = os.environ.get('ADMIN_PORTAL_EMAIL')
-        admin_password = os.environ.get('ADMIN_PORTAL_PASSWORD')
-        
-        is_env_admin = False
-        if admin_email and admin_password and email == admin_email.lower() and password == admin_password:
-            is_env_admin = True
+            admin_email = os.environ.get('ADMIN_PORTAL_EMAIL')
+            admin_password = os.environ.get('ADMIN_PORTAL_PASSWORD')
+            
+            is_env_admin = False
+            if admin_email and admin_password and email == admin_email.lower() and password == admin_password:
+                is_env_admin = True
 
-        users = get_collection('users')
-        user = users.find_one({'email': email})
+            users = get_collection('users')
+            user = users.find_one({'email': email})
 
-        if is_env_admin:
-            if not user:
-                import uuid
-                hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-                user_data = {
-                    'email': email,
-                    'mobile': 'admin_' + str(uuid.uuid4())[:8],
-                    'password': hashed,
-                    'is_active': True,
-                    'is_admin': True,
-                    'role': 'super_admin',
-                    'created_at': datetime.now(),
-                    'updated_at': datetime.now(),
-                }
-                result = users.insert_one(user_data)
-                user = users.find_one({'_id': result.inserted_id})
-            elif not user.get('is_admin'):
-                users.update_one({'_id': user['_id']}, {'$set': {'is_admin': True, 'role': 'super_admin'}})
-                user['is_admin'] = True
-                user['role'] = 'super_admin'
+            if is_env_admin:
+                if not user:
+                    import uuid
+                    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                    user_data = {
+                        'email': email,
+                        'mobile': 'admin_' + str(uuid.uuid4())[:8],
+                        'password': hashed,
+                        'is_active': True,
+                        'is_admin': True,
+                        'role': 'super_admin',
+                        'created_at': datetime.now(),
+                        'updated_at': datetime.now(),
+                    }
+                    result = users.insert_one(user_data)
+                    user = users.find_one({'_id': result.inserted_id})
+                elif not user.get('is_admin'):
+                    users.update_one({'_id': user['_id']}, {'$set': {'is_admin': True, 'role': 'super_admin'}})
+                    user['is_admin'] = True
+                    user['role'] = 'super_admin'
 
-            request.session['user_id'] = str(user['_id'])
-            request.session['mobile'] = user.get('mobile', '')
-            request.session['email'] = user.get('email', '')
-
-            users.update_one(
-                {'_id': user['_id']},
-                {'$set': {'last_login': datetime.now()}}
-            )
-
-            messages.success(request, 'Staff Login successful!')
-            return redirect('custom_admin_dashboard')
-
-        if user:
-            stored_password = user['password']
-            if isinstance(stored_password, str):
-                stored_password = stored_password.encode('utf-8')
-            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
-                if not user.get('is_active', True):
-                    messages.error(request, 'Your account has been deactivated.')
-                    return render(request, 'auth/admin_login.html')
-
-                # Ensure they actually have admin or tech_staff privileges
-                if not user.get('is_admin') and user.get('role') != 'tech_staff':
-                    messages.error(request, 'You do not have staff permissions.')
-                    return render(request, 'auth/admin_login.html')
-
-                # Set session
                 request.session['user_id'] = str(user['_id'])
                 request.session['mobile'] = user.get('mobile', '')
                 request.session['email'] = user.get('email', '')
 
-                # Update last login
+                # Force session save to catch SQLite write permission errors early
+                request.session.save()
+
                 users.update_one(
                     {'_id': user['_id']},
                     {'$set': {'last_login': datetime.now()}}
                 )
 
                 messages.success(request, 'Staff Login successful!')
-                return redirect('custom_admin_dashboard' if user.get('is_admin') else 'staff_dashboard')
+                return redirect('custom_admin_dashboard')
+
+            if user:
+                stored_password = user['password']
+                if isinstance(stored_password, str):
+                    stored_password = stored_password.encode('utf-8')
+                
+                try:
+                    is_valid = bcrypt.checkpw(password.encode('utf-8'), stored_password)
+                except ValueError as e:
+                    logger.error(f"Bcrypt error for user {email}: {str(e)}")
+                    messages.error(request, 'System error verifying credentials. Please contact support.')
+                    return render(request, 'auth/admin_login.html')
+
+                if is_valid:
+                    if not user.get('is_active', True):
+                        messages.error(request, 'Your account has been deactivated.')
+                        return render(request, 'auth/admin_login.html')
+
+                    # Ensure they actually have admin or tech_staff privileges
+                    if not user.get('is_admin') and user.get('role') != 'tech_staff':
+                        messages.error(request, 'You do not have staff permissions.')
+                        return render(request, 'auth/admin_login.html')
+
+                    # Set session
+                    request.session['user_id'] = str(user['_id'])
+                    request.session['mobile'] = user.get('mobile', '')
+                    request.session['email'] = user.get('email', '')
+
+                    # Force session save to catch SQLite write errors
+                    request.session.save()
+
+                    # Update last login
+                    users.update_one(
+                        {'_id': user['_id']},
+                        {'$set': {'last_login': datetime.now()}}
+                    )
+
+                    messages.success(request, 'Staff Login successful!')
+                    return redirect('custom_admin_dashboard' if user.get('is_admin') else 'staff_dashboard')
+                else:
+                    messages.error(request, 'Invalid email or password.')
             else:
                 messages.error(request, 'Invalid email or password.')
-        else:
-            messages.error(request, 'Invalid email or password.')
+
+        except Exception as e:
+            logger.exception("Error during admin login process:")
+            messages.error(request, f'An unexpected error occurred: {str(e)}')
+            return render(request, 'auth/admin_login.html', status=500)
 
     return render(request, 'auth/admin_login.html')
 
