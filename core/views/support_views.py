@@ -54,14 +54,24 @@ def my_tickets_view(request):
 @login_required
 def create_ticket_view(request):
     """Customer: Create a new support ticket."""
+    user_id = request.session.get('user_id')
+    
+    # Get member_id from profile
+    profiles_col = get_collection('profiles')
+    user_profile = profiles_col.find_one({'user_id': user_id}) or {}
+    member_id = user_profile.get('member_id', '')
+    
+    # Get mobile from users collection
+    users_col = get_collection('users')
+    user_data = users_col.find_one({'_id': ObjectId(user_id)}) or {}
+    mobile = user_data.get('mobile', '')
+
     if request.method == 'POST':
         subject = request.POST.get('subject', '').strip()
         description = request.POST.get('description', '').strip()
-        member_id = request.POST.get('member_id', '').strip()
-        mobile_number = request.POST.get('mobile_number', '').strip()
         
-        if not subject or not description or not member_id or not mobile_number:
-            messages.error(request, 'Subject, description, Member ID, and Mobile are required.')
+        if not subject or not description:
+            messages.error(request, 'Subject and description are required.')
             return redirect('create_ticket')
             
         img_path, error = handle_image_upload(request, 'screenshot')
@@ -71,12 +81,22 @@ def create_ticket_view(request):
             
         user_id = request.session.get('user_id')
         
+        # Find a random tech staff
+        import random
+        users_col = get_collection('users')
+        tech_staffs = list(users_col.find({'role': 'tech_staff'}))
+        assigned_staff_id = str(random.choice(tech_staffs)['_id']) if tech_staffs else None
+        
         ticket = {
             'user_id': user_id,
             'member_id': member_id,
-            'mobile': mobile_number,
+            'mobile': mobile,
             'subject': subject,
             'status': 'open',
+            'assigned_staff_id': assigned_staff_id,
+            'was_escalated': False,
+            'rating': None,
+            'review_text': None,
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'messages': [
@@ -92,10 +112,24 @@ def create_ticket_view(request):
         
         tickets_col = get_collection('tickets')
         tickets_col.insert_one(ticket)
+        
+        # Notify the assigned technical staff
+        if assigned_staff_id:
+            from core.utils import create_notification
+            create_notification(
+                user_id=assigned_staff_id,
+                title="New Support Ticket Assigned",
+                message=f"A new ticket '{subject}' has been assigned to you.",
+                notification_type="info"
+            )
+            
         messages.success(request, 'Your support ticket has been submitted successfully.')
         return redirect('my_tickets')
         
-    return render(request, 'support/create_ticket.html')
+    return render(request, 'support/create_ticket.html', {
+        'member_id': member_id,
+        'mobile': mobile
+    })
 
 @login_required
 def ticket_chat_view(request, ticket_id):
@@ -118,7 +152,18 @@ def ticket_chat_view(request, ticket_id):
         messages.error(request, 'Unauthorized access.')
         return redirect('my_tickets')
         
-    if request.method == 'POST':
+        # Review Submission (Customer Only)
+        if not is_staff and ticket.get('status') == 'resolved' and 'rating' in request.POST:
+            rating = request.POST.get('rating')
+            review_text = request.POST.get('review_text', '').strip()
+            if rating:
+                tickets_col.update_one(
+                    {'_id': ObjectId(ticket_id)},
+                    {'$set': {'rating': int(rating), 'review_text': review_text, 'updated_at': datetime.now()}}
+                )
+                messages.success(request, 'Thank you for your feedback!')
+                return redirect('ticket_chat', ticket_id=ticket_id)
+                
         reply_text = request.POST.get('reply', '').strip()
         new_status = request.POST.get('status') # Staff can update status
         
@@ -151,6 +196,19 @@ def ticket_chat_view(request, ticket_id):
             
         if is_staff and new_status and new_status in ['open', 'in_progress', 'resolved', 'escalated']:
             update_data['$set']['status'] = new_status
+            if new_status == 'escalated':
+                update_data['$set']['was_escalated'] = True
+                # Notify all admins
+                from core.utils import create_notification
+                users_col = get_collection('users')
+                admins = list(users_col.find({'is_admin': True}))
+                for admin in admins:
+                    create_notification(
+                        user_id=str(admin['_id']),
+                        title="Ticket Escalated",
+                        message=f"Ticket '{ticket.get('subject')}' has been escalated to Admin.",
+                        notification_type="warning"
+                    )
             
         tickets_col.update_one({'_id': ObjectId(ticket_id)}, update_data)
         messages.success(request, 'Ticket updated successfully.')

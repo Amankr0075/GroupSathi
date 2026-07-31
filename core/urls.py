@@ -47,7 +47,7 @@ from core.views.support_views import (
 from core.views.search_views import search_member_view
 from core.views.report_views import reports_view, generate_report_pdf, generate_settlement_pdf
 from core.views.settings_views import settings_view, change_password_view
-from core.views.help_views import help_view
+from core.views.help_views import help_view, download_legal_docs_view
 from core.views.calculator_views import calculator_view
 from core.views.download_views import download_apk_view
 from core.views.chatbot_views import get_jwt_token_view, ChatbotAskView, ChatbotHistoryView, PublicChatbotAskView, ai_summarize_view, ai_generate_message_view, ai_generate_image_view
@@ -145,8 +145,9 @@ urlpatterns = [
     path('settings/', settings_view, name='settings'),
     path('settings/password/', change_password_view, name='change_password'),
 
-    # Help
+    # Help & Legal
     path('help/', help_view, name='help'),
+    path('help/legal/download/', download_legal_docs_view, name='download_legal_docs'),
 
     # Calculator
     path('calculator/', calculator_view, name='calculator'),

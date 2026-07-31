@@ -2,50 +2,148 @@
 
 {% block title %}Contact Support - GroupSathi{% endblock %}
 
-{% block content %}
-<div class="container" style="max-width: 600px;">
-    <a href="{% url 'dashboard' %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Dashboard</a>
+{% block extra_css %}
+<style>
+    .support-header {
+        background: url('https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+        position: relative;
+        padding: 4rem 2rem;
+        border-radius: 24px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+        box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
+    }
     
-    <div class="gs-card mt-3">
-        <div class="gs-card-header text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB); border-bottom: none; padding: 1.5rem;">
-            <h3 class="mb-0 fw-bold"><i class="bi bi-headset me-2"></i>Contact Support</h3>
+    .support-header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(59,130,246,0.8) 100%);
+    }
+
+    .support-header-content {
+        position: relative;
+        z-index: 1;
+        color: white;
+        text-align: center;
+    }
+
+    .support-form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+        border: 1px solid #F1F5F9;
+        padding: 2.5rem;
+        position: relative;
+        margin-top: -3rem;
+        z-index: 2;
+    }
+
+    .gs-input-modern {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+        width: 100%;
+        display: block;
+    }
+
+    .gs-input-modern:focus {
+        background: #fff;
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    
+    .gs-input-modern[readonly] {
+        background: #F1F5F9;
+        cursor: not-allowed;
+        color: #64748B;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .support-notice {
+        background: #FFFBEB;
+        border: 1px solid #FEF3C7;
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #92400E;
+        margin-bottom: 2rem;
+    }
+
+    .support-notice i {
+        font-size: 1.5rem;
+        color: #F59E0B;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; padding-bottom: 4rem;">
+    <a href="{% url 'dashboard' %}" class="gs-back-btn mb-4 position-relative" style="bottom: auto; left: auto;"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    
+    <div class="support-header">
+        <div class="support-header-content">
+            <h2 class="fw-bold mb-2" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-headset me-2"></i>Contact Support</h2>
+            <p class="mb-0 text-white-50">We are here to help you resolve any issues.</p>
         </div>
-        <form method="post" enctype="multipart/form-data" class="p-4 bg-white">
+    </div>
+    
+    <div class="support-form-card">
+        <div class="support-notice shadow-sm">
+            <i class="bi bi-clock-history"></i>
+            <div>
+                <h6 class="fw-bold mb-1">Resolution Timeframe</h6>
+                <p class="mb-0" style="font-size: 0.85rem;">Please note that it takes a maximum of <strong>7 working days</strong> to resolve your problem. We appreciate your patience.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <p class="text-muted mb-4">Please describe the issue you are facing. Our technical staff will get back to you shortly.</p>
             
-            <div class="row">
+            <div class="row g-4 mb-4">
                 <div class="col-md-6">
-                    <div class="gs-form-group">
-                        <label>Member ID *</label>
-                        <input type="text" name="member_id" class="gs-input" placeholder="e.g. GS-12345" required>
-                    </div>
+                    <label class="form-label">Member ID <i class="bi bi-lock-fill text-muted ms-1" style="font-size: 0.75rem;"></i></label>
+                    <input type="text" name="member_id" class="gs-input-modern" value="{{ member_id }}" readonly>
                 </div>
                 <div class="col-md-6">
-                    <div class="gs-form-group">
-                        <label>Mobile Number *</label>
-                        <input type="text" name="mobile_number" class="gs-input" placeholder="e.g. 9876543210" required>
-                    </div>
+                    <label class="form-label">Mobile Number <i class="bi bi-lock-fill text-muted ms-1" style="font-size: 0.75rem;"></i></label>
+                    <input type="text" name="mobile_number" class="gs-input-modern" value="{{ mobile }}" readonly>
                 </div>
             </div>
             
-            <div class="gs-form-group">
-                <label>Subject *</label>
-                <input type="text" name="subject" class="gs-input" placeholder="e.g. App crashing on loan page" required>
+            <div class="mb-4">
+                <label class="form-label">Subject *</label>
+                <input type="text" name="subject" class="gs-input-modern" placeholder="e.g. App crashing on loan page" required>
             </div>
             
-            <div class="gs-form-group">
-                <label>Problem Description *</label>
-                <textarea name="description" class="gs-input" rows="5" placeholder="Please provide details about the issue..." required></textarea>
+            <div class="mb-4">
+                <label class="form-label">Problem Description *</label>
+                <textarea name="description" class="gs-input-modern" rows="5" placeholder="Please provide detailed information about the issue you are facing..." required></textarea>
             </div>
             
-            <div class="gs-form-group">
-                <label>Screenshot (Optional, < 1MB)</label>
-                <input type="file" name="screenshot" class="form-control gs-input" accept="image/png, image/jpeg">
+            <div class="mb-4">
+                <label class="form-label">Screenshot (Optional)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-image"></i></span>
+                    <input type="file" name="screenshot" class="form-control gs-input-modern border-start-0" accept="image/png, image/jpeg" style="border-radius: 0 12px 12px 0;">
+                </div>
+                <div class="form-text mt-1 text-muted"><small>Max file size: 1MB. Format: JPG or PNG.</small></div>
             </div>
             
-            <button type="submit" class="btn btn-primary w-100 mt-2 rounded-pill shadow-sm" style="padding: 14px; font-size: 1.1rem; border:none; background: linear-gradient(135deg, #2563EB, #1D4ED8);">
-                <i class="bi bi-send-fill me-2"></i> Submit Ticket
+            <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm d-flex justify-content-center align-items-center" style="padding: 14px; font-size: 1.05rem; font-weight: 600; border:none; background: linear-gradient(135deg, #2563EB, #1D4ED8);">
+                <i class="bi bi-send-fill me-2"></i> Submit Support Request
             </button>
         </form>
     </div>

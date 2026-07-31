@@ -78,6 +78,26 @@
         padding: 1.25rem;
         border-top: 1px solid #e2e8f0;
     }
+    .rating-stars {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .rating-stars input {
+        display: none;
+    }
+    .rating-stars label {
+        font-size: 2rem;
+        color: #d1d5db;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .rating-stars input:checked ~ label,
+    .rating-stars label:hover,
+    .rating-stars label:hover ~ label {
+        color: #fbbf24;
+    }
 </style>
 {% endblock %}
 
@@ -90,34 +110,45 @@
     {% endif %}
 
     <div class="chat-container shadow-sm">
-        <div class="chat-header">
-            <div>
-                <h5 class="mb-1 fw-bold">{{ ticket.subject }}</h5>
-                <small class="text-muted">Mobile: {{ ticket.mobile }}</small>
+        <div class="chat-header flex-column align-items-start flex-md-row align-items-md-center">
+            <div class="mb-2 mb-md-0">
+                <h5 class="mb-1 fw-bold text-dark">{{ ticket.subject }}</h5>
+                <div class="d-flex flex-wrap gap-3 text-muted" style="font-size: 0.85rem;">
+                    <span><i class="bi bi-telephone-fill me-1"></i>{{ ticket.mobile }}</span>
+                    <span><i class="bi bi-calendar-event me-1"></i>{{ ticket.created_at|date:"M d, Y" }}</span>
+                </div>
             </div>
             
-            {% if is_staff %}
-            <form method="post" id="statusForm" class="d-flex align-items-center">
-                {% csrf_token %}
-                <select name="status" class="form-select form-select-sm me-2 rounded-pill shadow-sm" onchange="document.getElementById('statusForm').submit();">
-                    <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
-                    <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
-                    <option value="escalated" {% if ticket.status == 'escalated' %}selected{% endif %} class="text-danger fw-bold">Escalate to Admin</option>
-                    <option value="resolved" {% if ticket.status == 'resolved' %}selected{% endif %}>Resolved</option>
-                </select>
-            </form>
-            {% else %}
-                {% if ticket.status == 'open' %}
-                <span class="badge bg-warning rounded-pill text-dark">Open</span>
-                {% elif ticket.status == 'in_progress' %}
-                <span class="badge bg-primary rounded-pill">In Progress</span>
-                {% elif ticket.status == 'escalated' %}
-                <span class="badge bg-danger rounded-pill">Escalated to Admin</span>
+            <div class="d-flex align-items-center">
+                {% if is_staff %}
+                <form method="post" id="statusForm" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    <select name="status" class="form-select form-select-sm me-2 rounded-pill shadow-sm" onchange="document.getElementById('statusForm').submit();">
+                        <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+                        <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="escalated" {% if ticket.status == 'escalated' %}selected{% endif %} class="text-danger fw-bold">Escalate to Admin</option>
+                        <option value="resolved" {% if ticket.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                </form>
                 {% else %}
-                <span class="badge bg-success rounded-pill">Resolved</span>
+                    {% if ticket.status == 'open' %}
+                    <span class="badge bg-warning rounded-pill text-dark px-3 py-2">Open</span>
+                    {% elif ticket.status == 'in_progress' %}
+                    <span class="badge bg-primary rounded-pill px-3 py-2">In Progress</span>
+                    {% elif ticket.status == 'escalated' %}
+                    <span class="badge bg-danger rounded-pill px-3 py-2">Escalated to Admin</span>
+                    {% else %}
+                    <span class="badge bg-success rounded-pill px-3 py-2">Resolved</span>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
         </div>
+
+        {% if not is_staff and ticket.status != 'resolved' %}
+        <div class="bg-light border-bottom p-2 text-center text-muted" style="font-size: 0.8rem;">
+            <i class="bi bi-info-circle me-1 text-primary"></i> It takes a maximum of <strong>7 working days</strong> to solve the problem.
+        </div>
+        {% endif %}
 
         <div class="chat-messages" id="chatArea">
             {% for msg in ticket.messages %}
@@ -150,10 +181,41 @@
         </div>
 
         <div class="chat-input-area">
-            {% if ticket.status == 'resolved' and not is_staff %}
-                <div class="alert alert-success mb-0 text-center rounded-pill">
-                    <i class="bi bi-check-circle-fill me-2"></i> This ticket is resolved.
-                </div>
+            {% if ticket.status == 'resolved' %}
+                {% if ticket.rating %}
+                    <div class="alert alert-light border mb-0 text-center rounded-3">
+                        <h6 class="fw-bold mb-2">Ticket Resolution Review</h6>
+                        <div class="text-warning mb-2" style="font-size: 1.2rem;">
+                            {% for i in "12345" %}
+                                <i class="bi bi-star-fill {% if forloop.counter > ticket.rating %}text-secondary opacity-25{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        {% if ticket.review_text %}
+                            <p class="mb-0 text-muted fst-italic">"{{ ticket.review_text }}"</p>
+                        {% endif %}
+                    </div>
+                {% elif not is_staff %}
+                    <div class="card border-0 shadow-sm rounded-3 bg-light p-4 text-center">
+                        <h5 class="fw-bold text-dark mb-1">How did we do?</h5>
+                        <p class="text-muted small mb-3">Please rate your support experience.</p>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="rating-stars mb-3">
+                                <input type="radio" name="rating" id="star5" value="5" required><label for="star5" class="bi bi-star-fill"></label>
+                                <input type="radio" name="rating" id="star4" value="4"><label for="star4" class="bi bi-star-fill"></label>
+                                <input type="radio" name="rating" id="star3" value="3"><label for="star3" class="bi bi-star-fill"></label>
+                                <input type="radio" name="rating" id="star2" value="2"><label for="star2" class="bi bi-star-fill"></label>
+                                <input type="radio" name="rating" id="star1" value="1"><label for="star1" class="bi bi-star-fill"></label>
+                            </div>
+                            <textarea name="review_text" class="form-control mb-3" rows="2" placeholder="Write a review (optional)..." style="border-radius: 10px;"></textarea>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold w-100">Submit Review</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success mb-0 text-center rounded-pill">
+                        <i class="bi bi-check-circle-fill me-2"></i> This ticket is resolved. Waiting for customer review.
+                    </div>
+                {% endif %}
             {% else %}
                 <form method="post" enctype="multipart/form-data" class="d-flex align-items-end gap-2">
                     {% csrf_token %}

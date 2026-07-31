@@ -46,10 +46,17 @@ class AIManager:
 
     @staticmethod
     def generate_response(user_id: str, full_prompt: str) -> str:
+        import os
         providers = []
-        if getattr(settings, 'GEMINI_API_KEY', None):
+        gemini_key = getattr(settings, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY')
+        groq_key = getattr(settings, 'GROQ_API_KEY', None) or os.getenv('GROQ_API_KEY')
+        
+        if gemini_key:
+            # We temporarily set the setting in case GeminiProvider relies on it directly
+            settings.GEMINI_API_KEY = gemini_key
             providers.append(("gemini-2.0", GeminiProvider('gemini-2.0-flash')))
-        if getattr(settings, 'GROQ_API_KEY', None):
+        if groq_key:
+            settings.GROQ_API_KEY = groq_key
             providers.append(("groq", GroqProvider('llama-3.3-70b-versatile')))
             
         if not providers:

@@ -110,6 +110,41 @@
         }
     }
 
+    @media (max-width: 767px) {
+        body.is-mobile-app .gs-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        body.is-mobile-app .gs-dash-card {
+            flex-direction: column;
+            gap: 0.4rem;
+            padding: 0.75rem 0.2rem;
+            text-align: center;
+        }
+        body.is-mobile-app .gs-dash-card-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1.1rem;
+            margin: 0 auto;
+        }
+        body.is-mobile-app .gs-dash-card-name {
+            font-size: 0.65rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+        body.is-mobile-app .gs-dash-card-arrow {
+            display: none;
+        }
+        body.is-mobile-app .gs-dash-card-badge {
+            top: 2px;
+            right: 2px;
+            font-size: 0.55rem;
+            padding: 1px 4px;
+        }
+    }
+
     .gs-dash-card {
         background: #ffffff;
         border-radius: 16px;
@@ -262,6 +297,18 @@
 
 {% block extra_js %}
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Detect if running in an App (Standalone PWA, TWA, or WebView)
+    const isApp = window.matchMedia('(display-mode: standalone)').matches || 
+                  window.navigator.standalone || 
+                  document.referrer.includes('android-app://') ||
+                  /wv|MicroMessenger|WebView/i.test(navigator.userAgent);
+                  
+    if (isApp) {
+        document.body.classList.add('is-mobile-app');
+    }
+});
+
 function shareGroupSathi(e) {
     e.preventDefault();
     const shareData = {

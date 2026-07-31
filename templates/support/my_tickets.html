@@ -26,28 +26,24 @@
             onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 .5rem 1.5rem rgba(0,0,0,.08)';"
             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 .125rem .25rem rgba(0,0,0,.075)';">
             <div class="card-body p-4 p-md-5">
-                <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
-                    <h5 class="fw-bold mb-2 me-3" style="color: #0F172A; font-family: 'Outfit', sans-serif;">{{
-                        ticket.subject }}</h5>
-                    <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill"
-                        style="font-weight: 500;"><i class="bi bi-calendar-event me-1"></i> {{ ticket.created_at|date:"M
-                        d, Y" }}</span>
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 text-dark">{{ ticket.subject }}</h4>
+                    <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill d-flex align-items-center gap-2" style="font-weight: 500;">
+                        <i class="bi bi-calendar3"></i> {{ ticket.created_at|date:"M d, Y" }}
+                    </span>
                 </div>
 
-                <p class="text-secondary text-truncate mb-5" style="font-size: 0.95rem; max-width: 90%;">{{
-                    ticket.messages.0.text }}</p>
+                <p class="text-secondary text-truncate mb-5" style="font-size: 1rem; max-width: 90%;">{{ ticket.messages.0.text }}</p>
 
-                <!-- Premium 4-Step Track Map -->
-                <div class="position-relative w-100" style="padding: 0 10px;">
+                <!-- Clean Horizontal Stepper -->
+                <div class="position-relative w-100 mt-4 px-2">
                     <!-- Base Track Line -->
-                    <div class="position-absolute w-100"
-                        style="top: 14px; left: 0; height: 4px; background-color: #F1F5F9; border-radius: 2px; z-index: 1;">
-                    </div>
+                    <div class="position-absolute w-100" style="top: 15px; left: 0; height: 3px; background-color: #E2E8F0; z-index: 1;"></div>
 
                     <!-- Dynamic Progress Line -->
-                    <div class="position-absolute" style="top: 14px; left: 0; height: 4px; background-color: #3B82F6; border-radius: 2px; z-index: 1; transition: width 0.5s ease;
+                    <div class="position-absolute" style="top: 15px; left: 0; height: 3px; background-color: #3B82F6; z-index: 1; transition: width 0.5s ease;
                         width: {% if ticket.status == 'open' %}0%
-                               {% elif ticket.status == 'in_progress' %}33%
+                               {% elif ticket.status == 'in_progress' %}{% if ticket.was_escalated %}33%{% else %}50%{% endif %}
                                {% elif ticket.status == 'escalated' %}66%
                                {% else %}100%{% endif %};">
                     </div>
@@ -55,43 +51,42 @@
                     <div class="d-flex justify-content-between position-relative" style="z-index: 2;">
                         <!-- Step 1: Raised -->
                         <div class="text-center" style="width: 80px; margin-left: -40px;">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 32px; height: 32px; background-color: #3B82F6; color: white; border: 4px solid #fff; box-shadow: 0 0 0 1px #3B82F6;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto bg-primary text-white"
+                                style="width: 32px; height: 32px; border: 3px solid #fff; box-shadow: 0 0 0 1px #3B82F6;">
                                 <i class="bi bi-check" style="font-size: 16px;"></i>
                             </div>
-                            <div class="mt-2" style="font-size: 0.75rem; font-weight: 600; color: #1E293B;">Raised</div>
+                            <div class="mt-2" style="font-size: 0.8rem; font-weight: 600; color: #1E293B;">Raised</div>
                         </div>
 
                         <!-- Step 2: In Progress -->
-                        <div class="text-center" style="width: 80px; margin-left: -40px;">
+                        <div class="text-center" style="width: 80px; {% if not ticket.was_escalated %}margin-left: 0;{% else %}margin-left: -40px;{% endif %}">
                             <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 32px; height: 32px; background-color: {% if ticket.status != 'open' %}#3B82F6{% else %}#F8FAFC{% endif %}; color: {% if ticket.status != 'open' %}white{% else %}#94A3B8{% endif %}; border: 4px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status != 'open' %}#3B82F6{% else %}#E2E8F0{% endif %};">
+                                style="width: 32px; height: 32px; background-color: {% if ticket.status != 'open' %}#3B82F6{% else %}#fff{% endif %}; color: {% if ticket.status != 'open' %}white{% else %}#64748B{% endif %}; border: 3px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status != 'open' %}#3B82F6{% else %}#CBD5E1{% endif %};">
                                 <i class="bi bi-gear-fill" style="font-size: 14px;"></i>
                             </div>
-                            <div class="mt-2"
-                                style="font-size: 0.75rem; font-weight: 600; color: {% if ticket.status != 'open' %}#1E293B{% else %}#94A3B8{% endif %};">
+                            <div class="mt-2" style="font-size: 0.8rem; font-weight: {% if ticket.status != 'open' %}600{% else %}500{% endif %}; color: {% if ticket.status != 'open' %}#1E293B{% else %}#64748B{% endif %};">
                                 In Progress</div>
                         </div>
 
+                        {% if ticket.was_escalated %}
                         <!-- Step 3: Admin Escalated -->
                         <div class="text-center" style="width: 100px; margin-left: -50px;">
                             <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 32px; height: 32px; background-color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#8B5CF6{% else %}#F8FAFC{% endif %}; color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}white{% else %}#94A3B8{% endif %}; border: 4px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#8B5CF6{% else %}#E2E8F0{% endif %};">
+                                style="width: 32px; height: 32px; background-color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#8B5CF6{% else %}#fff{% endif %}; color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}white{% else %}#64748B{% endif %}; border: 3px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#8B5CF6{% else %}#CBD5E1{% endif %};">
                                 <i class="bi bi-shield-lock-fill" style="font-size: 14px;"></i>
                             </div>
-                            <div class="mt-2"
-                                style="font-size: 0.75rem; font-weight: 700; color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#8B5CF6{% else %}#94A3B8{% endif %};">
+                            <div class="mt-2" style="font-size: 0.8rem; font-weight: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}600{% else %}500{% endif %}; color: {% if ticket.status == 'escalated' or ticket.status == 'resolved' %}#1E293B{% else %}#64748B{% endif %};">
                                 Admin Review</div>
                         </div>
+                        {% endif %}
 
-                        <!-- Step 4: Resolved -->
+                        <!-- Final Step: Resolved -->
                         <div class="text-center" style="width: 80px; margin-right: -40px;">
                             <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 32px; height: 32px; background-color: {% if ticket.status == 'resolved' %}#10B981{% else %}#F8FAFC{% endif %}; color: {% if ticket.status == 'resolved' %}white{% else %}#94A3B8{% endif %}; border: 4px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status == 'resolved' %}#10B981{% else %}#E2E8F0{% endif %};">
-                                <i class="bi bi-check-all" style="font-size: 18px;"></i>
+                                style="width: 32px; height: 32px; background-color: {% if ticket.status == 'resolved' %}#10B981{% else %}#fff{% endif %}; color: {% if ticket.status == 'resolved' %}white{% else %}#64748B{% endif %}; border: 3px solid #fff; box-shadow: 0 0 0 1px {% if ticket.status == 'resolved' %}#10B981{% else %}#CBD5E1{% endif %};">
+                                <i class="bi bi-check-all" style="font-size: 16px;"></i>
                             </div>
-                            <div class="mt-2"
-                                style="font-size: 0.75rem; font-weight: 600; color: {% if ticket.status == 'resolved' %}#10B981{% else %}#94A3B8{% endif %};">
+                            <div class="mt-2" style="font-size: 0.8rem; font-weight: {% if ticket.status == 'resolved' %}600{% else %}500{% endif %}; color: {% if ticket.status == 'resolved' %}#1E293B{% else %}#64748B{% endif %};">
                                 Resolved</div>
                         </div>
                     </div>
