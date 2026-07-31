@@ -113,6 +113,20 @@ def login_view(request):
                         messages.error(request, 'Your account has been deactivated.')
                         return render(request, 'auth/login.html')
 
+                    # --- Maintenance Mode Check ---
+                    from core.utils import get_maintenance_status
+                    maintenance = get_maintenance_status()
+                    if maintenance and maintenance.get('is_active'):
+                        is_admin = user.get('is_admin', False)
+                        allowed_staff = maintenance.get('allowed_staff_ids', [])
+                        if not is_admin and str(user['_id']) not in allowed_staff:
+                            msg = maintenance.get('message', 'System is under maintenance. Please try again later.')
+                            if maintenance.get('end_time'):
+                                msg += f" Expected end time: {maintenance['end_time']}."
+                            messages.error(request, msg)
+                            return render(request, 'auth/login.html')
+                    # -----------------------------
+
                     # Set session
                     request.session['user_id'] = str(user['_id'])
                     request.session['mobile'] = user['mobile']
@@ -215,6 +229,20 @@ def admin_login_view(request):
                     if not user.get('is_active', True):
                         messages.error(request, 'Your account has been deactivated.')
                         return render(request, 'auth/admin_login.html')
+
+                    # --- Maintenance Mode Check ---
+                    from core.utils import get_maintenance_status
+                    maintenance = get_maintenance_status()
+                    if maintenance and maintenance.get('is_active'):
+                        is_admin = user.get('is_admin', False)
+                        allowed_staff = maintenance.get('allowed_staff_ids', [])
+                        if not is_admin and str(user['_id']) not in allowed_staff:
+                            msg = maintenance.get('message', 'System is under maintenance. Please try again later.')
+                            if maintenance.get('end_time'):
+                                msg += f" Expected end time: {maintenance['end_time']}."
+                            messages.error(request, msg)
+                            return render(request, 'auth/admin_login.html')
+                    # -----------------------------
 
                     # Ensure they actually have admin or tech_staff privileges
                     if not user.get('is_admin') and user.get('role') != 'tech_staff':

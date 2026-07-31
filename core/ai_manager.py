@@ -47,17 +47,24 @@ class AIManager:
     @staticmethod
     def generate_response(user_id: str, full_prompt: str) -> str:
         import os
+        from dotenv import load_dotenv
+        
+        # Ensure environment variables are loaded
+        load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
+        
         providers = []
         gemini_key = getattr(settings, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY')
         groq_key = getattr(settings, 'GROQ_API_KEY', None) or os.getenv('GROQ_API_KEY')
         
+        # User requested to use groq first
+        if groq_key:
+            settings.GROQ_API_KEY = groq_key
+            providers.append(("groq", GroqProvider('llama-3.3-70b-versatile')))
+            
         if gemini_key:
             # We temporarily set the setting in case GeminiProvider relies on it directly
             settings.GEMINI_API_KEY = gemini_key
             providers.append(("gemini-2.0", GeminiProvider('gemini-2.0-flash')))
-        if groq_key:
-            settings.GROQ_API_KEY = groq_key
-            providers.append(("groq", GroqProvider('llama-3.3-70b-versatile')))
             
         if not providers:
             return "GroupSathi AI Assistant is currently unconfigured. Please contact support."

@@ -99,6 +99,30 @@ def get_group_balance(group_id):
     return round(result[0]['total'] if result else 0, 2)
 
 
+def get_maintenance_status():
+    """Get the current maintenance mode settings and auto-disable if end time is reached."""
+    settings_col = get_collection('system_settings')
+    maintenance = settings_col.find_one({'_id': 'maintenance_mode'})
+    
+    if maintenance and maintenance.get('is_active'):
+        end_time_str = maintenance.get('end_time')
+        if end_time_str:
+            try:
+                # Parse datetime-local string (e.g. "2026-07-31T18:00")
+                end_time = datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M")
+                if datetime.now() >= end_time:
+                    # Auto-disable
+                    settings_col.update_one(
+                        {'_id': 'maintenance_mode'},
+                        {'$set': {'is_active': False}}
+                    )
+                    maintenance['is_active'] = False
+            except ValueError:
+                pass
+                
+    return maintenance if maintenance else {'is_active': False, 'message': ''}
+
+
 def get_member_role(group_id, user_id):
     """Get member role in a group."""
     members = get_collection('group_members')

@@ -110,58 +110,119 @@
         }
     }
 
+    @keyframes fadeUpPremium {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 767px) {
         .gs-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            padding: 0 0.25rem;
+            gap: 12px; 
+            padding: 16px 12px;
         }
+        
         .gs-dash-card {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding: 1rem 0.25rem;
-            border-radius: 16px;
+            justify-content: center;
+            padding: 16px 4px; 
+            border-radius: 10px;
             background: #ffffff;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            gap: 0.5rem;
+            border: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            text-decoration: none;
+            position: relative;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 110px;
         }
+        
+        .gs-dash-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            background: #fcfcfc;
+        }
+
         .gs-dash-card-icon {
-            width: 48px;
-            height: 48px;
-            font-size: 1.4rem;
-            border-radius: 14px;
-            margin: 0;
+            width: auto;
+            height: 40px;
+            background: transparent;
+            color: var(--card-color, #6366f1);
+            font-size: 2.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 12px;
+            margin-top: 0;
+            box-shadow: none;
+            border-radius: 0;
         }
+
+        .gs-dash-card:hover .gs-dash-card-icon {
+            /* Keep it transparent on mobile like the image */
+            background: transparent;
+            color: var(--card-color, #6366f1);
+            transform: none;
+        }
+
+        .gs-dash-card-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .gs-dash-card-desc {
+            display: none !important; /* Hide description on mobile */
+        }
+
         .gs-dash-card-name {
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: #334155;
+            font-family: 'Montserrat', 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #222222;
             text-align: center;
             line-height: 1.25;
             width: 100%;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
             margin: 0;
-            padding: 0 2px;
+            padding: 0 4px;
+            white-space: normal;
+            word-wrap: break-word;
+            display: block;
         }
+
         .gs-dash-card-arrow {
             display: none !important;
         }
+        
         .gs-dash-card-badge {
-            top: -6px;
-            right: -6px;
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #ef4444;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(239,68,68,0.3);
+            z-index: 2;
         }
+
+        /* Premium Subtle Stagger */
+        .gs-dash-card:nth-child(1) { animation-delay: 0.04s; }
+        .gs-dash-card:nth-child(2) { animation-delay: 0.08s; }
+        .gs-dash-card:nth-child(3) { animation-delay: 0.12s; }
+        .gs-dash-card:nth-child(4) { animation-delay: 0.16s; }
+        .gs-dash-card:nth-child(5) { animation-delay: 0.20s; }
+        .gs-dash-card:nth-child(6) { animation-delay: 0.24s; }
+        .gs-dash-card:nth-child(7) { animation-delay: 0.28s; }
+        .gs-dash-card:nth-child(8) { animation-delay: 0.32s; }
+        .gs-dash-card:nth-child(9) { animation-delay: 0.36s; }
     }
 
     .gs-dash-card {
@@ -332,7 +393,20 @@ function shareGroupSathi(e) {
     e.preventDefault();
     const shareData = {
         title: 'GroupSathi',
-        text: 'GroupSathi is a smart management platform for Self Help Groups. Join now to manage loans, groups, and finances seamlessly!\n\nOfficial Website: https://groupsathi.duckdns.org/\nDownload APK: https://groupsathi.duckdns.org/download/app/',
+        text: `🌟 GroupSathi - The Ultimate Self Help Group Management Platform 🌟
+
+GroupSathi makes managing your SHG easy, transparent, and completely digital! Say goodbye to complex paper ledgers.
+
+✨ Key Benefits & Features:
+📊 100% Digital Ledger: Track loans, EMIs, and member savings accurately.
+🤖 Smart AI Chatbot: Get instant help and insights with our built-in AI assistant!
+⚖️ Transparent & Secure: Real-time financial reports and automated settlement calculations.
+📄 Auto-Generated Documents: Get professional Legal Agreements and PDF Reports instantly.
+
+Join thousands of groups managing their finances seamlessly today!
+
+🌐 Official Website: https://groupsathi.duckdns.org/
+📱 Download App: https://groupsathi.duckdns.org/download/app/`,
         url: 'https://groupsathi.duckdns.org/'
     };
 

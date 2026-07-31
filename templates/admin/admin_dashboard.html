@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}Custom Admin Dashboard - GroupSathi{% endblock %}
 
@@ -270,6 +271,17 @@
             </a>
         </div>
         {% endif %}
+        
+        {% if current_user.is_admin %}
+        <div class="col-md-6">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#maintenanceModal" class="admin-action-card" style="--card-color: #64748B; --card-color-dark: #475569; --card-rgb: 100, 116, 139;">
+                <div class="admin-action-icon-wrapper"><i class="bi bi-tools"></i></div>
+                <div class="admin-action-title">Maintenance Mode</div>
+                <p class="admin-action-desc">Schedule or instantly enable platform maintenance. Blocks regular users while allowing admin/staff access.</p>
+            </a>
+        </div>
+        {% endif %}
+        
         <div class="col-md-6">
             <a href="{% url 'admin_chatbot_train' %}" class="admin-action-card" style="--card-color: #EC4899; --card-color-dark: #BE185D; --card-rgb: 236, 72, 153;">
                 <div class="admin-action-icon-wrapper"><i class="bi bi-robot"></i></div>
@@ -286,4 +298,56 @@
         </div>
     </div>
 </div>
+
+<!-- Maintenance Mode Modal -->
+<div class="modal fade" id="maintenanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-tools text-secondary me-2"></i> System Maintenance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="maintenanceForm" action="{% url 'admin_maintenance_toggle' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-check form-switch mb-4" style="transform: scale(1.1); transform-origin: left;">
+                        <input class="form-check-input shadow-none" type="checkbox" role="switch" id="maintenanceSwitch" name="is_active" {% if maintenance.is_active %}checked{% endif %}>
+                        <label class="form-check-label fw-bold ms-2" for="maintenanceSwitch">Enable Maintenance Mode</label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Maintenance Message (Visible to Users)</label>
+                        <textarea class="form-control bg-light border-0 shadow-none" name="message" rows="3" placeholder="e.g., We are undergoing scheduled maintenance. Please check back in 2 hours.">{{ maintenance.message|default:'System is under scheduled maintenance. We will be back shortly.' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Estimated End Time (Optional)</label>
+                        <input type="datetime-local" class="form-control bg-light border-0 shadow-none" name="end_time" value="{{ maintenance.end_time|default:'' }}">
+                        <div class="text-muted small mt-1">If set, users will see exactly when the system is expected to be back online.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Allow Technical Staff Access</label>
+                        <div class="text-muted small mb-2">Select staff who can bypass the maintenance block:</div>
+                        <div style="max-height: 150px; overflow-y: auto; background: #f8fafc; border-radius: 8px; padding: 10px;">
+                            {% for staff in technical_staff %}
+                            <div class="form-check">
+                                <input class="form-check-input shadow-none" type="checkbox" name="allowed_staff" value="{{ staff|get_item:'_id' }}" id="staff_{{ staff|get_item:'_id' }}" {% if staff|get_item:'_id'|stringformat:'s' in maintenance.allowed_staff_ids %}checked{% endif %}>
+                                <label class="form-check-label" for="staff_{{ staff|get_item:'_id' }}">
+                                    {{ staff.name }} <small class="text-muted">({{ staff.mobile }})</small>
+                                </label>
+                            </div>
+                            {% empty %}
+                            <div class="text-muted small">No technical staff found.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold shadow" style="border-radius: 12px;">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

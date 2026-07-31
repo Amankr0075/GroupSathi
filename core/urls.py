@@ -38,7 +38,7 @@ from core.views.admin_views import (
     admin_hard_delete_user_view, admin_hard_delete_group_view, admin_edit_group_view,
     admin_chatbot_train_view, admin_db_explorer_view, admin_db_collection_view,
     admin_db_document_edit_view, admin_db_document_delete_view, admin_db_document_bulk_delete_view,
-    admin_staff_list_view, admin_edit_staff_view, admin_delete_staff_view
+    admin_staff_list_view, admin_edit_staff_view, admin_delete_staff_view, admin_maintenance_toggle
 )
 from core.views.support_views import (
     my_tickets_view, create_ticket_view, ticket_chat_view, admin_tickets_view,
@@ -157,6 +157,7 @@ urlpatterns = [
 
     # Custom Admin Dashboard
     path('custom-admin/', admin_dashboard_view, name='custom_admin_dashboard'),
+    path('custom-admin/maintenance/toggle/', admin_maintenance_toggle, name='admin_maintenance_toggle'),
     path('custom-admin/users/', admin_users_view, name='custom_admin_users'),
     path('custom-admin/users/<str:user_id>/', admin_user_detail_view, name='admin_user_detail'),
     path('custom-admin/users/<str:user_id>/edit/', admin_edit_user_view, name='admin_edit_user'),

@@ -31,3 +31,10 @@ def notification_context(request):
     if user_id:
         context['unread_count'] = get_unread_notification_count(user_id)
     return context
+
+
+def maintenance_context(request):
+    """Add maintenance settings to template context."""
+    from core.utils import get_maintenance_status
+    maintenance = get_maintenance_status()
+    return {'maintenance': maintenance}

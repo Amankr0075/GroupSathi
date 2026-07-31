@@ -4,6 +4,7 @@ Admin views for GroupSathi custom MongoDB Admin Dashboard.
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from functools import wraps
+from datetime import datetime
 from core.db import get_collection
 
 def admin_required(view_func):
@@ -59,11 +60,15 @@ def admin_dashboard_view(request):
     total_loans = loans.count_documents({})
     active_loans = loans.count_documents({'status': {'$in': ['approved', 'active']}})
     
+    # Get technical staff for maintenance modal
+    technical_staff = list(users.find({'role': 'tech_staff'}))
+    
     context = {
         'total_users': total_users,
         'total_groups': total_groups,
         'total_loans': total_loans,
         'active_loans': active_loans,
+        'technical_staff': technical_staff,
     }
     return render(request, 'admin/admin_dashboard.html', context)
 
@@ -753,3 +758,34 @@ def admin_db_document_bulk_delete_view(request, collection_name):
             messages.error(request, 'No documents were deleted. They may have already been removed.')
             
     return redirect('admin_db_collection', collection_name=collection_name)
+
+@admin_required
+def admin_maintenance_toggle(request):
+    """Toggle maintenance mode settings."""
+    if request.method == 'POST':
+        is_active = request.POST.get('is_active') == 'on'
+        message = request.POST.get('message', '').strip()
+        allowed_staff_ids = request.POST.getlist('allowed_staff')
+        end_time = request.POST.get('end_time', '').strip()
+        
+        settings_col = get_collection('system_settings')
+        settings_col.update_one(
+            {'_id': 'maintenance_mode'},
+            {
+                '$set': {
+                    'is_active': is_active,
+                    'message': message,
+                    'allowed_staff_ids': allowed_staff_ids,
+                    'end_time': end_time,
+                    'updated_at': datetime.now()
+                }
+            },
+            upsert=True
+        )
+        
+        if is_active:
+            messages.warning(request, 'Maintenance Mode enabled! Only admins and selected staff can log in.')
+        else:
+            messages.success(request, 'Maintenance Mode disabled. System is open.')
+            
+    return redirect('custom_admin_dashboard')

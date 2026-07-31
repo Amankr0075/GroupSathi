@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.ProfileCompletionMiddleware',
+    'core.middleware.MaintenanceModeMiddleware',
     'django_ratelimit.middleware.RatelimitMiddleware',
 ]
 
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.user_context',
                 'core.context_processors.notification_context',
+                'core.context_processors.maintenance_context',
             ],
         },
     },
