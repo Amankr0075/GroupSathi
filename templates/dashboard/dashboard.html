@@ -111,33 +111,37 @@
     }
 
     @media (max-width: 767px) {
-        body.is-mobile-app .gs-grid {
+        .gs-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
-        body.is-mobile-app .gs-dash-card {
+        .gs-dash-card {
             flex-direction: column;
-            gap: 0.4rem;
-            padding: 0.75rem 0.2rem;
+            gap: 0.5rem;
+            padding: 0.8rem 0.2rem;
             text-align: center;
+            border-radius: 12px;
+            justify-content: flex-start;
         }
-        body.is-mobile-app .gs-dash-card-icon {
-            width: 36px;
-            height: 36px;
-            font-size: 1.1rem;
+        .gs-dash-card-icon {
+            width: 42px;
+            height: 42px;
+            font-size: 1.25rem;
             margin: 0 auto;
+            border-radius: 10px;
         }
-        body.is-mobile-app .gs-dash-card-name {
-            font-size: 0.65rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .gs-dash-card-name {
+            font-size: 0.7rem;
+            line-height: 1.1;
+            white-space: normal; /* Let long words wrap nicely on 2 lines */
+            overflow: visible;
             width: 100%;
+            font-weight: 600;
         }
-        body.is-mobile-app .gs-dash-card-arrow {
+        .gs-dash-card-arrow {
             display: none;
         }
-        body.is-mobile-app .gs-dash-card-badge {
+        .gs-dash-card-badge {
             top: 2px;
             right: 2px;
             font-size: 0.55rem;
