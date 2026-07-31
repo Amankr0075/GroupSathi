@@ -429,131 +429,116 @@
         }
     }
 
-        {
-        % endblock %
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper p-0 m-0">
+    <!-- YONO SBI Style Header -->
+    <div class="yono-header">
+        <div class="yono-header-left">
+            <h2>Hello, {% if current_profile and current_profile.full_name %}{{ current_profile.full_name.split.0 }}{% else %}User{% endif %}</h2>
+            <p>Welcome to GroupSathi</p>
+        </div>
+        <div class="yono-profile-icon">
+            <i class="bi bi-person"></i>
+        </div>
+    </div>
+
+    <!-- Overlapping Summary Card -->
+    <div class="yono-account-card">
+        <div class="yono-stats-row">
+            <div class="yono-stat-item">
+                <span class="yono-stat-label">Total Groups</span>
+                <span class="yono-stat-value">{{ groups_count }}</span>
+            </div>
+            <div class="yono-stat-divider"></div>
+            <div class="yono-stat-item">
+                <span class="yono-stat-label">Active Loans</span>
+                <span class="yono-stat-value">{{ active_loans }}</span>
+            </div>
+        </div>
+        
+        {% if current_profile and current_profile.member_id %}
+        <div class="yono-member-id">
+            <span>Member ID: {{ current_profile.member_id }}</span>
+            <i class="bi bi-shield-check"></i>
+        </div>
+        {% endif %}
+    </div>
+
+    <h3 class="gs-grid-section-title">Quick Services</h3>
+
+    <div class="gs-grid">
+        {% for item in dashboard_items %}
+        <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};">
+            {% if item.badge %}
+            <span class="gs-dash-card-badge">{{ item.badge }}</span>
+            {% endif %}
+            <div class="gs-dash-card-icon">
+                <i class="bi {{ item.icon }}"></i>
+            </div>
+            <span class="gs-dash-card-name">{{ item.name }}</span>
+            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
+        </a>
+        {% endfor %}
+        
+        <!-- Share App Button -->
+        <a href="#" onclick="shareGroupSathi(event)" class="gs-dash-card" style="--card-color: #EC4899;">
+            <div class="gs-dash-card-icon">
+                <i class="bi bi-share-fill"></i>
+            </div>
+            <span class="gs-dash-card-name">Share App</span>
+            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
+        </a>
+        
+        <!-- Contact Support Button -->
+        <a href="{% url 'my_tickets' %}" class="gs-dash-card" style="--card-color: #6366F1;">
+            <div class="gs-dash-card-icon">
+                <i class="bi bi-headset"></i>
+            </div>
+            <span class="gs-dash-card-name">Contact Support</span>
+            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Detect if running in an App (Standalone PWA, TWA, or WebView)
+    const isApp = window.matchMedia('(display-mode: standalone)').matches || 
+                  window.navigator.standalone || 
+                  document.referrer.includes('android-app://') ||
+                  /wv|MicroMessenger|WebView/i.test(navigator.userAgent);
+                  
+    if (isApp) {
+        document.body.classList.add('is-mobile-app');
     }
+});
 
-        {
-        % block content %
+function shareGroupSathi(e) {
+    e.preventDefault();
+    const shareData = {
+        title: 'GroupSathi',
+        text: `🌟 GroupSathi - The Ultimate Self Help Group Management Platform 🌟\n\nGroupSathi makes managing your SHG easy, transparent, and completely digital! Say goodbye to complex paper ledgers.\n\n✨ Key Benefits & Features:\n📊 100% Digital Ledger: Track loans, EMIs, and member savings accurately.\n🤖 Smart AI Chatbot: Get instant help and insights with our built-in AI assistant!\n⚖️ Transparent & Secure: Real-time financial reports and automated settlement calculations.\n📄 Auto-Generated Documents: Get professional Legal Agreements and PDF Reports instantly.\n\nJoin thousands of groups managing their finances seamlessly today!\n\n🌐 Official Website: https://groupsathi.duckdns.org/\n📱 Download App: https://groupsathi.duckdns.org/download/app/`,
+        url: 'https://groupsathi.duckdns.org/'
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => console.log('Successfully shared'))
+            .catch((error) => console.log('Error sharing', error));
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        const dummy = document.createElement('textarea');
+        document.body.appendChild(dummy);
+        dummy.value = shareData.text;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        alert('Share text and links copied to clipboard!');
     }
-
-    <div class="dashboard-wrapper p-0 m-0">< !-- YONO SBI Style Header --><div class="yono-header"><div class="yono-header-left"><h2>Hello,
-    {
-    % if current_profile and current_profile.full_name %
-    }
-
-        {
-            {
-            current_profile.full_name.split.0
-        }
-    }
-
-        {
-        % else %
-    }
-
-    User {
-        % endif %
-    }
-
-    </h2><p>Welcome to GroupSathi</p></div><div class="yono-profile-icon"><i class="bi bi-person"></i></div></div>< !-- Overlapping Summary Card --><div class="yono-account-card"><div class="yono-stats-row"><div class="yono-stat-item"><span class="yono-stat-label">Total Groups</span><span class="yono-stat-value"> {
-            {
-            groups_count
-        }
-    }
-
-    </span></div><div class="yono-stat-divider"></div><div class="yono-stat-item"><span class="yono-stat-label">Active Loans</span><span class="yono-stat-value"> {
-            {
-            active_loans
-        }
-    }
-
-    </span></div></div> {
-        % if current_profile and current_profile.member_id %
-    }
-
-    <div class="yono-member-id"><span>Member ID: {
-            {
-            current_profile.member_id
-        }
-    }
-
-    </span><i class="bi bi-shield-check"></i></div> {
-        % endif %
-    }
-
-    </div><h3 class="gs-grid-section-title">Quick Services</h3><div class="gs-grid"> {
-        % for item in dashboard_items %
-    }
-
-    <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};"> {
-        % if item.badge %
-    }
-
-    <span class="gs-dash-card-badge"> {
-            {
-            item.badge
-        }
-    }
-
-    </span> {
-        % endif %
-    }
-
-    <div class="gs-dash-card-icon"><i class="bi {{ item.icon }}"></i></div><span class="gs-dash-card-name"> {
-            {
-            item.name
-        }
-    }
-
-    </span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a> {
-        % endfor %
-    }
-
-    < !-- Share App Button --><a href="#" onclick="shareGroupSathi(event)" class="gs-dash-card" style="--card-color: #EC4899;"><div class="gs-dash-card-icon"><i class="bi bi-share-fill"></i></div><span class="gs-dash-card-name">Share App</span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a>< !-- Contact Support Button --><a href="{% url 'my_tickets' %}" class="gs-dash-card" style="--card-color: #6366F1;"><div class="gs-dash-card-icon"><i class="bi bi-headset"></i></div><span class="gs-dash-card-name">Contact Support</span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a></div></div> {
-        % endblock %
-    }
-
-        {
-        % block extra_js %
-    }
-
-    <script>document.addEventListener('DOMContentLoaded', function() {
-            // Detect if running in an App (Standalone PWA, TWA, or WebView)
-            const isApp=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://') || /wv|MicroMessenger|WebView/i.test(navigator.userAgent);
-
-            if (isApp) {
-                document.body.classList.add('is-mobile-app');
-            }
-        });
-
-    function shareGroupSathi(e) {
-        e.preventDefault();
-
-        const shareData= {
-            title: 'GroupSathi',
-                text: `🌟 GroupSathi - The Ultimate Self Help Group Management Platform 🌟\n\nGroupSathi makes managing your SHG easy, transparent, and completely digital ! Say goodbye to complex paper ledgers.\n\n✨ Key Benefits & Features:\n📊 100% Digital Ledger: Track loans, EMIs, and member savings accurately.\n🤖 Smart AI Chatbot: Get instant help and insights with our built-in AI assistant !\n⚖️ Transparent & Secure: Real-time financial reports and automated settlement calculations.\n📄 Auto-Generated Documents: Get professional Legal Agreements and PDF Reports instantly.\n\nJoin thousands of groups managing their finances seamlessly today !\n\n🌐 Official Website: https: //groupsathi.duckdns.org/\n📱 Download App: https://groupsathi.duckdns.org/download/app/`,
-                url: 'https://groupsathi.duckdns.org/'
-        }
-
-        ;
-
-        if (navigator.share) {
-            navigator.share(shareData) .then(()=> console.log('Successfully shared')) .catch((error)=> console.log('Error sharing', error));
-        }
-
-        else {
-            // Fallback for browsers that don't support Web Share API
-            const dummy=document.createElement('textarea');
-            document.body.appendChild(dummy);
-            dummy.value=shareData.text;
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
-            alert('Share text and links copied to clipboard!');
-        }
-    }
-
-    </script> {
-        % endblock %
-    }
+}
+</script>
+{% endblock %}
