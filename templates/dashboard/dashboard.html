@@ -5,105 +5,163 @@
 
 {% block extra_css %}
 <style>
-    /* Premium Dashboard Styles */
+    /* Premium Dashboard Styles - YONO SBI Aesthetic */
+    body {
+        background-color: #F8F9FA !important;
+        /* Soft gray background for the grid area */
+    }
+
     .dashboard-wrapper {
-        padding: 1.25rem 0 3rem;
-    }
-    
-    .welcome-banner {
-        background: url('{% static "images/auth_rural_bg.png" %}') center/cover no-repeat;
-        border-radius: 20px;
-        padding: 3rem 2.5rem;
-        color: #ffffff;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    }
-    
-    .welcome-banner::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(59,130,246,0.7) 100%);
-        z-index: 0;
-    }
-    
-    .welcome-content {
-        position: relative;
-        z-index: 1;
+        padding: 0 0 3rem 0;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
-    .welcome-title {
-        font-family: 'Outfit', 'Inter', sans-serif;
-        font-weight: 800;
-        font-size: 1.8rem;
-        margin-bottom: 0.3rem;
-        letter-spacing: -0.5px;
+    .yono-header {
+        background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+        /* Deep Indigo / Navy */
+        padding: 1.5rem 1.5rem 4rem 1.5rem;
         color: #ffffff;
-    }
-    
-    .welcome-subtitle {
-        font-size: 1rem;
-        color: #e2e8f0;
-        font-weight: 400;
-        max-width: 500px;
-        line-height: 1.5;
-    }
-    
-    .gs-stats-row {
+        position: relative;
+        border-bottom-left-radius: 24px;
+        border-bottom-right-radius: 24px;
         display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-top: 1.25rem;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
-    .gs-stat-chip {
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 50px;
-        padding: 0.5rem 1rem;
+    .yono-header-left h2 {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 0.2rem;
+        color: #ffffff;
+    }
+
+    .yono-header-left p {
+        font-size: 0.85rem;
+        color: #C7D2FE;
+        margin: 0;
+    }
+
+    .yono-profile-icon {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: #ffffff;
-        transition: all 0.3s ease;
-    }
-    
-    .gs-stat-chip:hover {
-        background: rgba(255,255,255,0.2);
-        transform: translateY(-2px);
+        justify-content: center;
+        font-size: 1.3rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .gs-stat-chip i {
-        font-size: 0.9rem;
+    .yono-account-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin: -2.5rem 1.2rem 1.5rem 1.2rem;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .yono-stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .yono-stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .yono-stat-label {
+        font-size: 0.75rem;
+        color: #64748B;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .yono-stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0F172A;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .yono-stat-divider {
+        width: 1px;
+        height: 30px;
+        background: #E2E8F0;
+    }
+
+    .yono-member-id {
+        background: #F1F5F9;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .yono-member-id i {
+        color: #3B82F6;
     }
 
     .gs-grid-section-title {
         font-family: 'Inter', sans-serif;
-        font-size: 0.7rem;
+        font-size: 0.85rem;
         font-weight: 700;
-        color: #94A3B8;
+        color: #475569;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 1rem;
+        letter-spacing: 1px;
+        margin: 0 1.2rem 1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .gs-grid-section-title::before {
+        content: '';
+        width: 4px;
+        height: 16px;
+        background: #3B82F6;
+        border-radius: 2px;
     }
 
     .gs-grid {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
         gap: 1rem;
+        padding: 0 1rem;
     }
-    
+
     @media (min-width: 768px) {
         .gs-grid {
             grid-template-columns: repeat(2, 1fr);
         }
+
+        .yono-account-card {
+            margin: -2.5rem 2rem 2rem 2rem;
+        }
+
+        .gs-grid-section-title {
+            margin-left: 2rem;
+        }
     }
-    
+
     @media (min-width: 992px) {
         .gs-grid {
             grid-template-columns: repeat(3, 1fr);
@@ -111,61 +169,82 @@
     }
 
     @keyframes fadeUpPremium {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 767px) {
         .gs-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px; 
+            gap: 12px;
             padding: 16px 12px;
         }
-        
+
         .gs-dash-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 16px 4px; 
-            border-radius: 10px;
-            background: #ffffff;
+            justify-content: flex-start;
+            padding: 8px 4px;
+            border-radius: 0;
+            background: transparent;
             border: none;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            box-shadow: none;
             text-decoration: none;
             position: relative;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-height: 110px;
+            transition: all 0.2s ease;
+            min-height: 90px;
+            animation: fadeUpPremium 0.5s ease-out backwards;
         }
-        
-        .gs-dash-card:active {
-            transform: scale(0.96);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            background: #fcfcfc;
+
+        .gs-dash-card:active .gs-dash-card-icon {
+            transform: scale(0.92);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .gs-dash-card-icon {
-            width: auto;
-            height: 40px;
-            background: transparent;
-            color: var(--card-color, #6366f1);
-            font-size: 2.2rem;
+            width: 52px;
+            height: 52px;
+            background: #ffffff;
+            color: var(--card-color, #3B82F6);
+            /* Default to YONO blue if not set */
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             margin-top: 0;
-            box-shadow: none;
-            border-radius: 0;
+            border-radius: 50%;
+            /* Pure circles like YONO */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        .gs-dash-card-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--card-color, #3B82F6);
+            opacity: 0.1;
+            /* Very soft tint like YONO */
+            pointer-events: none;
         }
 
         .gs-dash-card:hover .gs-dash-card-icon {
-            /* Keep it transparent on mobile like the image */
-            background: transparent;
-            color: var(--card-color, #6366f1);
-            transform: none;
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
         }
 
         .gs-dash-card-details {
@@ -177,28 +256,33 @@
         }
 
         .gs-dash-card-desc {
-            display: none !important; /* Hide description on mobile */
+            display: none !important;
+            /* Hide description on mobile */
         }
 
         .gs-dash-card-name {
-            font-family: 'Montserrat', 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            color: #222222;
+            font-family: 'Outfit', 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            color: #334155;
             text-align: center;
-            line-height: 1.25;
+            line-height: 1.3;
             width: 100%;
             margin: 0;
-            padding: 0 4px;
+            padding: 0;
             white-space: normal;
             word-wrap: break-word;
-            display: block;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            letter-spacing: -0.1px;
         }
 
         .gs-dash-card-arrow {
             display: none !important;
         }
-        
+
         .gs-dash-card-badge {
             position: absolute;
             top: 6px;
@@ -209,221 +293,268 @@
             font-weight: 700;
             padding: 2px 5px;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(239,68,68,0.3);
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
             z-index: 2;
         }
 
         /* Premium Subtle Stagger */
-        .gs-dash-card:nth-child(1) { animation-delay: 0.04s; }
-        .gs-dash-card:nth-child(2) { animation-delay: 0.08s; }
-        .gs-dash-card:nth-child(3) { animation-delay: 0.12s; }
-        .gs-dash-card:nth-child(4) { animation-delay: 0.16s; }
-        .gs-dash-card:nth-child(5) { animation-delay: 0.20s; }
-        .gs-dash-card:nth-child(6) { animation-delay: 0.24s; }
-        .gs-dash-card:nth-child(7) { animation-delay: 0.28s; }
-        .gs-dash-card:nth-child(8) { animation-delay: 0.32s; }
-        .gs-dash-card:nth-child(9) { animation-delay: 0.36s; }
+        .gs-dash-card:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .gs-dash-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .gs-dash-card:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+
+        .gs-dash-card:nth-child(4) {
+            animation-delay: 0.16s;
+        }
+
+        .gs-dash-card:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+
+        .gs-dash-card:nth-child(6) {
+            animation-delay: 0.24s;
+        }
+
+        .gs-dash-card:nth-child(7) {
+            animation-delay: 0.28s;
+        }
+
+        .gs-dash-card:nth-child(8) {
+            animation-delay: 0.32s;
+        }
+
+        .gs-dash-card:nth-child(9) {
+            animation-delay: 0.36s;
+        }
     }
 
-    .gs-dash-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-        border: 1px solid #E2E8F0;
-        text-decoration: none;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-        gap: 1.2rem;
+    @media (min-width: 768px) {
+        .gs-dash-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            border: 1px solid #E2E8F0;
+            text-decoration: none;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .gs-dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+            border-color: color-mix(in srgb, var(--card-color, #6C5CE7) 30%, transparent);
+        }
+
+        .gs-dash-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--card-color, #6C5CE7);
+            background: color-mix(in srgb, var(--card-color, #6C5CE7) 12%, #ffffff);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .gs-dash-card:hover .gs-dash-card-icon {
+            background: var(--card-color, #6C5CE7);
+            color: white;
+        }
+
+        .gs-dash-card-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #1E293B;
+            letter-spacing: -0.2px;
+            margin: 0;
+        }
+
+        .gs-dash-card-arrow {
+            margin-left: auto;
+            color: #CBD5E1;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .gs-dash-card:hover .gs-dash-card-arrow {
+            color: var(--card-color, #6C5CE7);
+            transform: translateX(4px);
+        }
+
+        .gs-dash-card-badge {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            background: #EF4444;
+            color: #fff;
+            font-size: 0.6rem;
+            padding: 2px 5px;
+            border-radius: 20px;
+            font-weight: 800;
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+            border: 2px solid #fff;
+            z-index: 10;
+            animation: badgePulse 2s infinite;
+        }
     }
 
-    .gs-dash-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
-        border-color: color-mix(in srgb, var(--card-color, #6C5CE7) 30%, transparent);
-    }
+    /* End desktop styles */
 
-    .gs-dash-card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        color: var(--card-color, #6C5CE7);
-        background: color-mix(in srgb, var(--card-color, #6C5CE7) 12%, #ffffff);
-        flex-shrink: 0;
-        transition: all 0.3s ease;
-    }
-
-    .gs-dash-card:hover .gs-dash-card-icon {
-        background: var(--card-color, #6C5CE7);
-        color: white;
-    }
-
-    .gs-dash-card-name {
-        font-weight: 600;
-        font-size: 1.05rem;
-        color: #1E293B;
-        letter-spacing: -0.2px;
-        margin: 0;
-    }
-    
-    .gs-dash-card-arrow {
-        margin-left: auto;
-        color: #CBD5E1;
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
-    }
-    
-    .gs-dash-card:hover .gs-dash-card-arrow {
-        color: var(--card-color, #6C5CE7);
-        transform: translateX(4px);
-    }
-
-    .gs-dash-card-badge {
-        position: absolute;
-        top: 7px;
-        right: 7px;
-        background: #EF4444;
-        color: #fff;
-        font-size: 0.6rem;
-        padding: 2px 5px;
-        border-radius: 20px;
-        font-weight: 800;
-        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
-        border: 2px solid #fff;
-        z-index: 10;
-        animation: badgePulse 2s infinite;
-    }
-    
     @keyframes badgePulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.12); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.12);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
-{% endblock %}
 
-{% block content %}
-<div class="container dashboard-wrapper">
-    <div class="welcome-banner">
-        <div class="welcome-content">
-            <h2 class="welcome-title">Welcome{% if current_profile and current_profile.full_name %}, {{ current_profile.full_name }}{% endif %} 👋</h2>
-            <p class="welcome-subtitle">Here is what's happening with your Self Help Groups today.</p>
-            
-            <div class="gs-stats-row">
-                <div class="gs-stat-chip">
-                    <i class="bi bi-people-fill" style="color: #74B9FF;"></i>
-                    <span>{{ groups_count }} Group{{ groups_count|pluralize }}</span>
-                </div>
-                <div class="gs-stat-chip">
-                    <i class="bi bi-cash-stack" style="color: #55efc4;"></i>
-                    <span>{{ active_loans }} Active Loan{{ active_loans|pluralize }}</span>
-                </div>
-                {% if current_profile and current_profile.member_id %}
-                <div class="gs-stat-chip">
-                    <i class="bi bi-person-badge" style="color: #FBBF24;"></i>
-                    <span>ID: {{ current_profile.member_id }}</span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-        <div style="width:3px; height:18px; background: linear-gradient(to bottom, #6C5CE7, #00CEC9); border-radius:2px;"></div>
-        <h3 class="gs-grid-section-title" style="margin-bottom:0;">Quick Actions</h3>
-    </div>
-    <div class="gs-grid">
-        {% for item in dashboard_items %}
-        <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};">
-            {% if item.badge %}
-            <span class="gs-dash-card-badge">{{ item.badge }}</span>
-            {% endif %}
-            <div class="gs-dash-card-icon">
-                <i class="bi {{ item.icon }}"></i>
-            </div>
-            <span class="gs-dash-card-name">{{ item.name }}</span>
-            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
-        </a>
-        {% endfor %}
-        
-        <!-- Share App Button -->
-        <a href="#" onclick="shareGroupSathi(event)" class="gs-dash-card" style="--card-color: #EC4899;">
-            <div class="gs-dash-card-icon">
-                <i class="bi bi-share-fill"></i>
-            </div>
-            <span class="gs-dash-card-name">Share App</span>
-            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
-        </a>
-        
-        <!-- Contact Support Button -->
-        <a href="{% url 'my_tickets' %}" class="gs-dash-card" style="--card-color: #6366F1;">
-            <div class="gs-dash-card-icon">
-                <i class="bi bi-headset"></i>
-            </div>
-            <span class="gs-dash-card-name">Contact Support</span>
-            <i class="bi bi-chevron-right gs-dash-card-arrow"></i>
-        </a>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Detect if running in an App (Standalone PWA, TWA, or WebView)
-    const isApp = window.matchMedia('(display-mode: standalone)').matches || 
-                  window.navigator.standalone || 
-                  document.referrer.includes('android-app://') ||
-                  /wv|MicroMessenger|WebView/i.test(navigator.userAgent);
-                  
-    if (isApp) {
-        document.body.classList.add('is-mobile-app');
+        {
+        % endblock %
     }
-});
 
-function shareGroupSathi(e) {
-    e.preventDefault();
-    const shareData = {
-        title: 'GroupSathi',
-        text: `🌟 GroupSathi - The Ultimate Self Help Group Management Platform 🌟
-
-GroupSathi makes managing your SHG easy, transparent, and completely digital! Say goodbye to complex paper ledgers.
-
-✨ Key Benefits & Features:
-📊 100% Digital Ledger: Track loans, EMIs, and member savings accurately.
-🤖 Smart AI Chatbot: Get instant help and insights with our built-in AI assistant!
-⚖️ Transparent & Secure: Real-time financial reports and automated settlement calculations.
-📄 Auto-Generated Documents: Get professional Legal Agreements and PDF Reports instantly.
-
-Join thousands of groups managing their finances seamlessly today!
-
-🌐 Official Website: https://groupsathi.duckdns.org/
-📱 Download App: https://groupsathi.duckdns.org/download/app/`,
-        url: 'https://groupsathi.duckdns.org/'
-    };
-
-    if (navigator.share) {
-        navigator.share(shareData)
-            .then(() => console.log('Successfully shared'))
-            .catch((error) => console.log('Error sharing', error));
-    } else {
-        // Fallback for browsers that don't support Web Share API
-        const dummy = document.createElement('textarea');
-        document.body.appendChild(dummy);
-        dummy.value = shareData.text;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
-        alert('Share text and links copied to clipboard!');
+        {
+        % block content %
     }
-}
-</script>
-{% endblock %}
+
+    <div class="dashboard-wrapper p-0 m-0">< !-- YONO SBI Style Header --><div class="yono-header"><div class="yono-header-left"><h2>Hello,
+    {
+    % if current_profile and current_profile.full_name %
+    }
+
+        {
+            {
+            current_profile.full_name.split.0
+        }
+    }
+
+        {
+        % else %
+    }
+
+    User {
+        % endif %
+    }
+
+    </h2><p>Welcome to GroupSathi</p></div><div class="yono-profile-icon"><i class="bi bi-person"></i></div></div>< !-- Overlapping Summary Card --><div class="yono-account-card"><div class="yono-stats-row"><div class="yono-stat-item"><span class="yono-stat-label">Total Groups</span><span class="yono-stat-value"> {
+            {
+            groups_count
+        }
+    }
+
+    </span></div><div class="yono-stat-divider"></div><div class="yono-stat-item"><span class="yono-stat-label">Active Loans</span><span class="yono-stat-value"> {
+            {
+            active_loans
+        }
+    }
+
+    </span></div></div> {
+        % if current_profile and current_profile.member_id %
+    }
+
+    <div class="yono-member-id"><span>Member ID: {
+            {
+            current_profile.member_id
+        }
+    }
+
+    </span><i class="bi bi-shield-check"></i></div> {
+        % endif %
+    }
+
+    </div><h3 class="gs-grid-section-title">Quick Services</h3><div class="gs-grid"> {
+        % for item in dashboard_items %
+    }
+
+    <a href="{% url item.url %}" class="gs-dash-card" style="--card-color: {{ item.color }};"> {
+        % if item.badge %
+    }
+
+    <span class="gs-dash-card-badge"> {
+            {
+            item.badge
+        }
+    }
+
+    </span> {
+        % endif %
+    }
+
+    <div class="gs-dash-card-icon"><i class="bi {{ item.icon }}"></i></div><span class="gs-dash-card-name"> {
+            {
+            item.name
+        }
+    }
+
+    </span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a> {
+        % endfor %
+    }
+
+    < !-- Share App Button --><a href="#" onclick="shareGroupSathi(event)" class="gs-dash-card" style="--card-color: #EC4899;"><div class="gs-dash-card-icon"><i class="bi bi-share-fill"></i></div><span class="gs-dash-card-name">Share App</span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a>< !-- Contact Support Button --><a href="{% url 'my_tickets' %}" class="gs-dash-card" style="--card-color: #6366F1;"><div class="gs-dash-card-icon"><i class="bi bi-headset"></i></div><span class="gs-dash-card-name">Contact Support</span><i class="bi bi-chevron-right gs-dash-card-arrow"></i></a></div></div> {
+        % endblock %
+    }
+
+        {
+        % block extra_js %
+    }
+
+    <script>document.addEventListener('DOMContentLoaded', function() {
+            // Detect if running in an App (Standalone PWA, TWA, or WebView)
+            const isApp=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://') || /wv|MicroMessenger|WebView/i.test(navigator.userAgent);
+
+            if (isApp) {
+                document.body.classList.add('is-mobile-app');
+            }
+        });
+
+    function shareGroupSathi(e) {
+        e.preventDefault();
+
+        const shareData= {
+            title: 'GroupSathi',
+                text: `🌟 GroupSathi - The Ultimate Self Help Group Management Platform 🌟 GroupSathi makes managing your SHG easy, transparent, and completely digital ! Say goodbye to complex paper ledgers. ✨ Key Benefits & Features: 📊 100% Digital Ledger: Track loans, EMIs, and member savings accurately. 🤖 Smart AI Chatbot: Get instant help and insights with our built-in AI assistant ! ⚖️ Transparent & Secure: Real-time financial reports and automated settlement calculations. 📄 Auto-Generated Documents: Get professional Legal Agreements and PDF Reports instantly. Join thousands of groups managing their finances seamlessly today ! 🌐 Official Website: https: //groupsathi.duckdns.org/
+                📱 Download App: https: //groupsathi.duckdns.org/download/app/`,
+                url: 'https://groupsathi.duckdns.org/'
+        }
+
+        ;
+
+        if (navigator.share) {
+            navigator.share(shareData) .then(()=> console.log('Successfully shared')) .catch((error)=> console.log('Error sharing', error));
+        }
+
+        else {
+            // Fallback for browsers that don't support Web Share API
+            const dummy=document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value=shareData.text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert('Share text and links copied to clipboard!');
+        }
+    }
+
+    </script> {
+        % endblock %
+    }
