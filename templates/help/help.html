@@ -725,22 +725,23 @@
         </button>
         <div id="body10" class="accordion-collapse collapse">
             <div class="guide-body pt-3">
-                <p>When a group's cycle is complete or the group is being wound down, the <strong>Distribute Money</strong> feature allows a fair distribution of the group's financial pool to all members.</p>
-                <p><strong>How it works:</strong></p>
+                <p>When a group's cycle is complete or the group is being wound down, the <strong>Distribute Money</strong> feature allows a fair, deterministic distribution of the group's financial pool to all members.</p>
+                <p><strong>How it works (Single-Pass Calculation):</strong></p>
                 <ol class="guide-steps">
                     <li>Go to your group page (or My Groups) and click <strong>"Distribute Money"</strong>. Only Leaders and Co-Leaders can access this.</li>
-                    <li>A <strong>Settlement Preview</strong> page calculates the total group assets: EMI pool + interest collected + fines collected − outstanding loan balances.</li>
-                    <li>Each member's fair share is calculated proportionally based on their EMI contributions.</li>
-                    <li>After reviewing the breakdown, the Leader clicks <strong>Execute Settlement</strong> to finalize the distribution. This action clears all pending loans and settles any unpaid fines.</li>
+                    <li>The system calculates the total <strong>realized Group Profit</strong> (only interest and fines actually collected before settlement).</li>
+                    <li>Each member's fair <strong>Profit Share</strong> is calculated proportionally based on their total EMI contributions.</li>
+                    <li>The system calculates the <strong>Gross Settlement</strong> (Contributions + Profit Share) and deducts outstanding dues in a strict priority: <em>Loan Principal > Loan Interest > Unpaid EMI > Fines > Other</em>.</li>
+                    <li>After reviewing the breakdown on the Settlement Preview page, the Leader clicks <strong>Execute Settlement</strong> to finalize the distribution.</li>
                 </ol>
                 <div class="guide-compare">
                     <div class="guide-compare-card green">
-                        <h6><i class="bi bi-check-circle me-1"></i> What Gets Cleared</h6>
-                        All pending EMI requests, outstanding loan balances, and unpaid imposed fines are settled and marked complete.
+                        <h6><i class="bi bi-check-circle me-1"></i> Deterministic & Fair</h6>
+                        Members who contributed more get a larger profit share. Unpaid EMIs and dues are strictly deducted and recorded.
                     </div>
                     <div class="guide-compare-card red">
                         <h6><i class="bi bi-exclamation-circle me-1"></i> Important Note</h6>
-                        Settlement is a <strong>permanent action</strong>. Review the distribution preview carefully before executing. This is typically used at the end of a group's financial year or cycle.
+                        Settlement is a <strong>permanent action</strong>. Recovered dues during settlement are not redistributed. Review the preview carefully before executing.
                     </div>
                 </div>
                 <div class="guide-infobox warn mt-2">

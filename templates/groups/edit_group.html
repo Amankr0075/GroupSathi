@@ -4,7 +4,8 @@
 
 {% block content %}
 <div class="container" style="max-width: 600px;">
-    <a href="{% url 'group_detail' group.group_id %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Group Dashboard</a>
+    <a href="{% url 'group_detail' group.group_id %}" class="gs-back-btn"><i class="bi bi-arrow-left"></i> Group
+        Dashboard</a>
     <div class="gs-card">
         <div class="gs-card-header">
             <i class="bi bi-pencil-square"></i>
@@ -20,28 +21,33 @@
                 <label>Group Logo</label>
                 <input type="file" name="group_logo" class="gs-input" accept="image/*">
                 {% if group.logo %}
-                <small class="gs-text-muted mt-1 d-block">Current: <a href="/media/{{ group.logo }}" target="_blank">View Logo</a></small>
+                <small class="gs-text-muted mt-1 d-block">Current: <a href="/media/{{ group.logo }}"
+                        target="_blank">View Logo</a></small>
                 {% endif %}
             </div>
             <div class="gs-form-group">
                 <label>Monthly EMI Amount (₹) *</label>
-                <input type="number" name="emi_amount" class="gs-input" value="{{ group.emi_amount }}" min="0" step="0.01" required>
+                <input type="number" name="emi_amount" class="gs-input" value="{{ group.emi_amount }}" min="0"
+                    step="0.01" required>
             </div>
             <div class="gs-form-group">
                 <label>Interest Rate (% per month) *</label>
-                <input type="number" name="interest_rate" class="gs-input" value="{{ group.interest_rate }}" min="0" step="0.01" required>
+                <input type="number" name="interest_rate" class="gs-input" value="{{ group.interest_rate }}" min="0"
+                    step="0.01" required>
             </div>
             <div class="gs-form-group">
                 <label>EMI Payment Date (Day of Month) *</label>
                 <select name="emi_date" class="gs-input" required>
                     {% for day in "0123456789012345678901234567890"|make_list %}
-                    <option value="{{ forloop.counter }}" {% if group.emi_date == forloop.counter %}selected{% endif %}>{{ forloop.counter }}</option>
+                    <option value="{{ forloop.counter }}" {% if group.emi_date==forloop.counter %}selected{% endif %}>{{
+                        forloop.counter }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="gs-form-group">
                 <label>Late EMI Fine (₹ per month) *</label>
-                <input type="number" name="fine_amount" class="gs-input" value="{{ group.fine_amount }}" min="0" step="0.01" required>
+                <input type="number" name="fine_amount" class="gs-input" value="{{ group.fine_amount }}" min="0"
+                    step="0.01" required>
             </div>
             <button type="submit" class="gs-btn gs-btn-primary gs-mt-2">
                 <i class="bi bi-save"></i> Save Changes

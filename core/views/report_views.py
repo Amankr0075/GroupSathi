@@ -526,6 +526,7 @@ def _make_settlement_watermark_footer():
         canvas.restoreState()
     return watermark_cb
 
+
 @login_required_custom
 @ratelimit(key='ip', rate='10/h', block=True)
 def generate_settlement_pdf(request, group_id):
@@ -543,48 +544,17 @@ def generate_settlement_pdf(request, group_id):
         messages.error(request, 'Access denied.')
         return redirect('my_groups')
 
-    active_members = list(gm.find({'group_id': group_id, 'status': 'active'}))
-    num_members = len(active_members)
-    
-    from core.views.group_views import get_group_balance
-    total_cash = get_group_balance(group_id)
-
-    loans = get_collection('loans')
-    if_col = get_collection('imposed_fines')
-    profiles = get_collection('profiles')
-
-    member_plans = []
-    total_loan_dues = 0
-    total_fine_dues = 0
-
-    for m in active_members:
-        m_user_id = m['user_id']
-        p = profiles.find_one({'user_id': m_user_id})
-        name = p.get('full_name', 'Unknown') if p else 'Unknown'
-
-        active_loans = list(loans.find({'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}}))
-        loan_dues = sum(l.get('remaining_amount', 0.0) for l in active_loans)
-
-        unpaid_fines = list(if_col.find({'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'}))
-        fine_dues = sum(f.get('amount', 0.0) for f in unpaid_fines)
-
-        total_loan_dues += loan_dues
-        total_fine_dues += fine_dues
-
-        member_plans.append({
-            'name': name,
-            'role': m.get('role', 'member'),
-            'loan_dues': loan_dues,
-            'fine_dues': fine_dues,
-        })
-
-    total_dues = total_loan_dues + total_fine_dues
-    total_wealth = total_cash + total_dues
-    base_share = total_wealth / num_members if num_members > 0 else 0.0
-
-    for plan in member_plans:
-        plan['base_share'] = base_share
-        plan['net_payout'] = base_share - plan['loan_dues'] - plan['fine_dues']
+    from core.utils import calculate_settlement_plan
+    plan_data_res = calculate_settlement_plan(group_id)
+    if not plan_data_res:
+        messages.error(request, 'Unable to calculate settlement plan.')
+        return redirect('group_detail', group_id=group_id)
+        
+    total_cash = plan_data_res['total_cash']
+    group_profit = plan_data_res['group_profit']
+    total_group_contributions = plan_data_res['total_group_contributions']
+    total_final_payout = plan_data_res['total_final_payout']
+    member_plans = plan_data_res['member_plans']
 
     # Build PDF
     buf = io.BytesIO()
@@ -629,9 +599,9 @@ def generate_settlement_pdf(request, group_id):
     # Summary
     summary_data = [
         ['Total Cash Available', f"Rs. {total_cash:,.2f}"],
-        ['Total Dues to Recover', f"Rs. {total_dues:,.2f}"],
-        ['Total Group Wealth', f"Rs. {total_wealth:,.2f}"],
-        ['Base Share Per Member', f"Rs. {base_share:,.2f}"]
+        ['Distributable Profit', f"Rs. {group_profit:,.2f}"],
+        ['Total Paid Contributions', f"Rs. {total_group_contributions:,.2f}"],
+        ['Total Final Payout', f"Rs. {total_final_payout:,.2f}"]
     ]
     t_summary = Table(summary_data, colWidths=[3*inch, 2*inch])
     t_summary.setStyle(TableStyle([
@@ -650,25 +620,30 @@ def generate_settlement_pdf(request, group_id):
 
     # Formula
     formula_style = ParagraphStyle('Formula', parent=styles['Normal'], fontSize=9, textColor=colors.HexColor('#0d6efd'))
-    elements.append(Paragraph("<b>Calculations:</b>", formula_style))
-    elements.append(Paragraph("Total Group Wealth = Total Cash Available + Total Dues to Recover", formula_style))
-    elements.append(Paragraph("Base Share Per Member = Total Group Wealth / Total Active Members", formula_style))
-    elements.append(Paragraph("Net Payout = Base Share - Pending Loans - Unpaid Fines", formula_style))
+    elements.append(Paragraph("<b>Calculations (Single-Pass Deterministic):</b>", formula_style))
+    elements.append(Paragraph("1. Member Contribution = Total EMI/contributions actually paid", formula_style))
+    elements.append(Paragraph("2. Group Profit = Only collected interest + collected fines", formula_style))
+    elements.append(Paragraph("3. Profit Share = Group Profit * (Member Contribution / Total Group Contributions)", formula_style))
+    elements.append(Paragraph("4. Net Payout = max(0, Contribution + Profit Share - Deductions)", formula_style))
     elements.append(Spacer(1, 0.25 * inch))
 
     # Member Plan Table
-    plan_data = [['Member Name', 'Base Share', 'Pending Loans', 'Unpaid Fines', 'Net Payout']]
+    plan_data = [['Member Name', 'Contribution', 'Profit Share', 'Gross Settl.', 'Deductions', 'Net Payout']]
     for p in member_plans:
-        payout_str = f"+Rs. {p['net_payout']:,.2f}" if p['net_payout'] > 0 else (f"Owes Rs. {abs(p['net_payout']):,.2f}" if p['net_payout'] < 0 else "Rs. 0.00")
+        payout_str = f"+Rs. {p['final_payout']:,.2f}" if p['final_payout'] > 0 else "Rs. 0.00"
+        if p['remaining_due'] > 0:
+            payout_str = f"Owes Rs. {p['remaining_due']:,.2f}"
+            
         plan_data.append([
             f"{p['name']} ({p['role'].title()})",
-            f"Rs. {p['base_share']:,.2f}",
-            f"-Rs. {p['loan_dues']:,.2f}" if p['loan_dues'] > 0 else "Rs. 0.00",
-            f"-Rs. {p['fine_dues']:,.2f}" if p['fine_dues'] > 0 else "Rs. 0.00",
+            f"Rs. {p['paid_contribution']:,.2f}",
+            f"Rs. {p['profit_share']:,.2f}",
+            f"Rs. {p['gross_settlement']:,.2f}",
+            f"-Rs. {p['total_deduction']:,.2f}" if p['total_deduction'] > 0 else "Rs. 0.00",
             payout_str
         ])
     
-    t_plan = Table(plan_data, colWidths=[2.2*inch, 1.2*inch, 1.1*inch, 1.1*inch, 1.3*inch])
+    t_plan = Table(plan_data, colWidths=[1.8*inch, 1.0*inch, 1.0*inch, 1.1*inch, 1.1*inch, 1.0*inch])
     t_plan.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), PRIMARY_DARK),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),

@@ -1732,61 +1732,20 @@ def group_settlement_preview_view(request, group_id):
         messages.error(request, 'You are not a member of this group.')
         return redirect('my_groups')
 
-    # Get active members
-    active_members = list(gm.find({'group_id': group_id, 'status': 'active'}))
-    num_members = len(active_members)
-
-    total_cash = get_group_balance(group_id)
-
-    loans = get_collection('loans')
-    if_col = get_collection('imposed_fines')
-    profiles = get_collection('profiles')
-
-    member_plans = []
-    total_loan_dues = 0
-    total_fine_dues = 0
-
-    # Calculate dues for each member first to find total_dues
-    for m in active_members:
-        m_user_id = m['user_id']
-        p = profiles.find_one({'user_id': m_user_id})
-        name = p.get('full_name', 'Unknown') if p else 'Unknown'
-
-        # Sum of active/approved loans
-        active_loans = list(loans.find({'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}}))
-        loan_dues = sum(l.get('remaining_amount', 0.0) for l in active_loans)
-
-        # Sum of unpaid fines
-        unpaid_fines = list(if_col.find({'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'}))
-        fine_dues = sum(f.get('amount', 0.0) for f in unpaid_fines)
-
-        total_loan_dues += loan_dues
-        total_fine_dues += fine_dues
-
-        member_plans.append({
-            'user_id': m_user_id,
-            'name': name,
-            'role': m.get('role', 'member'),
-            'loan_dues': loan_dues,
-            'fine_dues': fine_dues,
-        })
-
-    total_dues = total_loan_dues + total_fine_dues
-    total_wealth = total_cash + total_dues
-    base_share = total_wealth / num_members if num_members > 0 else 0.0
-
-    # Fill in base share and net payout for each member
-    for plan in member_plans:
-        plan['base_share'] = base_share
-        plan['net_payout'] = base_share - plan['loan_dues'] - plan['fine_dues']
+    # Call new distribution logic
+    from core.utils import calculate_settlement_plan
+    plan_data = calculate_settlement_plan(group_id)
+    if not plan_data:
+        messages.error(request, 'Unable to calculate settlement plan.')
+        return redirect('group_detail', group_id=group_id)
 
     context = {
         'group': group,
-        'total_cash': total_cash,
-        'total_dues': total_dues,
-        'total_wealth': total_wealth,
-        'base_share': base_share,
-        'member_plans': member_plans,
+        'total_cash': plan_data['total_cash'],
+        'group_profit': plan_data['group_profit'],
+        'total_group_contributions': plan_data['total_group_contributions'],
+        'total_final_payout': plan_data['total_final_payout'],
+        'member_plans': plan_data['member_plans'],
         'user_role': membership.get('role', 'member'),
     }
     return render(request, 'groups/settlement_preview.html', context)
@@ -1817,52 +1776,48 @@ def execute_group_settlement_view(request, group_id):
         messages.error(request, 'No active members to distribute assets to.')
         return redirect('group_detail', group_id=group_id)
 
-    total_cash = get_group_balance(group_id)
+    # Call new distribution logic
+    from core.utils import calculate_settlement_plan
+    plan_data = calculate_settlement_plan(group_id)
+    if not plan_data:
+        messages.error(request, 'Unable to calculate settlement plan.')
+        return redirect('group_detail', group_id=group_id)
 
     loans = get_collection('loans')
     if_col = get_collection('imposed_fines')
     txns = get_collection('transactions')
 
-    # Gather totals
-    total_loan_dues = 0
-    total_fine_dues = 0
-    member_data = []
-
-    for m in active_members:
-        m_user_id = m['user_id']
-        active_loans = list(loans.find({'group_id': group_id, 'user_id': m_user_id, 'status': {'$in': ['approved', 'active']}}))
-        loan_dues = sum(l.get('remaining_amount', 0.0) for l in active_loans)
-
-        unpaid_fines = list(if_col.find({'group_id': group_id, 'user_id': m_user_id, 'status': 'unpaid'}))
-        fine_dues = sum(f.get('amount', 0.0) for f in unpaid_fines)
-
-        total_loan_dues += loan_dues
-        total_fine_dues += fine_dues
-
-        member_data.append({
-            'user_id': m_user_id,
-            'loan_dues': loan_dues,
-            'fine_dues': fine_dues,
-        })
-
-    total_dues = total_loan_dues + total_fine_dues
-    total_wealth = total_cash + total_dues
-    base_share = total_wealth / num_members
-
-    # Process each member
-    for item in member_data:
-        m_user_id = item['user_id']
-        net_payout = base_share - item['loan_dues'] - item['fine_dues']
+    # Process each member based on calculated plan
+    for plan in plan_data['member_plans']:
+        m_user_id = plan['user_id']
+        net_payout = plan['final_payout']
 
         # Record payout transaction
-        txns.insert_one({
-            'group_id': group_id,
-            'user_id': m_user_id,
-            'type': 'settlement_payout',
-            'amount': -net_payout,
-            'description': f'Settlement distribution payout: {format_currency(net_payout)}',
-            'created_at': datetime.now(),
-        })
+        if net_payout > 0:
+            txns.insert_one({
+                'group_id': group_id,
+                'user_id': m_user_id,
+                'type': 'settlement_payout',
+                'amount': -net_payout,
+                'description': f'Settlement distribution payout: {format_currency(net_payout)}',
+                'created_at': datetime.now(),
+            })
+
+        # Record recovered dues explicitly for auditability (0 amount, just documentation)
+        if plan['recovered_loan_principal'] > 0 or plan['recovered_fines'] > 0 or plan['recovered_unpaid_emi'] > 0:
+            recovery_desc = []
+            if plan['recovered_loan_principal'] > 0: recovery_desc.append(f"Loan: {format_currency(plan['recovered_loan_principal'])}")
+            if plan['recovered_fines'] > 0: recovery_desc.append(f"Fines: {format_currency(plan['recovered_fines'])}")
+            if plan['recovered_unpaid_emi'] > 0: recovery_desc.append(f"EMI: {format_currency(plan['recovered_unpaid_emi'])}")
+            
+            txns.insert_one({
+                'group_id': group_id,
+                'user_id': m_user_id,
+                'type': 'settlement_recovery',
+                'amount': 0.0,
+                'description': f"Dues recovered during settlement: {', '.join(recovery_desc)}",
+                'created_at': datetime.now(),
+            })
 
         # Mark all pending/active loans of this member in this group as completed
         loans.update_many(
@@ -1885,7 +1840,10 @@ def execute_group_settlement_view(request, group_id):
             group_id
         )
 
-    messages.success(request, 'Group settlement executed successfully! All dues cleared and cash distributed.')
+    # Disable group after settlement
+    groups.update_one({'group_id': group_id}, {'$set': {'is_active': False}})
+
+    messages.success(request, 'Group settlement executed successfully! All dues cleared and cash distributed. The group is now inactive.')
     return redirect('group_detail', group_id=group_id)
 
 

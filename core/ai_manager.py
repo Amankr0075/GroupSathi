@@ -49,8 +49,8 @@ class AIManager:
         import os
         from dotenv import load_dotenv
         
-        # Ensure environment variables are loaded
-        load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
+        # Ensure environment variables are loaded (override=True ensures latest values are used even if server started with empty ones)
+        load_dotenv(os.path.join(settings.BASE_DIR, '.env'), override=True)
         
         providers = []
         gemini_key = getattr(settings, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY')

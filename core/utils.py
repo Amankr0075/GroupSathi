@@ -231,3 +231,160 @@ def check_and_send_all_active_reminders(target_date=None):
         send_automated_reminders_for_group(group, target_date)
 
 
+def calculate_settlement_plan(group_id):
+    """
+    Calculate the deterministic, single-pass final distribution plan for a group.
+    """
+    groups = get_collection('groups')
+    group = groups.find_one({'group_id': group_id})
+    if not group:
+        return None
+        
+    gm = get_collection('group_members')
+    active_members = list(gm.find({'group_id': group_id, 'status': 'active'}))
+    if not active_members:
+        return None
+
+    txns = get_collection('transactions')
+    loans = get_collection('loans')
+    if_col = get_collection('imposed_fines')
+    profiles = get_collection('profiles')
+    
+    from core.utils import get_group_balance
+    total_cash = get_group_balance(group_id)
+    
+    emi_amount = group.get('emi_amount', 0.0)
+    now = datetime.now()
+    
+    member_plans = []
+    total_group_contributions = 0.0
+    
+    # Calculate group profit (actually realized before settlement)
+    # Profit = Collected Interest + Collected Fines
+    pipeline_int = [
+        {'$match': {'group_id': group_id, 'type': 'interest_payment'}},
+        {'$group': {'_id': None, 'total': {'$sum': '$amount'}}}
+    ]
+    res_int = list(txns.aggregate(pipeline_int))
+    collected_interest = res_int[0]['total'] if res_int else 0.0
+    
+    pipeline_fine = [
+        {'$match': {'group_id': group_id, 'type': 'fine_payment'}},
+        {'$group': {'_id': None, 'total': {'$sum': '$amount'}}}
+    ]
+    res_fine = list(txns.aggregate(pipeline_fine))
+    collected_fines = res_fine[0]['total'] if res_fine else 0.0
+    
+    # We might also have other distributable income, but for now we'll stick to interest + fines
+    group_profit = collected_interest + collected_fines
+    
+    # Step 1: Calculate contributions and find totals
+    for m in active_members:
+        user_id = m['user_id']
+        joined_at = m.get('joined_at', now)
+        
+        # Calculate paid contributions (EMI payments)
+        pipeline_emi = [
+            {'$match': {'group_id': group_id, 'user_id': user_id, 'type': 'emi_payment'}},
+            {'$group': {'_id': None, 'total': {'$sum': '$amount'}}}
+        ]
+        res_emi = list(txns.aggregate(pipeline_emi))
+        paid_contribution = res_emi[0]['total'] if res_emi else 0.0
+        
+        total_group_contributions += paid_contribution
+        
+        # Calculate unpaid contribution based on months active
+        months_active = (now.year - joined_at.year) * 12 + (now.month - joined_at.month)
+        if months_active < 0:
+            months_active = 0
+            
+        expected_contribution = months_active * emi_amount
+        unpaid_contribution = max(0.0, expected_contribution - paid_contribution)
+        
+        p = profiles.find_one({'user_id': user_id})
+        name = p.get('full_name', 'Unknown') if p else 'Unknown'
+        
+        member_plans.append({
+            'user_id': user_id,
+            'name': name,
+            'role': m.get('role', 'member'),
+            'paid_contribution': paid_contribution,
+            'expected_contribution': expected_contribution,
+            'unpaid_contribution': unpaid_contribution,
+        })
+        
+    # Steps 2-7 for each member
+    for plan in member_plans:
+        user_id = plan['user_id']
+        
+        # Step 3: Profit Share
+        if total_group_contributions > 0:
+            profit_share = group_profit * (plan['paid_contribution'] / total_group_contributions)
+        else:
+            profit_share = group_profit / len(active_members) if active_members else 0.0
+            
+        # Step 4: Gross Settlement
+        gross_settlement = plan['paid_contribution'] + profit_share
+        
+        # Calculate Outstanding Dues
+        active_loans = list(loans.find({'group_id': group_id, 'user_id': user_id, 'status': {'$in': ['approved', 'active']}}))
+        loan_principal_due = sum(l.get('remaining_amount', 0.0) for l in active_loans)
+        
+        # We don't have a reliable 'loan_interest_due' in DB yet, but if it exists we'd add it. 
+        # Assuming remaining_amount represents total due for loan, or interest is handled separately. 
+        # I'll add a 0 placeholder for now to match the algorithm steps.
+        loan_interest_due = 0.0 
+        
+        unpaid_fines_list = list(if_col.find({'group_id': group_id, 'user_id': user_id, 'status': 'unpaid'}))
+        fine_due = sum(f.get('amount', 0.0) for f in unpaid_fines_list)
+        other_due = 0.0
+        
+        # Step 5: Total Deduction (Fixed Order: Principal, Interest, Unpaid EMI, Fines, Other)
+        total_deduction = loan_principal_due + loan_interest_due + plan['unpaid_contribution'] + fine_due + other_due
+        
+        plan['profit_share'] = profit_share
+        plan['gross_settlement'] = gross_settlement
+        plan['loan_principal_due'] = loan_principal_due
+        plan['loan_interest_due'] = loan_interest_due
+        plan['fine_due'] = fine_due
+        plan['other_due'] = other_due
+        plan['total_deduction'] = total_deduction
+        
+        # Step 6 & 7: Final Amount & Remaining Due
+        plan['final_payout'] = max(0.0, gross_settlement - total_deduction)
+        plan['remaining_due'] = max(0.0, total_deduction - gross_settlement)
+        
+        # Step 8 & 9: Determine specifically what was recovered (for record keeping, NOT redistribution)
+        available_for_deduction = gross_settlement
+        
+        recovered_loan_principal = min(available_for_deduction, loan_principal_due)
+        available_for_deduction -= recovered_loan_principal
+        
+        recovered_loan_interest = min(available_for_deduction, loan_interest_due)
+        available_for_deduction -= recovered_loan_interest
+        
+        recovered_unpaid_emi = min(available_for_deduction, plan['unpaid_contribution'])
+        available_for_deduction -= recovered_unpaid_emi
+        
+        recovered_fines = min(available_for_deduction, fine_due)
+        available_for_deduction -= recovered_fines
+        
+        recovered_other_dues = min(available_for_deduction, other_due)
+        available_for_deduction -= recovered_other_dues
+        
+        plan['recovered_loan_principal'] = recovered_loan_principal
+        plan['recovered_loan_interest'] = recovered_loan_interest
+        plan['recovered_unpaid_emi'] = recovered_unpaid_emi
+        plan['recovered_fines'] = recovered_fines
+        plan['recovered_other_dues'] = recovered_other_dues
+
+    total_final_payout = sum(p['final_payout'] for p in member_plans)
+    
+    return {
+        'group_id': group_id,
+        'total_cash': total_cash,
+        'group_profit': group_profit,
+        'total_group_contributions': total_group_contributions,
+        'total_final_payout': total_final_payout,
+        'member_plans': member_plans
+    }

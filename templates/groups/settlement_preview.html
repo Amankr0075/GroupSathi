@@ -21,11 +21,15 @@
         <div class="alert alert-info d-flex align-items-center mb-4" role="alert" style="border-radius: 12px; background: rgba(13, 110, 253, 0.05); border: 1px solid rgba(13, 110, 253, 0.2);">
             <i class="bi bi-info-circle-fill me-3" style="font-size: 1.5rem; color: #0d6efd;"></i>
             <div>
-                <strong>How it is calculated:</strong><br>
+                <strong>How it is calculated (Single-Pass Deterministic):</strong><br>
                 <small class="mb-0">
-                    <strong>Total Group Wealth</strong> = Total Cash Available + Total Dues to Recover<br>
-                    <strong>Base Share Per Member</strong> = Total Group Wealth ÷ Total Active Members<br>
-                    <strong>Net Payout</strong> = Base Share - Pending Loans - Unpaid Fines
+                    <strong>1. Member Contribution</strong> = Total EMI/contributions actually paid<br>
+                    <strong>2. Group Profit</strong> = Only collected interest + collected fines<br>
+                    <strong>3. Profit Share</strong> = Group Profit × (Member Contribution ÷ Total Group Contributions)<br>
+                    <strong>4. Gross Settlement</strong> = Member Contribution + Profit Share<br>
+                    <strong>5. Deductions</strong> = Outstanding Loan Principal, Interest, Unpaid EMI, Fines, Other Dues<br>
+                    <strong>6. Net Payout</strong> = max(0, Gross Settlement - Deductions)<br>
+                    <strong>7. Remaining Due</strong> = max(0, Deductions - Gross Settlement)
                 </small>
             </div>
         </div>
@@ -53,21 +57,21 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="p-3 rounded text-center" style="background-color: rgba(220, 53, 69, 0.05); border: 1px solid rgba(220, 53, 69, 0.1);">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Dues to Recover</div>
-                    <h4 class="m-0" style="color: var(--gs-danger);">₹{{ total_dues|floatformat:2 }}</h4>
+                <div class="p-3 rounded text-center" style="background-color: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Distributable Profit</div>
+                    <h4 class="m-0" style="color: var(--gs-success);">₹{{ group_profit|floatformat:2 }}</h4>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
-                <div class="p-3 rounded text-center" style="background-color: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.1);">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Group Wealth</div>
-                    <h4 class="m-0" style="color: var(--gs-success);">₹{{ total_wealth|floatformat:2 }}</h4>
+                <div class="p-3 rounded text-center" style="background-color: rgba(220, 53, 69, 0.05); border: 1px solid rgba(220, 53, 69, 0.1);">
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Paid Contributions</div>
+                    <h4 class="m-0" style="color: var(--gs-danger);">₹{{ total_group_contributions|floatformat:2 }}</h4>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6">
                 <div class="p-3 rounded text-center" style="background-color: rgba(108, 117, 125, 0.05); border: 1px solid rgba(108, 117, 125, 0.1);">
-                    <div class="text-muted small fw-bold text-uppercase mb-1">Base Share Per Member</div>
-                    <h4 class="m-0 text-dark">₹{{ base_share|floatformat:2 }}</h4>
+                    <div class="text-muted small fw-bold text-uppercase mb-1">Total Final Payout</div>
+                    <h4 class="m-0 text-dark">₹{{ total_final_payout|floatformat:2 }}</h4>
                 </div>
             </div>
         </div>
@@ -77,10 +81,12 @@
                 <thead class="table-light">
                     <tr>
                         <th>Member Name</th>
-                        <th class="text-end">Base Share</th>
-                        <th class="text-end">Pending Loans</th>
-                        <th class="text-end">Unpaid Fines</th>
+                        <th class="text-end">Contribution</th>
+                        <th class="text-end">Profit Share</th>
+                        <th class="text-end">Gross Settlement</th>
+                        <th class="text-end">Total Deductions</th>
                         <th class="text-end">Net Payout</th>
+                        <th class="text-end">Remaining Due</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,20 +98,24 @@
                                 <span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">{{ plan.role|title }}</span>
                             {% endif %}
                         </td>
-                        <td class="text-end text-muted">₹{{ plan.base_share|floatformat:2 }}</td>
-                        <td class="text-end {% if plan.loan_dues > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
-                            {% if plan.loan_dues > 0 %}-₹{{ plan.loan_dues|floatformat:2 }}{% else %}₹0.00{% endif %}
-                        </td>
-                        <td class="text-end {% if plan.fine_dues > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
-                            {% if plan.fine_dues > 0 %}-₹{{ plan.fine_dues|floatformat:2 }}{% else %}₹0.00{% endif %}
+                        <td class="text-end text-muted">₹{{ plan.paid_contribution|floatformat:2 }}</td>
+                        <td class="text-end text-success">₹{{ plan.profit_share|floatformat:2 }}</td>
+                        <td class="text-end fw-bold">₹{{ plan.gross_settlement|floatformat:2 }}</td>
+                        <td class="text-end {% if plan.total_deduction > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                            {% if plan.total_deduction > 0 %}-₹{{ plan.total_deduction|floatformat:2 }}{% else %}₹0.00{% endif %}
                         </td>
                         <td class="text-end">
-                            {% if plan.net_payout > 0 %}
-                                <span class="text-success fw-bold">+₹{{ plan.net_payout|floatformat:2 }}</span>
-                            {% elif plan.net_payout < 0 %}
-                                <span class="text-danger fw-bold">Owes ₹{{ plan.net_payout|stringformat:".2f"|slice:"1:" }}</span>
+                            {% if plan.final_payout > 0 %}
+                                <span class="text-success fw-bold">+₹{{ plan.final_payout|floatformat:2 }}</span>
                             {% else %}
                                 <span class="text-muted fw-bold">₹0.00</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if plan.remaining_due > 0 %}
+                                <span class="text-danger fw-bold">Owes ₹{{ plan.remaining_due|floatformat:2 }}</span>
+                            {% else %}
+                                <span class="text-muted">₹0.00</span>
                             {% endif %}
                         </td>
                     </tr>

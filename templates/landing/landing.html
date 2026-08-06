@@ -65,19 +65,42 @@
     }
 
     /* Hero */
-    .hero-v3 { 
-        min-height: calc(100vh - 120px); /* Subtract Navbar and Marquee heights */
-        display: flex; 
-        align-items: center; 
-        padding: 40px 0; 
-        position: relative; 
-        color: #0F172A; 
-        overflow: hidden; 
-        background: radial-gradient(120% 100% at 50% 0%, #FFFFFF 0%, #F1F5F9 100%); 
+    .hero-v3 {
+        min-height: calc(100vh - 120px);
+        /* Subtract Navbar and Marquee heights */
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+        position: relative;
+        color: #0F172A;
+        overflow: hidden;
+        background: radial-gradient(120% 100% at 50% 0%, #FFFFFF 0%, #F1F5F9 100%);
     }
-    .hero-title-v3 { font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 800; line-height: 1.1; letter-spacing: -2px; color: #0F172A; margin-bottom: 24px; text-shadow: none; }
-    .hero-title-v3 span { background: linear-gradient(135deg, #3B82F6, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-desc { font-size: 1.15rem; color: #475569; line-height: 1.7; margin-bottom: 40px; font-weight: 400; max-width: 90%; }
+
+    .hero-title-v3 {
+        font-size: clamp(2.8rem, 6vw, 5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -2px;
+        color: #0F172A;
+        margin-bottom: 24px;
+        text-shadow: none;
+    }
+
+    .hero-title-v3 span {
+        background: linear-gradient(135deg, #3B82F6, #10B981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+        font-size: 1.15rem;
+        color: #475569;
+        line-height: 1.7;
+        margin-bottom: 40px;
+        font-weight: 400;
+        max-width: 90%;
+    }
 
     /* Buttons */
     .btn-pro {
@@ -252,17 +275,33 @@
     }
 
     }
-    .mobile-mockup-header i { color: #3B82F6; font-size: 1.2rem; }
-    .mobile-mockup-header span { font-weight: 800; font-family: var(--font-heading); color: #0F172A; font-size: 1.1rem; }
-    .mobile-mockup-body { padding: 15px; background: #ffffff; }
+
+    .mobile-mockup-header i {
+        color: #3B82F6;
+        font-size: 1.2rem;
+    }
+
+    .mobile-mockup-header span {
+        font-weight: 800;
+        font-family: var(--font-heading);
+        color: #0F172A;
+        font-size: 1.1rem;
+    }
+
+    .mobile-mockup-body {
+        padding: 15px;
+        background: #ffffff;
+    }
+
     .mockup-card {
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid #E2E8F0;
         border-radius: 12px;
         padding: 15px;
         margin-top: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     }
+
     .mockup-container {
         background: white;
         border-radius: 24px;
@@ -487,6 +526,325 @@
     .chatbot-toggle-btn:hover {
         transform: scale(1.1);
     }
+
+    /* FAQ Section Styles */
+    .faq-section {
+        background: linear-gradient(135deg, var(--gs-light), #FFFFFF);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .faq-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+    }
+
+    .faq-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .faq-header h2 {
+        font-weight: 800;
+        color: var(--gs-primary);
+        font-size: 2.5rem;
+    }
+
+    .faq-header h2 span {
+        background: linear-gradient(135deg, #3B82F6, #10B981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .accordion-item {
+        border: none;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 16px !important;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+    }
+
+    .accordion-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .accordion-button {
+        background: transparent !important;
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--gs-primary);
+        padding: 1.25rem 1.5rem;
+        border: none;
+        border-radius: 16px !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: var(--gs-secondary);
+        background: rgba(59, 130, 246, 0.03) !important;
+    }
+
+    .accordion-button::after {
+        background-size: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .accordion-body {
+        padding: 0 1.5rem 1.25rem 1.5rem;
+        color: var(--gs-slate);
+        line-height: 1.7;
+        font-size: 1rem;
+    }
+
+
+    /* APK Button Animation */
+    .apk-btn-animated {
+        position: relative;
+        overflow: hidden;
+        animation: pulse-shadow 2s infinite;
+        z-index: 1;
+    }
+
+    .apk-btn-animated::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: all 0.5s ease;
+        animation: shine 3s infinite;
+        z-index: -1;
+    }
+
+    @keyframes pulse-shadow {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    @keyframes shine {
+        0% {
+            left: -100%;
+        }
+
+        20% {
+            left: 100%;
+        }
+
+        100% {
+            left: 100%;
+        }
+    }
+
+    /* FAQ Category Headers */
+    .faq-category {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--gs-primary);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        padding-bottom: 0.5rem;
+    }
+
+
+    /* Chatbot Label & Floating */
+    .chatbot-toggle-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .chatbot-label {
+        background: white;
+        color: var(--gs-primary);
+        padding: 8px 16px;
+        border-radius: 30px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        position: relative;
+        animation: float-label 3s ease-in-out infinite;
+    }
+
+    .chatbot-label::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 8px 0 8px 8px;
+        border-style: solid;
+        border-color: transparent transparent transparent white;
+    }
+
+    @keyframes float-label {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .chatbot-btn-animated {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        padding: 0;
+        border: 3px solid white;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        animation: pulse-ring 2s infinite;
+        transition: transform 0.3s;
+    }
+
+    .chatbot-btn-animated:hover {
+        transform: scale(1.1);
+    }
+
+    @keyframes pulse-ring {
+        0% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+    }
+
+    /* Feature Card Hover & Icon Animations */
+    .feature-card:hover {
+        transform: translateY(-10px) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+        border-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .icon-pulse {
+        animation: icon-pulse-anim 2s infinite;
+    }
+
+    @keyframes icon-pulse-anim {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.15);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .icon-ring {
+        animation: icon-ring-anim 2.5s infinite;
+        transform-origin: top center;
+    }
+
+    @keyframes icon-ring-anim {
+
+        0%,
+        100% {
+            transform: rotate(0deg);
+        }
+
+        10%,
+        30%,
+        50% {
+            transform: rotate(15deg);
+        }
+
+        20%,
+        40% {
+            transform: rotate(-15deg);
+        }
+
+        60% {
+            transform: rotate(0deg);
+        }
+    }
+
+    .icon-float {
+        animation: icon-float-anim 3s ease-in-out infinite;
+    }
+
+    @keyframes icon-float-anim {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    .icon-beat {
+        animation: icon-beat-anim 1.5s infinite;
+    }
+
+    @keyframes icon-beat-anim {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        25% {
+            transform: scale(1.1);
+        }
+
+        50% {
+            transform: scale(1);
+        }
+
+        75% {
+            transform: scale(1.1);
+        }
+    }
 </style>
 {% endblock %}
 
@@ -532,7 +890,8 @@
                     <a href="{% url 'register' %}" class="btn btn-pro btn-pro-primary px-4 py-3 fs-5 gs-btn-glow"
                         style="border-radius: 50px;">Get Started for Free <i class="bi bi-arrow-right ms-2"></i></a>
                     <div class="d-flex flex-column">
-                        <a href="{% url 'download_apk' %}" class="btn btn-pro btn-pro-accent px-4 py-3 fs-5"><i
+                        <a href="{% url 'download_apk' %}"
+                            class="btn btn-pro btn-pro-accent px-4 py-3 fs-5 apk-btn-animated"><i
                                 class="bi bi-android2 me-2"></i>Download APK</a>
                         <small class="text-muted mt-2" style="font-size: 0.85rem;"><i
                                 class="bi bi-info-circle me-1"></i>App is for Android only. iOS users please use the
@@ -542,7 +901,9 @@
             </div>
             <div class="col-lg-6 mt-5 mt-lg-0" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="200">
                 <div class="hero-mockup-wrapper">
-                    <img src="{% static 'images/shg_meeting_modern.png' %}" alt="Rural women SHG meeting" class="img-fluid floating-img shadow-lg" style="border-radius: 24px; border: 4px solid white; object-fit: contain; max-height: 550px; width: 100%;">
+                    <img src="{% static 'images/shg_meeting_modern.png' %}" alt="Rural women SHG meeting"
+                        class="img-fluid floating-img shadow-lg"
+                        style="border-radius: 24px; border: 4px solid white; object-fit: contain; max-height: 550px; width: 100%;">
                 </div>
             </div>
         </div>
@@ -608,7 +969,7 @@
                     style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
                     <div class="feature-icon"
                         style="font-size: 2.5rem; color: #3B82F6; margin-bottom: 24px; background: rgba(59,130,246,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
-                        <i class="bi bi-people-fill"></i>
+                        <i class="bi bi-people-fill icon-pulse"></i>
                     </div>
                     <h4 class="text-dark">Consensus Approvals</h4>
                     <p class="text-muted mt-3" style="color: #475569 !important;">Democracy is built into the code. Loan
@@ -622,7 +983,7 @@
                     style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
                     <div class="feature-icon"
                         style="font-size: 2.5rem; color: #10B981; margin-bottom: 24px; background: rgba(16,185,129,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
-                        <i class="bi bi-bell-fill"></i>
+                        <i class="bi bi-bell-fill icon-ring"></i>
                     </div>
                     <h4 class="text-dark">Live Notifications</h4>
                     <p class="text-muted mt-3" style="color: #475569 !important;">Stay informed the second a transaction
@@ -635,7 +996,7 @@
                     style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
                     <div class="feature-icon"
                         style="font-size: 2.5rem; color: #8B5CF6; margin-bottom: 24px; background: rgba(139,92,246,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
-                        <i class="bi bi-robot"></i>
+                        <i class="bi bi-robot icon-float"></i>
                     </div>
                     <h4 class="text-dark">AI Support Assistant</h4>
                     <p class="text-muted mt-3" style="color: #475569 !important;">Integrated Gemini AI is available 24/7
@@ -648,7 +1009,7 @@
                     style="background: white; padding: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.03); transition: all 0.4s ease; height: 100%;">
                     <div class="feature-icon"
                         style="font-size: 2.5rem; color: #F59E0B; margin-bottom: 24px; background: rgba(245,158,11,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px;">
-                        <i class="bi bi-exclamation-octagon"></i>
+                        <i class="bi bi-exclamation-octagon icon-beat"></i>
                     </div>
                     <h4 class="text-dark">Fine Management</h4>
                     <p class="text-muted mt-3" style="color: #475569 !important;">Maintain group discipline easily.
@@ -733,22 +1094,293 @@
 </section>
 
 <!-- Footer -->
+
+
+
+
+
 <footer class="bg-dark text-white py-4 text-center mt-auto">
     <div class="container">
-        <div class="d-flex justify-content-center align-items-center mb-3">
-            <img src="{% static 'images/GroupSathi.png' %}" alt="Logo"
-                style="height: 30px; margin-right: 10px; border-radius:8px;">
-            <h5 class="mb-0 fw-bold">GroupSathi</h5>
-        </div>
-        <div class="mb-3">
-            <a href="#" class="text-white-50 text-decoration-none me-3" data-bs-toggle="modal"
+        <div class="d-flex justify-content-center gap-3 mb-3">
+            <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#faqModal"><small>FAQs</small></a>
+            <span class="text-white-50">|</span>
+            <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal"
                 data-bs-target="#termsModal"><small>Terms & Conditions</small></a>
+            <span class="text-white-50">|</span>
             <a href="#" class="text-white-50 text-decoration-none" data-bs-toggle="modal"
                 data-bs-target="#privacyModal"><small>Privacy Policy</small></a>
         </div>
-        <p class="text-muted mb-0">&copy; 2026 GroupSathi. All rights reserved. Empowering rural India.</p>
+        <p class="text-light mb-2">&copy; 2026 GroupSathi. All rights reserved. Empowering rural India.</p>
+        <p class="text-white-50 mb-0" style="font-size: 0.85rem;">GroupSathi is available as a Web App and Android
+            App.<br>Developed and Founded by <a href="https://www.linkedin.com/in/amanxelon" target="_blank"
+                class="text-white text-decoration-none fw-bold">Aman Kumar</a></p>
     </div>
 </footer>
+
+
+<!-- FAQ Modal -->
+<div class="modal fade" id="faqModal" tabindex="-1" aria-labelledby="faqModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="background: linear-gradient(135deg, var(--gs-light), #FFFFFF);">
+            <div class="modal-header border-0 pb-0">
+                <div class="w-100 text-center position-relative">
+                    <h2 class="modal-title fw-bold" id="faqModalLabel"
+                        style="color: var(--gs-primary); font-size: 2rem;">
+                        Frequently Asked <span
+                            style="background: linear-gradient(135deg, #3B82F6, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Questions</span>
+                    </h2>
+                    <p class="text-muted mb-0">Everything you need to know about the GroupSathi platform.</p>
+                </div>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 p-md-5">
+                <div class="accordion" id="faqAccordion">
+
+
+                    <!-- CATEGORY: GENERAL & FACILITIES -->
+                    <h3 class="faq-category" data-aos="fade-up">General & Facilities</h3>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="50">
+                        <h2 class="accordion-header" id="headingGen1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseGen1" aria-expanded="false" aria-controls="collapseGen1">
+                                What is GroupSathi and how does it help Self Help Groups?
+                            </button>
+                        </h2>
+                        <div id="collapseGen1" class="accordion-collapse collapse" aria-labelledby="headingGen1"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                GroupSathi is a digital ledger and management platform. It helps Self Help Groups (SHGs)
+                                transition from traditional paper-based record-keeping to a 100% transparent, automated
+                                digital ecosystem. It tracks monthly contributions, calculates interest, manages loans,
+                                and generates instant reports.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="accordion-header" id="headingGen2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseGen2" aria-expanded="false" aria-controls="collapseGen2">
+                                Do you provide the funds or act as a bank?
+                            </button>
+                        </h2>
+                        <div id="collapseGen2" class="accordion-collapse collapse" aria-labelledby="headingGen2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                No. GroupSathi is strictly a software management tool. We do not collect, hold, or
+                                transfer any real money through our platform. All physical cash remains completely under
+                                the control and responsibility of the group members and leaders. GroupSathi only
+                                maintaining the records of all the data of the users.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="150">
+                        <h2 class="accordion-header" id="headingGen3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseGen3" aria-expanded="false" aria-controls="collapseGen3">
+                                Can I use GroupSathi on my mobile phone?
+                            </button>
+                        </h2>
+                        <div id="collapseGen3" class="accordion-collapse collapse" aria-labelledby="headingGen3"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! You can access the platform via our responsive website on any device, and Android
+                                users can download the official GroupSathi APK for a native app experience.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORY: CORE FUNCTIONS -->
+                    <h3 class="faq-category" data-aos="fade-up">Core Functions (EMI, Loans & Settlements)</h3>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+                        <h2 class="accordion-header" id="headingFunc1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFunc1" aria-expanded="false" aria-controls="collapseFunc1">
+                                How are loans and interest managed?
+                            </button>
+                        </h2>
+                        <div id="collapseFunc1" class="accordion-collapse collapse" aria-labelledby="headingFunc1"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Group leaders can approve loan requests through the dashboard. The system automatically
+                                calculates compound or flat interest based on the group's predefined rate, and adds it
+                                to the member's outstanding dues.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
+                        <h2 class="accordion-header" id="headingFunc2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFunc2" aria-expanded="false" aria-controls="collapseFunc2">
+                                How is the final group settlement calculated?
+                            </button>
+                        </h2>
+                        <div id="collapseFunc2" class="accordion-collapse collapse" aria-labelledby="headingFunc2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                GroupSathi uses a deterministic, single-pass calculation system. A member's final payout
+                                equals their Total Paid EMI plus their Share of the Group's Profit (collected interest
+                                and fines), minus any Outstanding Dues (unpaid loans, fines, or EMIs).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+                        <h2 class="accordion-header" id="headingFunc3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseFunc3" aria-expanded="false" aria-controls="collapseFunc3">
+                                Can we generate financial reports?
+                            </button>
+                        </h2>
+                        <div id="collapseFunc3" class="accordion-collapse collapse" aria-labelledby="headingFunc3"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes. Group leaders can generate instantaneous, professional PDF reports outlining total
+                                cash available, distributable profit, member contributions, and final payout plans for
+                                audit purposes.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORY: SUBSCRIPTIONS & PRICING -->
+                    <h3 class="faq-category" data-aos="fade-up">Subscriptions & Pricing</h3>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="350">
+                        <h2 class="accordion-header" id="headingSub1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSub1" aria-expanded="false" aria-controls="collapseSub1">
+                                Is GroupSathi free to use?
+                            </button>
+                        </h2>
+                        <div id="collapseSub1" class="accordion-collapse collapse" aria-labelledby="headingSub1"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                GroupSathi is currently free for early adopters. We believe in providing robust
+                                financial tools to rural groups without immediate cost barriers.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+                        <h2 class="accordion-header" id="headingSub2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSub2" aria-expanded="false" aria-controls="collapseSub2">
+                                Will I have to pay in the future?
+                            </button>
+                        </h2>
+                        <div id="collapseSub2" class="accordion-collapse collapse" aria-labelledby="headingSub2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                In the future, the platform may introduce a nominal subscription fee for advanced
+                                features or for managing larger groups. However, transparency is our core value, and any
+                                pricing changes will be communicated well in advance.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORY: SECURITY & PRIVACY -->
+                    <h3 class="faq-category" data-aos="fade-up">Security, Privacy & Terms</h3>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="450">
+                        <h2 class="accordion-header" id="headingSec1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSec1" aria-expanded="false" aria-controls="collapseSec1">
+                                How secure is our financial data?
+                            </button>
+                        </h2>
+                        <div id="collapseSec1" class="accordion-collapse collapse" aria-labelledby="headingSec1"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Extremely secure. We use industry-standard encryption for data at rest and in transit.
+                                Your group's ledger is completely private and only accessible to verified members and
+                                leaders of that specific group.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="500">
+                        <h2 class="accordion-header" id="headingSec2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSec2" aria-expanded="false" aria-controls="collapseSec2">
+                                How is my personal information handled? (Privacy Policy)
+                            </button>
+                        </h2>
+                        <div id="collapseSec2" class="accordion-collapse collapse" aria-labelledby="headingSec2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                GroupSathi only collects information necessary to maintain accurate records. We do not
+                                sell your data to third parties. For full details, please refer to our Privacy Policy
+                                linked in the footer.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="550">
+                        <h2 class="accordion-header" id="headingSec3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSec3" aria-expanded="false" aria-controls="collapseSec3">
+                                What are the Terms and Conditions of use?
+                            </button>
+                        </h2>
+                        <div id="collapseSec3" class="accordion-collapse collapse" aria-labelledby="headingSec3"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                By using GroupSathi, you agree that it is a record-keeping tool and you are solely
+                                responsible for the physical handling of cash. You also agree to our fair usage
+                                policies. Detailed Terms & Conditions can be accessed via the footer modal. You can
+                                check the Terms and conditions & the privacy policy in the footer section.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORY: AI & SUPPORT -->
+                    <h3 class="faq-category" data-aos="fade-up">AI Assistant & Support</h3>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="600">
+                        <h2 class="accordion-header" id="headingAI1">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseAI1" aria-expanded="false" aria-controls="collapseAI1">
+                                What does the AI Assistant do?
+                            </button>
+                        </h2>
+                        <div id="collapseAI1" class="accordion-collapse collapse" aria-labelledby="headingAI1"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Powered by advanced language models, the GroupSathi AI Assistant helps you navigate the
+                                platform, explains financial calculations, and provides instant support for common
+                                queries related to SHG management.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="650">
+                        <h2 class="accordion-header" id="headingAI2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseAI2" aria-expanded="false" aria-controls="collapseAI2">
+                                How do I contact human support?
+                            </button>
+                        </h2>
+                        <div id="collapseAI2" class="accordion-collapse collapse" aria-labelledby="headingAI2"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                If the AI Assistant cannot resolve your issue, you can reach out to our dedicated
+                                support team via the Contact form in the application.
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modals for Policies -->
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
@@ -813,9 +1445,15 @@
     </div>
 </div>
 
-<button id="chatbot-toggle" class="chatbot-toggle-btn" style="padding:0; overflow:hidden;">
-    <img src="{% static 'images/GroupSathi.png' %}" alt="AI" style="width:100%; height:100%; object-fit:cover;">
-</button>
+<div class="chatbot-toggle-container" id="chatbot-toggle-wrapper">
+    <div class="chatbot-label" id="chatbot-label-text">
+        <span>Need Help? <strong>Ask AI</strong></span>
+        <i class="bi bi-robot ms-2 text-primary fs-5"></i>
+    </div>
+    <button id="chatbot-toggle" class="chatbot-btn-animated bg-white">
+        <img src="{% static 'images/GroupSathi.png' %}" alt="AI" style="width:100%; height:100%; object-fit:cover;">
+    </button>
+</div>
 
 
 {% endblock %}
@@ -840,9 +1478,20 @@
         const inputField = document.getElementById('chatbot-input');
         const messagesContainer = document.getElementById('chatbot-messages');
 
-        toggleBtn.addEventListener('click', () => {
+
+        const toggleWrapper = document.getElementById('chatbot-toggle-wrapper');
+        const labelText = document.getElementById('chatbot-label-text');
+
+        const toggleChatbot = () => {
             widget.style.display = widget.style.display === 'flex' ? 'none' : 'flex';
-        });
+            if (widget.style.display === 'flex') {
+                labelText.style.display = 'none'; // Hide label when open
+            }
+        };
+
+        toggleBtn.addEventListener('click', toggleChatbot);
+        labelText.addEventListener('click', toggleChatbot);
+
 
         closeBtn.addEventListener('click', () => {
             widget.style.display = 'none';
